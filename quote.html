@@ -81,7 +81,7 @@
              The whole column is one <form>: the basket's quantity and size
              controls carry no name attribute, so they are never submitted and
              never appear in the emailed body — see formBody() in site.js. -->
-        <form id="quote-form" action="mailto:sales@hanekom.co.zm" method="post" enctype="text/plain" data-hanekom-form data-form-offline novalidate>
+        <form id="quote-form" action="mailto:sales@hanekom.co.zm" method="post" enctype="text/plain" data-hanekom-form data-form-offline data-supabase-inquiry="quotation" novalidate>
           <input type="hidden" name="access_key" value="REPLACE-WITH-YOUR-WEB3FORMS-ACCESS-KEY">
           <input type="hidden" name="subject" value="New quote request from hanekom.co.zm">
           <input type="hidden" name="from_name" value="Hanekom website">
@@ -176,7 +176,7 @@
           </div>
 
           <div class="btn-row">
-            <button type="submit" class="btn btn-primary">Send by email</button>
+            <button type="submit" class="btn btn-primary">Send quotation request</button>
             <a class="btn btn-wa" id="wa-list" href="https://wa.me/260954263566" target="_blank" rel="noopener">Or send it on WhatsApp</a>
             <button type="button" class="btn btn-amber" id="dl-pdf">Download as PDF</button>
           </div>
@@ -309,14 +309,13 @@ document.addEventListener('DOMContentLoaded', function () {
     box.innerHTML = window.HANEKOM_KITS.map(function (k) {
       var items = k.codes.map(byCode).filter(Boolean);
       if (!items.length) return '';
-      var sum = items.reduce(function (a, x) { return a + x.price; }, 0);
       return '<button type="button" class="kit" data-kit="' + k.id + '">' +
         '<span class="kit-imgs">' + items.slice(0, 4).map(function (x) {
           return '<i><img src="assets/thumb/' + x.img + '.webp" alt="" width="44" height="44" loading="lazy" decoding="async" fetchpriority="low"></i>';
         }).join('') + '</span>' +
         '<span class="kit-name">' + k.name + '</span>' +
         '<span class="kit-blurb">' + k.blurb + '</span>' +
-        '<span class="kit-meta">' + items.length + ' items &middot; from ZMW ' + money(sum) + '</span>' +
+        '<span class="kit-meta">' + items.length + (items.length === 1 ? ' item' : ' items') + '</span>' +
       '</button>';
     }).join('');
     box.addEventListener('click', function (e) {
@@ -367,10 +366,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // is what pastes cleanly into a sheet; the header names match Odoo's own
   // import column labels.
   function odooBlock(L) {
-    var rows = ['Internal Reference\tProduct\tQuantity\tSize requested\tColour requested\tUnit Price'];
+    var rows = ['Internal Reference\tProduct\tQuantity\tSize requested\tColour requested'];
     L.forEach(function (x) {
       rows.push([ODOO[x.p.code] || '', x.p.name + (x.p.variant ? ' - ' + x.p.variant : ''),
-                 x.v.q, x.v.s || '', x.v.c || '', x.p.price.toFixed(2)].join('\t'));
+                 x.v.q, x.v.s || '', x.v.c || ''].join('\t'));
     });
     return rows.join('\n');
   }
@@ -804,5 +803,6 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="assets/js/pdf.js" defer></script>
 <script src="assets/js/quote-pdf.js" defer></script>
 <script src="assets/js/site.min.js?v=202610040849" defer></script>
+<script src="assets/js/inquiry-submit.js?v=2026100403" defer></script>
 </body>
 </html>

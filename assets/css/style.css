@@ -306,10 +306,10 @@ section.tight{padding:48px 0}
                               rgba(9,14,11,.58) 70%, rgba(9,14,11,.86) 100%);
   }
 }
-.hero-inner{position:relative;z-index:2;padding:84px 0 92px;max-width:680px}
+.hero-inner{position:relative;z-index:2;padding:164px 0 92px;max-width:680px}
 @media (max-width:700px){
-  /* keep both calls to action above the fixed bottom bar at rest */
-  .hero-inner{padding:44px 0 40px}
+  /* clear the fixed top navigation while retaining a compact mobile hero */
+  .hero-inner{padding:148px 0 40px}
   .hero p{font-size:1rem;line-height:1.55}
   .hero-meta{gap:.4rem;margin-bottom:1.1rem}
   .chip{font-size:.72rem;padding:.3rem .7rem}
@@ -333,7 +333,7 @@ section.tight{padding:48px 0}
 .nav-search-trigger{display:inline-flex;align-items:center;gap:.38rem;padding:.55rem .75rem;border:1px solid rgba(140,200,95,.3);border-radius:999px;background:rgba(140,200,95,.08);color:inherit;font:inherit;font-weight:800;cursor:pointer}
 .nav-search-trigger svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .nav-search-trigger:hover,.nav-search-trigger:focus-visible,.nav-search-trigger.is-open{color:#79ca4e;border-color:#79ca4e;background:rgba(121,202,78,.14);outline:none}
-.site-search-strip{position:relative;z-index:18;padding:.72rem 1rem;background:rgba(14,32,22,.94);border-bottom:1px solid rgba(140,200,95,.22);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);animation:search-drop .22s ease both}
+.site-search-strip{position:fixed;top:calc(134px + env(safe-area-inset-top));left:0;right:0;z-index:79;padding:.72rem 1rem;background:rgba(14,32,22,.94);border-block:1px solid rgba(140,200,95,.22);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 14px 30px rgba(0,0,0,.24);animation:search-drop .22s ease both}
 .site-search-strip[hidden]{display:none}
 @keyframes search-drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 .site-search-strip form{display:flex;align-items:center;gap:.55rem;max-width:1180px;margin:0 auto}
@@ -353,7 +353,7 @@ section.tight{padding:48px 0}
 }
 
 /* ---------- page header (interior) ---------- */
-.page-head{position:relative;padding:56px 0 46px;border-bottom:1px solid var(--edge);background:rgba(255,255,255,.028)}
+.page-head{position:relative;padding:164px 0 46px;border-bottom:1px solid var(--edge);background:rgba(255,255,255,.028)}
 .page-head h1{margin-bottom:.6rem}
 .crumbs{font-size:.82rem;color:var(--faint);margin-bottom:.85rem}
 .crumbs a{color:var(--mute)}
@@ -953,10 +953,10 @@ address{font-style:normal;line-height:1.75}
   --lift:35px;
   display:block;position:fixed;left:50%;width:min(720px,calc(100% - 28px));
   transform:translateX(-50%);
-  top:auto;bottom:calc(12px + env(safe-area-inset-bottom));
+  top:calc(10px + env(safe-area-inset-top));bottom:auto;
   z-index:80;padding-top:var(--lift);transition:--notch-x var(--motion-beat) cubic-bezier(.22,.78,.28,1);
 }
-body{padding-top:0;padding-bottom:calc(132px + env(safe-area-inset-bottom))}
+body{padding-top:0;padding-bottom:24px}
 
 .hn-bar{
   position:relative;height:82px;border-radius:25px;
@@ -1043,8 +1043,28 @@ body{padding-top:0;padding-bottom:calc(132px + env(safe-area-inset-bottom))}
 .hn-puck .hn-badge{top:-3px;right:-5px;border-color:#fff}
 .hn-grip{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);width:126px;height:4px;border-radius:99px;background:rgba(32,64,43,.2);z-index:1}
 @media (max-width:380px){
-  .hn-nav{width:calc(100% - 16px);bottom:calc(8px + env(safe-area-inset-bottom))}.hn-item .lbl{font-size:9px}.hn-puck{width:62px;height:62px;margin-left:-31px;top:6px}.hn-puck::after{inset:-4px}
+  .hn-nav{width:calc(100% - 16px);top:calc(8px + env(safe-area-inset-top))}.hn-item .lbl{font-size:9px}.hn-puck{width:62px;height:62px;margin-left:-31px;top:6px}.hn-puck::after{inset:-4px}
   .hn-item .ico{width:23px;height:23px}.hn-grip{width:96px}
+}
+
+/* At the top edge, keep the mobile hop subtle so the active puck remains
+   fully visible instead of jumping outside the viewport. */
+@media (hover:none),(pointer:coarse){
+  @keyframes hn-nav-hop-forward{
+    0%,100%{transform:translateY(0) rotate(0) scale(1)}
+    45%{transform:translateY(-7px) rotate(7deg) scale(1.04,.97)}
+    75%{transform:translateY(3px) rotate(1deg) scale(1.02,.98)}
+  }
+  @keyframes hn-nav-hop-backward{
+    0%,100%{transform:translateY(0) rotate(0) scale(1)}
+    45%{transform:translateY(-7px) rotate(-7deg) scale(1.04,.97)}
+    75%{transform:translateY(3px) rotate(-1deg) scale(1.02,.98)}
+  }
+  @keyframes hn-nav-button-hop{
+    0%,100%{transform:translateY(0)}
+    45%{transform:translateY(-5px) scale(1.03)}
+    75%{transform:translateY(2px) scale(.99)}
+  }
 }
 
 /* Solid dock avoids live backdrop blur and keeps scrolling smooth. */
@@ -1066,7 +1086,7 @@ body{padding-top:0;padding-bottom:calc(132px + env(safe-area-inset-bottom))}
 @media print{
   body::before,body::after{display:none}
   .site-header,.topbar,.site-footer,.wa-float,.btn,.filters,.toolbar,.hn-nav{display:none!important}
-  body{background:#fff;color:#000;font-size:11pt;padding-bottom:0}
+  body{background:#fff;color:#000;font-size:11pt;padding:0}
   .card,.product,.table-wrap{background:#fff;border-color:#bbb;backdrop-filter:none}
   h1,h2,h3,h4,td,th,p,li,.lead{color:#000}
 }

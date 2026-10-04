@@ -129,7 +129,7 @@
       { size: 7.2, color: GREY });
     doc.text(RIGHT, y + 2, 'Ref ' + ref + '  -  page ' + page, { size: 7.2, align: 'right', color: GREY });
     doc.text(M, y - 8,
-      'Generated from hanekom.co.zm. Catalogue prices, shown before confirmation. Not a payable document.',
+      'Generated from hanekom.co.zm. Prices are supplied on Hanekom\'s written quotation.',
       { size: 7.2, color: GREY });
   }
 
@@ -140,11 +140,9 @@
   // description. fit() below is the safety net for any code added later.
   var COLS = [
     { k: 'code', label: 'Code', x: M + 4, w: 76 },
-    { k: 'desc', label: 'Description', x: M + 84, w: 198 },
-    { k: 'unit', label: 'Unit', x: M + 292, w: 30, align: 'center' },
-    { k: 'price', label: 'Unit price (K)', x: M + 400, w: 66, align: 'right' },
-    { k: 'qty', label: 'Qty', x: M + 432, w: 30, align: 'right' },
-    { k: 'total', label: 'Total (K)', x: RIGHT - 4, w: 70, align: 'right' }
+    { k: 'desc', label: 'Description', x: M + 84, w: 330 },
+    { k: 'unit', label: 'Unit', x: M + 424, w: 36, align: 'center' },
+    { k: 'qty', label: 'Qty', x: RIGHT - 4, w: 38, align: 'right' }
   ];
 
   function tableHead(doc, y) {
@@ -188,7 +186,7 @@
     y = tableHead(doc, y);
 
     /* line items */
-    var subtotal = 0, zebra = false;
+    var zebra = false;
     lines.forEach(function (x) {
       var p = x.p, v = x.v;
       var desc = p.name + (p.variant ? ' - ' + p.variant : '');
@@ -209,9 +207,6 @@
       if (zebra) doc.rect(M, y - h, COLW, h, BAND);
       zebra = !zebra;
 
-      var total = p.price * v.q;
-      subtotal += total;
-
       doc.text(COLS[0].x, y - 12, p.code, { size: fit(p.code, COLS[0].w - 4, 7.6, true), bold: true, color: INK });
       // Odoo's own reference, so whoever raises the quotation can search for
       // the product rather than match it by description.
@@ -224,32 +219,21 @@
         ty -= 9.4;
       });
       doc.text(COLS[2].x + COLS[2].w / 2, y - 12, 'Unit', { size: 7.6, color: GREY, align: 'center' });
-      doc.text(COLS[3].x, y - 12, money(p.price), { size: 8, color: INK, align: 'right' });
-      doc.text(COLS[4].x, y - 12, String(v.q), { size: 8, color: INK, align: 'right' });
-      doc.text(COLS[5].x, y - 12, money(total), { size: 8, bold: true, color: INK, align: 'right' });
+      doc.text(COLS[3].x, y - 12, String(v.q), { size: 8, bold: true, color: INK, align: 'right' });
 
       y -= h;
       doc.line(M, y, RIGHT, y, RULE, 0.4);
     });
 
-    /* totals — the template's arithmetic, marked for what it is */
-    var vat = subtotal * VAT_RATE;
+    /* Pricing is intentionally omitted; Hanekom supplies it on quotation. */
     y -= 6;
     if (y < M + 190) { footer(doc, page, ref); doc.newPage(); page++; y = letterhead(doc, ref); }
 
-    var tx = RIGHT - 200;
-    function totalRow(label, value, bold, band) {
-      if (band) doc.rect(tx, y - 15, 200, 15, band);
-      doc.text(tx + 6, y - 10.5, label, { size: 8.2, bold: bold, color: bold ? [1, 1, 1] : INK });
-      doc.text(RIGHT - 6, y - 10.5, value, { size: 8.2, bold: bold, align: 'right', color: bold ? [1, 1, 1] : INK });
-      y -= 15;
-    }
-    totalRow('Subtotal', 'K ' + money(subtotal), false, BAND);
-    totalRow('VAT @ ' + Math.round(VAT_RATE * 100) + '%', 'K ' + money(vat), false, BAND);
-    doc.text(tx + 6, y - 10.5, 'Delivery', { size: 8.2, color: GREY });
-    doc.text(RIGHT - 6, y - 10.5, 'quoted separately', { size: 8.2, align: 'right', color: GREY });
-    y -= 15;
-    totalRow('INDICATIVE TOTAL', 'K ' + money(subtotal + vat), true, GREEN);
+    doc.rect(M, y - 24, COLW, 24, BAND);
+    doc.text(M + 8, y - 10, 'Pricing', { size: 8.2, bold: true, color: GREEN });
+    doc.text(M + 70, y - 10, 'Confirmed on Hanekom\'s written quotation.', { size: 8.2, color: INK });
+    doc.text(RIGHT - 8, y - 10, 'Countrywide delivery available', { size: 8, align: 'right', color: GREEN });
+    y -= 24;
 
     y -= 16;
 
@@ -261,7 +245,7 @@
     [['Delivery period', terms.delivery || '14-21 days, confirmed on quotation'],
      ['Payment terms', terms.payment || 'Upfront payment or as negotiated'],
      ['Warranty', terms.warranty || 'As per manufacturer specifications'],
-     ['Validity', terms.validity || 'Catalogue prices; confirmed on quotation']
+     ['Validity', terms.validity || 'Confirmed on written quotation']
     ].forEach(function (r) {
       doc.text(M + 5, y - 9, r[0], { size: 7.6, color: GREY });
       doc.text(M + 100, y - 9, r[1], { size: 8, color: INK });
@@ -277,9 +261,9 @@
     doc.rect(M, y - noteH, 2.5, noteH, GOLD);
     doc.text(M + 10, y - 13, 'This is a request, not a quotation.', { size: 8.6, bold: true, color: INK });
     [
-      'You created this document yourself from the catalogue on hanekom.co.zm. The prices are catalogue',
-      'prices and the total above is indicative only. Price, VAT status, stock, certification, sizes,',
-      'colours and delivery are all confirmed on the written quotation Hanekom sends you. Send this',
+      'You created this request from the catalogue on hanekom.co.zm. No product prices are displayed.',
+      'Price, VAT status, stock, certification, sizes, colours and delivery are confirmed on the',
+      'written quotation Hanekom sends you. Countrywide delivery is available. Send this',
       'document to ' + ((CFG.email && CFG.email.primary) || 'sales@hanekom.co.zm') + ' and we will reply within one working day.'
     ].forEach(function (t, i) {
       doc.text(M + 10, y - 25 - i * 9.6, t, { size: 7.6, color: INK });

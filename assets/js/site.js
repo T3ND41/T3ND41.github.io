@@ -230,7 +230,6 @@
           '<p class="desc">' + esc(p.desc) + '</p>' +
           '<p class="spec">' + esc(p.spec) + '</p>' +
           '<div class="foot">' +
-            '<span class="price"><span class="cur">ZMW</span>' + money(p.price) + '</span>' +
             '<span style="display:flex;gap:.4rem">' +
               '<a class="btn btn-sm btn-ghost card-wa" href="' + wa + '" target="_blank" rel="noopener" aria-label="WhatsApp about ' + esc(p.code) + '">WhatsApp</a>' +
               '<button type="button" class="add-btn' + (inBasket ? ' added' : '') + '" data-add="' + esc(p.code) + '">' +
@@ -241,6 +240,26 @@
       '</article>';
   }
   window.hanekomCard = card;
+
+  /* Public catalogue policy: prices are supplied only on a written quotation.
+     This also cleans legacy pre-rendered cards and shared footers on every page. */
+  function applyPublicCataloguePolicy() {
+    document.querySelectorAll('.price, .pdp-price, .b-total').forEach(function (el) { el.remove(); });
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var nodes = [], node;
+    while ((node = walker.nextNode())) nodes.push(node);
+    nodes.forEach(function (textNode) {
+      var value = textNode.nodeValue;
+      if (!value || !value.trim()) return;
+      value = value.replace(/P\.?\s*O\.?\s*Box\s*21600,?\s*Kitwe,?\s*Zambia/gi,
+        'Delivery available countrywide across Zambia');
+      value = value.replace(/See 45 PPE lines with prices/gi, 'See 45 PPE product lines');
+      value = value.replace(/Forty-five priced lines/gi, 'Forty-five product lines');
+      value = value.replace(/Prices in ZMW are indicative[^.]*\./gi,
+        'Request a written quotation for current pricing.');
+      textNode.nodeValue = value;
+    });
+  }
 
   /* Plain-language catalogue search.
      Buyers often know the hazard (dust, noise, rain, height) or a familiar
@@ -1025,11 +1044,25 @@
 
       e.preventDefault();
       var href = item.href;
+      var previousIndex = active;
       nav.querySelectorAll('.hn-item.is-next').forEach(function (el) { el.classList.remove('is-next'); });
       item.classList.add('is-next');
       nav.classList.remove('is-hopping', 'is-forward', 'is-backward');
       void nav.offsetWidth;
-      nav.classList.add(nextIndex > active ? 'is-forward' : 'is-backward');
+
+      // Adapt the selected icon immediately. Previously only the wave moved;
+      // the puck icon changed after the next document loaded, which felt late.
+      nav.querySelectorAll('.hn-item[aria-current]').forEach(function (el) {
+        el.removeAttribute('aria-current');
+      });
+      item.setAttribute('aria-current', 'page');
+      active = nextIndex;
+      var selectedTab = NAV_TABS[active];
+      nav.querySelector('.hn-puck').innerHTML =
+        '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="' + selectedTab.icon + '"></use></svg>' +
+        (selectedTab.badge ? badgeHTML(true) : '');
+
+      nav.classList.add(nextIndex > previousIndex ? 'is-forward' : 'is-backward');
       nav.style.setProperty('--notch-x', ((nextIndex + 0.5) / NAV_TABS.length * 100).toFixed(2) + '%');
       nav.classList.add('is-hopping');
 
@@ -1038,7 +1071,7 @@
       // Fast desktops need a little more time to display the hop before the
       // next document replaces the current one. Touch devices keep the faster
       // timing that already feels right on mobile.
-      setTimeout(function () { location.href = href; }, 210);
+      setTimeout(function () { location.href = href; }, 120);
     });
 
     document.addEventListener('quote:change', paint);
@@ -1138,6 +1171,7 @@
   /* ---------------- boot ---------------- */
   // exposed so a single-page preview can re-run it after swapping <main>
   window.hanekomBoot = function () {
+    applyPublicCataloguePolicy();
     initSiteLoader();
     initNav();
     initGlobalSearch();

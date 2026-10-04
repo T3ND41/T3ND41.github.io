@@ -149,7 +149,7 @@
           </div>
           <div class="b-total" id="basket-total" hidden>
             <span>Indicative total <span class="hint" style="font-weight:500">(catalogue prices, before VAT and delivery)</span></span>
-            <span class="amt" id="total-amt">ZMW 0.00</span>
+            <span class="amt" id="total-amt">Price confirmed on quotation</span>
           </div>
           <!-- Managing the list. The three ways of SENDING it live together at
                the bottom of the page, so a visitor is never hunting for one of
@@ -382,8 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // The quantity is a bounded integer before it ever gets here, so this is
     // arithmetic on known-good numbers. It is still only an indication — the
     // quotation Hanekom sends back is the priced document.
-    var total = L.reduce(function (s, x) { return s + x.p.price * x.v.q; }, 0);
-    totalAmt.textContent = 'ZMW ' + money(total);
+    totalBox.hidden = true;
 
     var txt = L.map(lineText).join('\n');
     // The hidden field is what reaches the sales inbox. Append the paste-ready
@@ -441,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<div class="b-item">' +
         '<span class="bi-img"><img src="assets/cat/' + p.img + '.jpg" alt="" width="64" height="64"></span>' +
         '<span class="bi-txt"><span class="bi-name">' + esc(p.name) + (p.variant ? ' &mdash; ' + esc(p.variant) : '') + '</span>' +
-          '<span class="bi-meta">' + esc(p.code) + ' &middot; ZMW ' + money(p.price) + '</span></span>' +
+          '<span class="bi-meta">' + esc(p.code) + ' &middot; Price confirmed on quotation</span></span>' +
         '<span class="bi-opts">' +
           '<span class="bi-opt bi-qty"><label class="sr-only" for="q-' + p.id + '">Quantity of ' + esc(p.code) + '</label>' +
             '<input type="number" inputmode="numeric" min="1" max="100000" step="1" id="q-' + p.id + '" ' +
@@ -747,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <strong style="color:#fff">Lusaka office</strong><br>
           218A Mbereshi Street, Nyumba Yanga<br>
           Lusaka, Lusaka Province<br><br>
-          P.O. Box 21600, Kitwe, Zambia<br>
+          Delivery available countrywide across Zambia<br>
           Monday to Friday, 08:00 - 17:00<br><br>
           <a href="https://wa.me/260954263566" target="_blank" rel="noopener">WhatsApp +260 954 263 566</a><br>
           <a href="tel:+260975956570">Brian (Sales) +260 975 956 570</a><br>

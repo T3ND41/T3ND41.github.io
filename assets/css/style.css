@@ -50,7 +50,11 @@ main{view-transition-name:page-content;animation:page-arrive var(--motion-beat) 
 ::view-transition-group(root){animation-duration:var(--motion-beat);animation-timing-function:cubic-bezier(.22,.7,.2,1)}
 ::view-transition-old(page-content){animation:page-out .22s ease both}
 ::view-transition-new(page-content){animation:page-in var(--motion-beat) cubic-bezier(.22,.7,.2,1) both}
-::view-transition-old(site-header),::view-transition-new(site-header),::view-transition-old(primary-nav),::view-transition-new(primary-nav){animation-duration:.28s}
+::view-transition-old(site-header),::view-transition-new(site-header){animation-duration:.28s}
+/* Never cross-fade two navigation states: overlapping puck icons look like
+   input lag. The destination nav replaces the previous one cleanly. */
+::view-transition-old(primary-nav){animation:none;opacity:0}
+::view-transition-new(primary-nav){animation:none;opacity:1}
 @keyframes page-arrive{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes page-out{to{opacity:0;transform:translateY(-5px) scale(.995)}}
 @keyframes page-in{from{opacity:0;transform:translateY(10px) scale(.998)}to{opacity:1;transform:none}}
@@ -85,6 +89,11 @@ body{
   margin:0;font-family:var(--sans);color:var(--text-2);background:var(--ground);
   font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
+
+/* Prices are provided privately on Hanekom's written quotation. Keeping these
+   hidden in CSS also prevents legacy pre-rendered values flashing on load. */
+.price,.pdp-price,.b-total{display:none!important}
+.product .foot{justify-content:flex-end}
 
 /* Branded page loader. The official combined mark moves as one unit so the
    hard hat and gear always stay perfectly aligned. */

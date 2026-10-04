@@ -170,7 +170,7 @@
     <h2>General enquiry</h2>
     <p class="lead" style="font-size:.98rem;margin-bottom:1.75rem">Need a price? Use the <a href="quote.html">quote request form</a> instead &mdash; it lets you attach your product codes. For anything else, this form reaches the same inbox.</p>
 
-    <form action="mailto:sales@hanekom.co.zm" method="post" enctype="text/plain" data-hanekom-form data-form-offline id="contact-form" novalidate>
+    <form action="mailto:sales@hanekom.co.zm" method="post" enctype="text/plain" data-hanekom-form data-form-offline data-supabase-inquiry="general" id="contact-form" novalidate>
           <input type="hidden" name="access_key" value="REPLACE-WITH-YOUR-WEB3FORMS-ACCESS-KEY">
       <input type="hidden" name="subject" value="New enquiry from hanekom.co.zm">
       <input type="hidden" name="from_name" value="Hanekom website">
@@ -200,7 +200,7 @@
         </div>
       </div>
       <div class="btn-row">
-        <button type="submit" class="btn btn-primary">Send by email</button>
+        <button type="submit" class="btn btn-primary">Send enquiry</button>
         <a class="btn btn-wa" data-wa-form href="https://wa.me/260954263566" target="_blank" rel="noopener">Or send it on WhatsApp</a>
       </div>
       <p class="hint" style="margin-top:.75rem">We use these details only to answer your enquiry. We set no cookies and share nothing with advertisers &mdash; see our <a href="privacy.html">privacy notice</a>.</p>
@@ -278,7 +278,7 @@
     <div class="f-bottom">
       <span>&copy; <span id="year">2026</span> Hanekom Innovations Limited. All rights reserved.</span>
       <span>TPIN 1001639160 &middot; Reg. No. 52472 &middot; <a href="privacy.html">Privacy notice</a></span>
-      <span>Prices in ZMW are indicative &mdash; confirm current price, VAT status and stock on quote.</span>
+      <span>Request a written quotation for current pricing.</span>
     </div>
   </div>
 </footer>
@@ -323,5 +323,6 @@
 </nav>
 <script src="assets/js/config.js" defer></script>
 <script src="assets/js/site.min.js?v=202609302100" defer></script>
+<script src="assets/js/inquiry-submit.js?v=2026100403" defer></script>
 </body>
 </html>

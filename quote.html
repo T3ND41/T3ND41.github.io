@@ -21,7 +21,7 @@
 <meta name="geo.placename" content="Kitwe, Zambia">
 <link rel="icon" href="assets/img/favicon.png" sizes="any">
 <link rel="apple-touch-icon" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/style.min.css?v=202609302115">
+<link rel="stylesheet" href="assets/css/style.min.css?v=202610040849">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.hanekom.co.zm/#org","name":"Hanekom Innovations Limited","legalName":"Hanekom Innovations Limited","alternateName":"Hanekom Innovations","url":"https://www.hanekom.co.zm/","logo":"https://www.hanekom.co.zm/assets/img/logo-1200.png","description":"Wholly Zambian-owned supplier of personal protective equipment, workwear and working-at-height systems to the mining, manufacturing, water utility, process, farming and mineral processing industries. Offices in Kitwe and Lusaka.","foundingDate":"2003-05-19","email":"sales@hanekom.co.zm","telephone":"+260 975 956 570","taxID":"1001639160","vatID":"1001639160","slogan":"Innovating your safety","contactPoint":[{"@type":"ContactPoint","contactType":"sales","telephone":"+260 975 956 570","email":"sales@hanekom.co.zm","areaServed":"ZM","availableLanguage":"English"},{"@type":"ContactPoint","contactType":"customer support","telephone":"+260 954 263 566","email":"brianm@hanekom.co.zm","areaServed":"ZM","availableLanguage":"English"}],"areaServed":[{"@type":"Country","name":"Zambia"},{"@type":"AdministrativeArea","name":"Copperbelt Province"},{"@type":"AdministrativeArea","name":"Lusaka Province"},{"@type":"AdministrativeArea","name":"North-Western Province"}],"knowsAbout":["Personal protective equipment","Safety footwear","Fall protection","Respiratory protection","Industrial workwear","Mining safety supplies"],"department":[{"@id":"https://www.hanekom.co.zm/#kitwe"},{"@id":"https://www.hanekom.co.zm/#lusaka"}]},{"@type":"LocalBusiness","@id":"https://www.hanekom.co.zm/#kitwe","name":"Hanekom Innovations Limited \u2014 Kitwe","parentOrganization":{"@id":"https://www.hanekom.co.zm/#org"},"url":"https://www.hanekom.co.zm/contact.html","image":"https://www.hanekom.co.zm/assets/img/logo-1200.png","telephone":["+260 975 956 570","+260 954 263 566"],"email":["sales@hanekom.co.zm","brianm@hanekom.co.zm"],"taxID":"1001639160","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"1559 Independence Avenue","postOfficeBoxNumber":"21600","addressLocality":"Kitwe","addressRegion":"Copperbelt Province","addressCountry":"ZM"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"17:00"}]},{"@type":"LocalBusiness","@id":"https://www.hanekom.co.zm/#lusaka","name":"Hanekom Innovations Limited \u2014 Lusaka","parentOrganization":{"@id":"https://www.hanekom.co.zm/#org"},"url":"https://www.hanekom.co.zm/contact.html","image":"https://www.hanekom.co.zm/assets/img/logo-1200.png","telephone":["+260 975 956 570","+260 954 263 566"],"email":["sales@hanekom.co.zm","brianm@hanekom.co.zm"],"taxID":"1001639160","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"218A Mbereshi Street, Nyumba Yanga","addressLocality":"Lusaka","addressRegion":"Lusaka Province","addressCountry":"ZM"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"17:00"}]}]}</script>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.hanekom.co.zm/"},{"@type":"ListItem","position":2,"name":"Request a quote","item":"https://www.hanekom.co.zm/quote.html"}]}</script>
@@ -232,7 +232,7 @@
         <div class="card" >
           <h3>What we need from you</h3>
           <ul style="margin-bottom:0">
-            <li><strong>Product code</strong> &mdash; P01&ndash;P19, C01&ndash;C11 or the harness / lifeline code</li>
+            <li><strong>Product name</strong> and description</li>
             <li><strong>Quantity</strong> per line</li>
             <li><strong>Size or colour</strong> where it applies</li>
             <li><strong>Delivery point</strong> and required date</li>
@@ -358,9 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var bits = [];
     if (x.v.s) bits.push('size ' + x.v.s);
     if (x.v.c) bits.push('colour ' + x.v.c);
-    var ref = ODOO[x.p.code];
-    return x.p.code + (ref ? ' [' + ref + ']' : '') + ' \u2014 ' +
-           x.p.name + (x.p.variant ? ' (' + x.p.variant + ')' : '') +
+    return x.p.name + (x.p.variant ? ' (' + x.p.variant + ')' : '') +
            ' \u00d7 ' + x.v.q + (bits.length ? ', ' + bits.join(', ') : '');
   }
 
@@ -420,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function selectFor(p, o, current) {
     var id = 'o-' + o.key + '-' + p.id;
     return '<span class="bi-opt">' +
-      '<label class="sr-only" for="' + id + '">' + esc(o.label) + ' for ' + esc(p.code) + '</label>' +
+      '<label class="sr-only" for="' + id + '">' + esc(o.label) + ' for ' + esc(p.name) + '</label>' +
       '<select id="' + id + '" data-opt="' + o.key + '" data-code="' + esc(p.code) + '">' +
         '<option value=""' + (current ? '' : ' selected') + '>' + esc(o.label) + '&hellip;</option>' +
         o.values.map(function (v) {
@@ -440,16 +438,16 @@ document.addEventListener('DOMContentLoaded', function () {
       return '<div class="b-item">' +
         '<span class="bi-img"><img src="assets/cat/' + p.img + '.jpg" alt="" width="64" height="64"></span>' +
         '<span class="bi-txt"><span class="bi-name">' + esc(p.name) + (p.variant ? ' &mdash; ' + esc(p.variant) : '') + '</span>' +
-          '<span class="bi-meta">' + esc(p.code) + ' &middot; Price confirmed on quotation</span></span>' +
+          '<span class="bi-meta">Price confirmed on quotation</span></span>' +
         '<span class="bi-opts">' +
-          '<span class="bi-opt bi-qty"><label class="sr-only" for="q-' + p.id + '">Quantity of ' + esc(p.code) + '</label>' +
+          '<span class="bi-opt bi-qty"><label class="sr-only" for="q-' + p.id + '">Quantity of ' + esc(p.name) + '</label>' +
             '<input type="number" inputmode="numeric" min="1" max="100000" step="1" id="q-' + p.id + '" ' +
             'data-qty="' + esc(p.code) + '" value="' + x.v.q + '"></span>' +
           (p.opts || []).map(function (o) {
             return selectFor(p, o, o.key === 'size' ? x.v.s : x.v.c);
           }).join('') +
         '</span>' +
-        '<button type="button" class="rm" data-rm="' + esc(p.code) + '" aria-label="Remove ' + esc(p.code) + '">Remove</button>' +
+        '<button type="button" class="rm" data-rm="' + esc(p.code) + '" aria-label="Remove ' + esc(p.name) + '">Remove</button>' +
       '</div>';
     }).join('');
     sync();
@@ -805,6 +803,6 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="assets/js/products.js" defer></script>
 <script src="assets/js/pdf.js" defer></script>
 <script src="assets/js/quote-pdf.js" defer></script>
-<script src="assets/js/site.min.js?v=202609302100" defer></script>
+<script src="assets/js/site.min.js?v=202610040849" defer></script>
 </body>
 </html>

@@ -92,7 +92,7 @@ body{
 
 /* Prices are provided privately on Hanekom's written quotation. Keeping these
    hidden in CSS also prevents legacy pre-rendered values flashing on load. */
-.price,.pdp-price,.b-total{display:none!important}
+.price,.pdp-price,.b-total,.code,.qp-code{display:none!important}
 .product .foot{justify-content:flex-end}
 
 /* Branded page loader. The official combined mark moves as one unit so the

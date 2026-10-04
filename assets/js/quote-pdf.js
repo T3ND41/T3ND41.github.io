@@ -135,12 +135,8 @@
 
   /* ---------- the table ---------- */
 
-  // The code column is sized for the longest code in the catalogue,
-  // "PN 10(S)+PN 361", which overran a narrower column and collided with the
-  // description. fit() below is the safety net for any code added later.
   var COLS = [
-    { k: 'code', label: 'Code', x: M + 4, w: 76 },
-    { k: 'desc', label: 'Description', x: M + 84, w: 330 },
+    { k: 'desc', label: 'Description', x: M + 4, w: 410 },
     { k: 'unit', label: 'Unit', x: M + 424, w: 36, align: 'center' },
     { k: 'qty', label: 'Qty', x: RIGHT - 4, w: 38, align: 'right' }
   ];
@@ -193,9 +189,9 @@
       var extra = [];
       if (v.s) extra.push('Size requested: ' + v.s);
       if (v.c) extra.push('Colour requested: ' + v.c);
-      var wrapped = doc.wrap(desc, COLS[1].w - 6, 8, false);
-      if (extra.length) wrapped = wrapped.concat(doc.wrap(extra.join('   '), COLS[1].w - 6, 7.2, false));
-      var h = Math.max(ODOO[p.code] ? 24 : 16, 6 + wrapped.length * 9.4);
+      var wrapped = doc.wrap(desc, COLS[0].w - 6, 8, false);
+      if (extra.length) wrapped = wrapped.concat(doc.wrap(extra.join('   '), COLS[0].w - 6, 7.2, false));
+      var h = Math.max(16, 6 + wrapped.length * 9.4);
 
       if (y - h < M + 96) {                    // room for the footer
         footer(doc, page, ref);
@@ -207,19 +203,14 @@
       if (zebra) doc.rect(M, y - h, COLW, h, BAND);
       zebra = !zebra;
 
-      doc.text(COLS[0].x, y - 12, p.code, { size: fit(p.code, COLS[0].w - 4, 7.6, true), bold: true, color: INK });
-      // Odoo's own reference, so whoever raises the quotation can search for
-      // the product rather than match it by description.
-      var oref = ODOO[p.code];
-      if (oref) doc.text(COLS[0].x, y - 21, oref, { size: fit(oref, COLS[0].w - 4, 6.4, false), color: GREY });
       var ty = y - 11;
       wrapped.forEach(function (t, i) {
-        var isExtra = i >= doc.wrap(desc, COLS[1].w - 6, 8, false).length;
-        doc.text(COLS[1].x, ty, t, { size: isExtra ? 7.2 : 8, color: isExtra ? GREY : INK });
+        var isExtra = i >= doc.wrap(desc, COLS[0].w - 6, 8, false).length;
+        doc.text(COLS[0].x, ty, t, { size: isExtra ? 7.2 : 8, color: isExtra ? GREY : INK });
         ty -= 9.4;
       });
-      doc.text(COLS[2].x + COLS[2].w / 2, y - 12, 'Unit', { size: 7.6, color: GREY, align: 'center' });
-      doc.text(COLS[3].x, y - 12, String(v.q), { size: 8, bold: true, color: INK, align: 'right' });
+      doc.text(COLS[1].x + COLS[1].w / 2, y - 12, 'Unit', { size: 7.6, color: GREY, align: 'center' });
+      doc.text(COLS[2].x, y - 12, String(v.q), { size: 8, bold: true, color: INK, align: 'right' });
 
       y -= h;
       doc.line(M, y, RIGHT, y, RULE, 0.4);

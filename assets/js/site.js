@@ -169,7 +169,7 @@
     var lines = [
       'Hello Hanekom, please quote me on:',
       '',
-      p.code + ' — ' + p.name + (p.variant ? ' (' + p.variant + ')' : ''),
+      p.name + (p.variant ? ' (' + p.variant + ')' : ''),
       'Quantity needed: ' + (v.q || ''),
       'Size requested: ' + (v.s || ''),
       'Colour requested: ' + (v.c || ''),
@@ -214,7 +214,7 @@
     return '' +
       '<article class="product" data-cat="' + p.cat + '" data-code="' + esc(p.code) + '" ' +
       'data-search="' + esc((p.code + ' ' + p.name + ' ' + (p.variant || '') + ' ' + p.brand + ' ' + p.desc + ' ' + p.tag).toLowerCase()) + '">' +
-        '<div class="ph"><span class="code">' + esc(p.code) + '</span>' +
+        '<div class="ph">' +
           '<a class="ph-link" href="' + p.url + '" aria-label="' + esc(p.name) + ' details"></a>' +
           (p.imgNote ? '<span class="ph-note" title="' + esc(p.imgNote) + '">packaging shown</span>' : '') +
           '<picture>' +
@@ -244,7 +244,19 @@
   /* Public catalogue policy: prices are supplied only on a written quotation.
      This also cleans legacy pre-rendered cards and shared footers on every page. */
   function applyPublicCataloguePolicy() {
-    document.querySelectorAll('.price, .pdp-price, .b-total').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.price, .pdp-price, .b-total, .code, .qp-code').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.pdp-spec > div').forEach(function (row) {
+      var label = row.querySelector('dt');
+      if (label && /^product code$/i.test(label.textContent.trim())) row.remove();
+    });
+    document.querySelectorAll('.sec-head').forEach(function (head) {
+      var eyebrow = head.querySelector('.eyebrow');
+      if (eyebrow && /^complete price index$/i.test(eyebrow.textContent.trim())) {
+        var table = head.nextElementSibling;
+        if (table && table.classList.contains('table-wrap')) table.remove();
+        head.remove();
+      }
+    });
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     var nodes = [], node;
     while ((node = walker.nextNode())) nodes.push(node);
@@ -257,6 +269,8 @@
       value = value.replace(/Forty-five priced lines/gi, 'Forty-five product lines');
       value = value.replace(/Prices in ZMW are indicative[^.]*\./gi,
         'Request a written quotation for current pricing.');
+      value = value.replace(/product codes/gi, 'product names');
+      value = value.replace(/product code/gi, 'product name');
       textNode.nodeValue = value;
     });
   }
@@ -524,7 +538,7 @@
         '<button type="button" class="qp-close" data-qp-close aria-label="Close">&times;</button>' +
         '<div class="qp-head">' +
           '<span class="qp-img"><img id="quote-picker-img" src="" alt="" width="92" height="92"></span>' +
-          '<span><span class="qp-code" id="quote-picker-code"></span>' +
+          '<span>' +
           '<h2 id="quote-picker-title">Configure product</h2>' +
           '<p id="quote-picker-variant"></p></span>' +
         '</div>' +
@@ -557,7 +571,6 @@
       var p = byCode(code); if (!p) return;
       current = p;
       var line = api.line(code) || { q: 1, s: '', c: '' };
-      document.getElementById('quote-picker-code').textContent = p.code;
       document.getElementById('quote-picker-title').textContent = p.name;
       document.getElementById('quote-picker-variant').textContent = p.variant || p.tag || '';
       var img = document.getElementById('quote-picker-img');

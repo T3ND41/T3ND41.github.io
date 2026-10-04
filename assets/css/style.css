@@ -410,6 +410,21 @@ a.card:hover .more{gap:.55rem}
 .cat-tile .body p{font-size:.84rem;color:var(--mute);margin:0}
 .cat-tile .count{font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-top:.6rem;display:block}
 
+/* Keep the homepage category showcase visually balanced as one centered unit. */
+.category-section .sec-head{margin-inline:auto;text-align:center}
+.category-section .sec-head .lead{margin-inline:auto}
+.category-section #cat-grid{justify-items:stretch}
+.category-section .cat-tile{text-align:center}
+.category-section .cat-tile .body{
+  display:flex;min-height:185px;flex-direction:column;align-items:center;justify-content:center;
+}
+.category-section .cat-tile .body p{max-width:29ch;text-wrap:balance}
+.category-section .cat-tile .count{margin-top:auto;padding-top:.75rem}
+.category-section>.wrap>.btn-row{justify-content:center}
+@media (max-width:600px){
+  .category-section .cat-tile .body{min-height:auto;padding:1rem 1.15rem 1.15rem}
+}
+
 /* ---------- product cards ---------- */
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:1.35rem}
 .product-grid .product,.empty{scroll-margin-top:1.25rem}

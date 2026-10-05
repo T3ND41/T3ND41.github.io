@@ -960,8 +960,8 @@ body{padding-top:0;padding-bottom:24px}
 
 .hn-bar{
   position:relative;height:82px;border-radius:25px;
-  background:#f8fbf6;border:1px solid rgba(255,255,255,.95);
-  box-shadow:0 15px 34px rgba(2,13,7,.24),inset 0 1px 0 #fff;
+  background:rgba(244,250,241,.96);border:1px solid rgba(255,255,255,.68);
+  box-shadow:0 10px 26px rgba(2,13,7,.18),inset 0 1px 0 rgba(255,255,255,.8),inset 0 -1px 0 rgba(105,167,63,.12);
   /* Enlarged fluid wave: a deeper centre clears the floating button while
      the long feathered shoulders blend the cradle back into the nav bar. */
   -webkit-mask-image:radial-gradient(ellipse 110px 74px at var(--notch-x) -6px,
@@ -1067,7 +1067,24 @@ body{padding-top:0;padding-bottom:24px}
   }
 }
 
-/* Solid dock avoids live backdrop blur and keeps scrolling smooth. */
+/* Glass is confined to the small nav surface; blur never animates.
+   The opaque base above remains readable in browsers without backdrop support. */
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .hn-bar{
+    background:linear-gradient(135deg,rgba(255,255,255,.76),rgba(236,247,231,.60) 55%,rgba(255,255,255,.68));
+    -webkit-backdrop-filter:blur(10px) saturate(1.12);
+    backdrop-filter:blur(10px) saturate(1.12);
+  }
+  @media (hover:none),(pointer:coarse){
+    .hn-bar{
+      background:linear-gradient(135deg,rgba(255,255,255,.80),rgba(236,247,231,.70));
+      -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    }
+  }
+}
+@media (prefers-reduced-transparency:reduce),(forced-colors:active){
+  .hn-bar{background:#f8fbf6;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
 @media (max-width:700px){body::after{filter:blur(12px) saturate(.55) brightness(.42)}}
 
 /* ==========================================================================

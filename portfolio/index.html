@@ -81,8 +81,13 @@
         <p>Each project is presented as a case study: the problem, the decisions, what was built, and the value it creates.</p>
       </div>
 
+      <div class="project-filters" aria-label="Filter projects">
+        <button class="filter-button active" type="button" data-filter="all">All work</button>
+        <button class="filter-button" type="button" data-filter="web">Web</button>
+        <button class="filter-button" type="button" data-filter="powershell">PowerShell</button>
+      </div>
       <div class="project-grid">
-        <article class="project-card featured reveal">
+        <article class="project-card featured reveal" data-category="web">
           <div class="project-index">01</div>
           <div class="project-main">
             <div class="project-tags"><span>Business Platform</span><span>Web</span><span>Lead Generation</span></div>
@@ -107,7 +112,7 @@
           </div>
         </article>
 
-        <article class="project-card reveal">
+        <article class="project-card reveal" data-category="powershell">
           <div class="project-index">02</div>
           <div class="project-main">
             <div class="project-tags"><span>PowerShell</span><span>Diagnostics</span><span>Automation</span></div>
@@ -132,7 +137,7 @@
           </div>
         </article>
 
-        <article class="project-card reveal">
+        <article class="project-card reveal" data-category="powershell">
           <div class="project-index">03</div>
           <div class="project-main">
             <div class="project-tags"><span>PowerShell</span><span>System Health</span><span>Safety</span></div>
@@ -155,7 +160,7 @@
           </div>
         </article>
 
-        <article class="project-card reveal">
+        <article class="project-card reveal" data-category="powershell">
           <div class="project-index">04</div>
           <div class="project-main">
             <div class="project-tags"><span>PowerShell</span><span>Microsoft 365</span><span>Technician Tooling</span></div>

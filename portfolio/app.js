@@ -36,3 +36,13 @@ if(prefersReduced){
     },{passive:true});
   }
 }
+const filterButtons=[...document.querySelectorAll('.filter-button')];
+const projectCards=[...document.querySelectorAll('.project-card[data-category]')];
+filterButtons.forEach(button=>button.addEventListener('click',()=>{
+  const filter=button.dataset.filter;
+  filterButtons.forEach(b=>b.classList.toggle('active',b===button));
+  projectCards.forEach(card=>{
+    const show=filter==='all'||card.dataset.category===filter;
+    card.classList.toggle('filtered-out',!show);
+  });
+}));

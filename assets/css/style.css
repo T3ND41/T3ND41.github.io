@@ -960,46 +960,77 @@ body{padding-top:0;padding-bottom:24px}
 
 .hn-bar{
   position:relative;height:82px;border-radius:25px;
-  background:rgba(244,250,241,.96);border:1px solid rgba(255,255,255,.68);
-  box-shadow:0 10px 26px rgba(2,13,7,.18),inset 0 1px 0 rgba(255,255,255,.8),inset 0 -1px 0 rgba(105,167,63,.12);
-  /* Enlarged fluid wave: a deeper centre clears the floating button while
-     the long feathered shoulders blend the cradle back into the nav bar. */
-  -webkit-mask-image:radial-gradient(ellipse 110px 74px at var(--notch-x) -6px,
-    transparent 0 53px,rgba(0,0,0,.03) 56px,rgba(0,0,0,.1) 59px,
-    rgba(0,0,0,.23) 63px,rgba(0,0,0,.43) 67px,rgba(0,0,0,.66) 70px,
-    rgba(0,0,0,.86) 72px,#000 74px);
-          mask-image:radial-gradient(ellipse 110px 74px at var(--notch-x) -6px,
-    transparent 0 53px,rgba(0,0,0,.03) 56px,rgba(0,0,0,.1) 59px,
-    rgba(0,0,0,.23) 63px,rgba(0,0,0,.43) 67px,rgba(0,0,0,.66) 70px,
-    rgba(0,0,0,.86) 72px,#000 74px);
+  background:rgba(244,250,241,.52);border:1px solid rgba(255,255,255,.68);
+  box-shadow:0 8px 22px rgba(2,13,7,.14),inset 0 1px 0 rgba(255,255,255,.72),inset 0 -1px 0 rgba(105,167,63,.12);
+  /* A clean, flowing scoop cradles the selected button.  The bar alone is
+     translucent; the button never inherits its blur or transparency. */
+  -webkit-mask-image:radial-gradient(ellipse 116px 78px at var(--notch-x) -7px,
+    transparent 0 52px,rgba(0,0,0,.12) 55px,
+    rgba(0,0,0,.55) 60px,#000 65px);
+          mask-image:radial-gradient(ellipse 116px 78px at var(--notch-x) -7px,
+    transparent 0 52px,rgba(0,0,0,.12) 55px,
+    rgba(0,0,0,.55) 60px,#000 65px);
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
 }
-.hn-items{position:absolute;inset:var(--lift) 0 0;display:grid;grid-template-columns:repeat(6,1fr);align-items:center;padding:9px 10px 12px}
+/* The precise SVG-like path is supplied at runtime where supported. This
+   preserves the glass blur while drawing a continuous liquid curve. */
+.hn-bar.is-fluid{-webkit-mask-image:none;mask-image:none;border:0}
+.hn-items{position:absolute;inset:var(--lift) 0 0;display:grid;grid-template-columns:repeat(6,1fr);align-items:center;padding:9px 65px 12px}
 .hn-item{
   position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:3px;height:100%;padding:0 2px;
   background:none;border:0;cursor:pointer;font-family:inherit;color:#34423a;
   text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:background .22s ease,color .22s ease,transform .28s var(--ease);
 }
-.hn-item:hover{text-decoration:none;color:var(--green-deep);background:rgba(95,168,60,.1);border-radius:16px}
-.hn-item .ico{width:26px;height:26px;display:block;transition:transform .28s var(--ease),opacity .2s,color .2s}
+/* Six distinct shades are drawn from Hanekom green, deep industrial green,
+   and safety gold. The active puck uses the same shade as its destination. */
+.hn-item:nth-child(1){--item-fill:#69A73F;--item-ring:#DAB416;--item-ink:#121A16;--item-hover:#E0F0D5;--item-text:#315F1D}
+.hn-item:nth-child(2){--item-fill:#3E7723;--item-ring:#8CC85F;--item-ink:#F2CA46;--item-hover:#D5E9C9;--item-text:#2E5C1D}
+.hn-item:nth-child(3){--item-fill:#DAB416;--item-ring:#3E7723;--item-ink:#121A16;--item-hover:#F5E8B8;--item-text:#655000}
+.hn-item:nth-child(4){--item-fill:#5FA83C;--item-ring:#DAB416;--item-ink:#121A16;--item-hover:#E6F2D8;--item-text:#336822}
+.hn-item:nth-child(5){--item-fill:#274D36;--item-ring:#8CC85F;--item-ink:#F2CA46;--item-hover:#D8E9DE;--item-text:#274D36}
+.hn-item:nth-child(6){--item-fill:#8CC85F;--item-ring:#3E7723;--item-ink:#121A16;--item-hover:#EAF4DB;--item-text:#3E7723}
+.hn-item:focus-visible,.hn-item.is-preview{background:transparent;color:#1D3324;transform:none}
+.hn-item.is-preview{justify-content:flex-end;padding-bottom:2px}
+@media (hover:hover) and (pointer:fine){
+  .hn-item:hover{text-decoration:none;background:transparent;color:#1D3324;transform:none}
+}
+.hn-item.is-preview .ico{display:none}
+.hn-item.is-preview .lbl{font-weight:850;color:#172D1E}
+.hn-item.is-preview .hn-badge{visibility:visible}
+.hn-item .ico{width:25px;height:25px;display:block;transition:transform .28s var(--ease),opacity .2s,color .2s}
 .hn-search-item{border:0;background:transparent;font:inherit;cursor:pointer}
 .hn-search-item .ico{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.hn-item .lbl{font-size:11px;font-weight:700;line-height:1;white-space:nowrap;transition:color .2s,font-weight .2s}
-.hn-item:focus-visible{outline:3px solid var(--green);outline-offset:-5px;border-radius:14px}
+.hn-item .lbl{font-size:12px;font-weight:750;line-height:1.15;white-space:nowrap;color:#102418;text-shadow:0 1px 1px rgba(255,255,255,.8);transition:color .2s,font-weight .2s}
+.hn-item:focus-visible{outline:none}
+.hn-item:focus-visible .lbl{text-decoration:underline;text-decoration-color:var(--item-fill);text-decoration-thickness:2px;text-underline-offset:4px}
 .hn-item[aria-current]{color:#121A16;justify-content:flex-end;padding-bottom:2px}
-.hn-item[aria-current] .lbl{font-weight:800;color:#24352b}
-.hn-item[aria-current] .ico{opacity:0;transform:translateY(-10px) scale(.7)}
+.hn-item[aria-current] .lbl{font-weight:850;color:#102418}
+.hn-item[aria-current] .ico{display:none}
 
 .hn-puck{
-  position:absolute;top:3px;left:var(--notch-x);width:66px;height:66px;margin-left:-33px;
-  border-radius:50%;background:#69A73F;border:3px solid #DAB416;
-  display:flex;align-items:center;justify-content:center;color:#fff;
-  box-shadow:0 9px 22px rgba(27,84,24,.38),inset 0 1px 0 rgba(255,255,255,.3);z-index:3;pointer-events:none;
-  transition:left var(--motion-beat) cubic-bezier(.22,.78,.28,1);
+  position:absolute;top:2px;left:var(--notch-x);width:66px;height:66px;margin-left:-33px;
+  border-radius:50%;background:var(--puck-color,#69A73F);border:3px solid var(--puck-ring,#DAB416);
+  background:linear-gradient(145deg,rgba(255,255,255,.38),rgba(255,255,255,.04) 48%,rgba(5,32,13,.12)),
+    color-mix(in srgb,var(--puck-color,#69A73F) 68%,transparent);
+  -webkit-backdrop-filter:blur(9px) saturate(1.2);backdrop-filter:blur(9px) saturate(1.2);
+  display:flex;align-items:center;justify-content:center;color:var(--puck-ink,#fff);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.58),inset 0 -2px 6px rgba(4,26,10,.12),0 8px 20px rgba(2,18,7,.14);
+  z-index:3;pointer-events:none;
+  transition:left var(--motion-beat) cubic-bezier(.22,.78,.28,1),
+    background .24s ease,border-color .24s ease,color .24s ease;
 }
-.hn-puck .ico{width:31px;height:31px}
-.hn-puck::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(255,255,255,.28);z-index:-1}
+/* Hover keeps the icon in the dock with a quiet glass-like glint. */
+.hn-item.is-preview{justify-content:center;padding-bottom:0}
+.hn-item.is-preview .ico{display:block;transform:translateY(-2px);color:#274D36;filter:drop-shadow(0 1px 3px rgba(255,255,255,.55))}
+.hn-item.is-preview .lbl{font-weight:800;color:#1D3324}
+.hn-puck .ico{width:34px;height:34px}
+.hn-item .ico-solid{--icon-cut:#EAF3E5}
+.hn-search-item .ico-solid{stroke:none}
+.hn-puck .ico-solid{--icon-cut:var(--puck-color,#69A73F)}
+@media (max-width:700px){.hn-puck .ico-3d{width:30px;height:30px}}
+.hn-puck::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(255,255,255,.52);z-index:-1}
 .hn-nav.is-hopping.is-forward .hn-puck{
   animation:hn-nav-hop-forward var(--motion-beat) cubic-bezier(.22,.78,.28,1);
 }
@@ -1013,7 +1044,7 @@ body{padding-top:0;padding-bottom:24px}
 @keyframes hn-nav-hop-forward{
   0%{transform:translateY(0) rotate(0) scale(1,1)}
   18%{transform:translateY(-18px) rotate(8deg) scale(.96,1.05)}
-  48%{transform:translateY(-42px) rotate(18deg) scale(1.06,.96);box-shadow:0 25px 38px rgba(0,0,0,.18),inset 0 0 0 5px rgba(232,181,58,.28)}
+  48%{transform:translateY(-42px) rotate(18deg) scale(1.06,.96)}
   76%{transform:translateY(6px) rotate(3deg) scale(1.08,.9)}
   90%{transform:translateY(-5px) rotate(-2deg) scale(.98,1.03)}
   100%{transform:translateY(0) rotate(0) scale(1)}
@@ -1021,7 +1052,7 @@ body{padding-top:0;padding-bottom:24px}
 @keyframes hn-nav-hop-backward{
   0%{transform:translateY(0) rotate(0) scale(1,1)}
   18%{transform:translateY(-18px) rotate(-8deg) scale(.96,1.05)}
-  48%{transform:translateY(-42px) rotate(-18deg) scale(1.06,.96);box-shadow:0 25px 38px rgba(0,0,0,.18),inset 0 0 0 5px rgba(232,181,58,.28)}
+  48%{transform:translateY(-42px) rotate(-18deg) scale(1.06,.96)}
   76%{transform:translateY(6px) rotate(-3deg) scale(1.08,.9)}
   90%{transform:translateY(-5px) rotate(2deg) scale(.98,1.03)}
   100%{transform:translateY(0) rotate(0) scale(1)}
@@ -1041,9 +1072,10 @@ body{padding-top:0;padding-bottom:24px}
 }
 .hn-item .hn-badge{top:10px;right:calc(50% - 20px)}
 .hn-puck .hn-badge{top:-3px;right:-5px;border-color:#fff}
-.hn-grip{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);width:126px;height:4px;border-radius:99px;background:rgba(32,64,43,.2);z-index:1}
+.hn-grip{display:none}
+@media (max-width:700px){.hn-items{padding-left:36px;padding-right:36px}}
 @media (max-width:380px){
-  .hn-nav{width:calc(100% - 16px);top:calc(8px + env(safe-area-inset-top))}.hn-item .lbl{font-size:9px}.hn-puck{width:62px;height:62px;margin-left:-31px;top:6px}.hn-puck::after{inset:-4px}
+  .hn-nav{width:calc(100% - 16px);top:calc(8px + env(safe-area-inset-top))}.hn-item .lbl{font-size:10px}.hn-puck{width:62px;height:62px;margin-left:-31px;top:4px}.hn-puck::after{inset:-4px}
   .hn-item .ico{width:23px;height:23px}.hn-grip{width:96px}
 }
 
@@ -1067,23 +1099,23 @@ body{padding-top:0;padding-bottom:24px}
   }
 }
 
-/* Glass is confined to the small nav surface; blur never animates.
-   The opaque base above remains readable in browsers without backdrop support. */
+/* Frosted dock and tinted glass button; the icon glyph stays crisp. */
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .hn-bar{
-    background:linear-gradient(135deg,rgba(255,255,255,.76),rgba(236,247,231,.60) 55%,rgba(255,255,255,.68));
-    -webkit-backdrop-filter:blur(10px) saturate(1.12);
-    backdrop-filter:blur(10px) saturate(1.12);
+    background:linear-gradient(135deg,rgba(255,255,255,.57),rgba(236,247,231,.47) 55%,rgba(255,255,255,.52));
+    -webkit-backdrop-filter:blur(13px) saturate(1.18);
+    backdrop-filter:blur(13px) saturate(1.18);
   }
   @media (hover:none),(pointer:coarse){
     .hn-bar{
-      background:linear-gradient(135deg,rgba(255,255,255,.80),rgba(236,247,231,.70));
-      -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+      background:linear-gradient(135deg,rgba(255,255,255,.63),rgba(236,247,231,.54));
+      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
     }
   }
 }
 @media (prefers-reduced-transparency:reduce),(forced-colors:active){
   .hn-bar{background:#f8fbf6;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .hn-puck{background:var(--puck-color,#69A73F);-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 @media (max-width:700px){body::after{filter:blur(12px) saturate(.55) brightness(.42)}}
 

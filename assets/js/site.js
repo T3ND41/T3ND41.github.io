@@ -1201,3 +1201,206 @@
   };
   document.addEventListener('DOMContentLoaded', window.hanekomBoot);
 })();
+
+/* The selected bubble stays in its liquid cradle. Hover lightly accents
+   a normal icon without replacing or recolouring the selected bubble. */
+(function () {
+  function initLiquidWave() {
+    var nav = document.getElementById('hn-nav');
+    if (!nav) return;
+    var bar = nav.querySelector('.hn-bar');
+    var puck = nav.querySelector('.hn-puck');
+    if (!bar || !puck) return;
+    var canClip = window.CSS && CSS.supports('clip-path', 'path("M0 0 L1 0 L1 1 Z")');
+    var tabs = nav.querySelectorAll('.hn-item');
+    var current = nav.querySelector('.hn-item[aria-current]');
+    var selected = current ? Number(current.getAttribute('data-i')) : 0;
+    var index = selected;
+    var preview = -1;
+    var frame = 0;
+    var x = 0;
+    // Solid glyphs echo the reference, with a restrained hard edge for depth.
+    var iconArt = [
+  {silhouette: "<path fill-rule=\"evenodd\" d=\"M12 2.8 2.9 10.6a1.5 1.5 0 0 0 1.9 2.3l.7-.6v6.6a2.2 2.2 0 0 0 2.2 2.2h10.4a2.2 2.2 0 0 0 2.2-2.2v-6.6l.7.6a1.5 1.5 0 0 0 1.9-2.3L12 2.8ZM10 21v-6.5h4V21h-4Z\"/>", detail: "", shine: "<path d=\"m5.5 10.2 6.5-5.5\"/>"},
+  {silhouette: "<path d=\"m12 2.7 9 4.8v9.6l-9 4.6-9-4.6V7.5Z\"/>", detail: "<path d=\"m3.6 7.7 8.4 4.4 8.4-4.4M12 12.1v8.6\"/>", shine: "<path d=\"m5.5 7.1 6.5-3.5\"/>"},
+  {silhouette: "<path d=\"M7.3 3.1h8.1l4.1 4.1v11.9a2 2 0 0 1-2 2H7.3a2 2 0 0 1-2-2v-14a2 2 0 0 1 2-2Z\"/>", detail: "<path d=\"M15.4 3.3v3.8h3.8M8.5 11h7.2M8.5 14.3h7.2M8.5 17.6h4.6\"/>", shine: "<path d=\"M6.8 8.3V6.1c0-.8.6-1.4 1.4-1.4\"/>"},
+  {silhouette: "<path d=\"M11.3 6.2C8.9 4.5 6.3 4.2 3.2 5.4v12.8c3.1-1.2 5.7-.9 8.1.9V6.2ZM12.7 6.2c2.4-1.7 5-2 8.1-.8v12.8c-3.1-1.2-5.7-.9-8.1.9V6.2Z\"/>", detail: "<path d=\"M5.6 9c1.2-.3 2.3-.1 3.4.4M15 9.4c1.1-.5 2.2-.7 3.4-.4\"/>", shine: "<path d=\"M4.5 6.5c2.4-.8 4.3-.4 6 1\"/>"},
+  {silhouette: "<path d=\"M20.5 11.7a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4.2-1.1L3.4 20l1.5-4.4a8.4 8.4 0 1 1 15.6-3.9Z\"/>", detail: "<path d=\"M8.4 11.9h.01M12 11.9h.01M15.6 11.9h.01\" stroke-width=\"2.5\"/>", shine: "<path d=\"M6.3 8.4A6.8 6.8 0 0 1 10 5.6\"/>"},
+  {silhouette: "<path fill-rule=\"evenodd\" d=\"M10.2 3.2a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 3.1a3.9 3.9 0 1 1 0 7.8 3.9 3.9 0 0 1 0-7.8Z\"/><path d=\"m14.8 14.8 5.2 5.2a1.6 1.6 0 0 0 2.2-2.2L17 12.6Z\"/>", detail: "", shine: "<path d=\"M6.5 8.5a4.5 4.5 0 0 1 2.8-2.3\"/>"}
+    ];
+    function modernIcon(i) {
+      var art = iconArt[i];
+      return '<svg class="ico ico-3d ico-solid" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+        '<g fill="#082816" stroke="none" opacity=".34" transform="translate(.65 .9)">' + art.silhouette + '</g>' +
+        '<g fill="currentColor" stroke="none">' + art.silhouette + '</g>' +
+        '<g fill="none" stroke="var(--icon-cut,#F3F9EF)" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">' + art.detail + '</g>' +
+        '<g fill="none" stroke="#FFF7D6" stroke-width=".95" stroke-linecap="round" opacity=".70">' + art.shine + '</g></svg>';
+    }
+    function modernizeIcons() {
+      nav.querySelectorAll('.hn-item').forEach(function (item) {
+        var icon = item.querySelector('svg');
+        if (icon) icon.outerHTML = modernIcon(Number(item.getAttribute('data-i')));
+      });
+      var badge = puck.querySelector('.hn-badge');
+      puck.innerHTML = modernIcon(selected) + (badge ? badge.outerHTML : '');
+    }
+
+    function itemAt(i) { return nav.querySelector('.hn-item[data-i="' + i + '"]'); }
+    function target(i, width) {
+      var item = itemAt(i);
+      if (!item) return (i + .5) * width / tabs.length;
+      var rect = item.getBoundingClientRect();
+      return rect.left + rect.width / 2 - bar.getBoundingClientRect().left;
+    }
+    function theme(item) {
+      if (!item) return;
+      var style = getComputedStyle(item);
+      nav.style.setProperty('--puck-color', style.getPropertyValue('--item-fill').trim());
+      nav.style.setProperty('--puck-ring', style.getPropertyValue('--item-ring').trim());
+      nav.style.setProperty('--puck-ink', style.getPropertyValue('--item-ink').trim());
+    }
+    function position(i) {
+      var width = bar.getBoundingClientRect().width;
+      if (width) nav.style.setProperty('--notch-x', (target(i, width) / width * 100).toFixed(2) + '%');
+    }
+
+    function draw(center, stretch) {
+      var width = bar.getBoundingClientRect().width;
+      if (width < 150) return;
+      x = center;
+      // Keep a small rounded cap beyond an end tab, as in the reference.
+      // Narrow screens use a flowing side shoulder when there is no room.
+      var edgeDistance = Math.min(center, width - center);
+      var edgeBlend = Math.max(0, Math.min(1, (190 - edgeDistance) / 100));
+      // Let the cradle sweep under the neighbouring tabs, while an end tab
+      // keeps its short outer shoulder and the rounded bar cap.
+      var innerReach = 120 + stretch * 12;
+      var outerReach = innerReach - 35 * edgeBlend;
+      var leftReach = center <= width / 2 ? outerReach : innerReach;
+      var rightReach = center >= width / 2 ? outerReach : innerReach;
+      var cap = edgeDistance > 100 ? 25 : 18;
+      var start = Math.max(cap, center - leftReach);
+      var end = Math.min(width - cap, center + rightReach);
+      var left = center - start;
+      var right = end - center;
+      var depth = 52 + stretch * 5;
+      var nearLeft = start < 25;
+      var nearRight = end > width - 25;
+      var leftWing = nearLeft
+        ? 'M0 25 Q0 19 7 19 C' +
+          (7 + Math.min(14, (center - 7) * .42)).toFixed(1) + ' 19 ' +
+          (center - Math.min(30, left * .55)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+          center.toFixed(1) + ' ' + depth.toFixed(1) + ' '
+        : 'M25 0 L' + start.toFixed(1) + ' 0 C' +
+          (start + left * .65).toFixed(1) + ' 0 ' +
+          (center - Math.min(42, left * .4)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+          center.toFixed(1) + ' ' + depth.toFixed(1) + ' ';
+      var rightWing = nearRight
+        ? 'C' + (center + Math.min(30, right * .55)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+          (width - 7 - Math.min(14, (width - center - 7) * .42)).toFixed(1) + ' 19 ' +
+          (width - 7).toFixed(1) + ' 19 Q' + width.toFixed(1) + ' 19 ' + width.toFixed(1) + ' 25 '
+        : 'C' + (center + Math.min(42, right * .4)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+          (end - right * .65).toFixed(1) + ' 0 ' + end.toFixed(1) + ' 0 L' +
+          (width - 25).toFixed(1) + ' 0 Q' + width.toFixed(1) + ' 0 ' +
+          width.toFixed(1) + ' 25 ';
+      var d = leftWing + rightWing +
+        'L' + width.toFixed(1) + ' 57 Q' + width.toFixed(1) + ' 82 ' +
+        (width - 25).toFixed(1) + ' 82 L25 82 Q0 82 0 57 L0 25 ' +
+        (nearLeft ? 'Z' : 'Q0 0 25 0 Z');
+      bar.style.clipPath = 'path("' + d + '")';
+      bar.classList.add('is-fluid');
+    }
+
+    function move(next) {
+      if (!canClip) { index = next; return; }
+      cancelAnimationFrame(frame);
+      var from = x;
+      var to = target(next, bar.getBoundingClientRect().width);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        draw(to, 0);
+        index = next;
+        return;
+      }
+      var began = performance.now();
+      bar.style.willChange = 'clip-path';
+      function tick(now) {
+        var t = Math.min(1, (now - began) / 360);
+        var eased = t * t * (3 - 2 * t);
+        draw(from + (to - from) * eased, Math.sin(Math.PI * t));
+        if (t < 1) frame = requestAnimationFrame(tick);
+        else { index = next; bar.style.willChange = ''; }
+      }
+      frame = requestAnimationFrame(tick);
+    }
+
+    function show(item) {
+      var next = Number(item.getAttribute('data-i'));
+      if (next === selected) { restore(); return; }
+      if (next === preview) return;
+      var previous = nav.querySelector('.hn-item.is-preview');
+      if (previous) previous.classList.remove('is-preview');
+      preview = next;
+      item.classList.add('is-preview');
+    }
+    function restore() {
+      if (preview < 0) return;
+      var previous = nav.querySelector('.hn-item.is-preview');
+      if (previous) previous.classList.remove('is-preview');
+      preview = -1;
+    }
+
+    modernizeIcons();
+    theme(itemAt(selected));
+    requestAnimationFrame(function () { position(selected); });
+    if (canClip) requestAnimationFrame(function () {
+      draw(target(index, bar.getBoundingClientRect().width), 0);
+    });
+    nav.addEventListener('pointerover', function (event) {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      var item = event.target.closest('.hn-item');
+      if (item && nav.contains(item)) show(item);
+    });
+    nav.addEventListener('pointerout', function (event) {
+      var item = event.target.closest('.hn-item');
+      var next = event.relatedTarget && event.relatedTarget.closest('.hn-item');
+      if (item && !next) restore();
+    });
+    nav.addEventListener('pointerleave', restore);
+    nav.addEventListener('focusin', function (event) {
+      var item = event.target.closest('.hn-item');
+      if (item && nav.contains(item)) show(item);
+    });
+    nav.addEventListener('focusout', function (event) {
+      if (!nav.contains(event.relatedTarget)) restore();
+    });
+    nav.addEventListener('click', function (event) {
+      var item = event.target.closest('.hn-item');
+      if (!item) return;
+      var next = Number(item.getAttribute('data-i'));
+      selected = next;
+      nav.querySelectorAll('.hn-item[aria-current]').forEach(function (el) { el.removeAttribute('aria-current'); });
+      item.setAttribute('aria-current', item.hasAttribute('data-search-nav') ? 'true' : 'page');
+      var previous = nav.querySelector('.hn-item.is-preview');
+      if (previous) previous.classList.remove('is-preview');
+      preview = -1;
+      modernizeIcons();
+      theme(item);
+      position(next);
+      if (next !== index) move(next);
+    });
+    document.addEventListener('quote:change', function () {
+      modernizeIcons();
+      var item = itemAt(selected);
+      nav.querySelectorAll('.hn-item[aria-current]').forEach(function (el) { el.removeAttribute('aria-current'); });
+      if (item) item.setAttribute('aria-current', item.hasAttribute('data-search-nav') ? 'true' : 'page');
+      theme(item);
+      position(selected);
+    });
+    window.addEventListener('resize', function () {
+      cancelAnimationFrame(frame);
+      position(selected);
+      if (canClip) draw(target(selected, bar.getBoundingClientRect().width), 0);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', initLiquidWave);
+})();

@@ -154,4 +154,14 @@ if sitemap.exists():
             sm = sm.replace('</urlset>', f'<url><loc>{e(loc)}</loc></url>\n</urlset>')
     sitemap.write_text(sm)
 
+# Pages can be cached independently of the shared data script. Version its URL
+# so returning visitors receive the 80-item list and new category filters.
+for page in ROOT.glob('*.html'):
+    content = page.read_text()
+    content = re.sub(r'assets/js/products\.js(?:\?v=[^"\']*)?',
+                     'assets/js/products.js?v=20261009-expanded', content)
+    content = re.sub(r'assets/js/site\.min\.js(?:\?v=[^"\']*)?',
+                     'assets/js/site.min.js?v=20261009-expanded', content)
+    page.write_text(content)
+
 print('Built', len(additions), 'new detail pages and', len(products), 'price-free catalogue cards')

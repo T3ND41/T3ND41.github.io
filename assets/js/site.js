@@ -216,7 +216,8 @@
       'data-search="' + esc((p.code + ' ' + p.name + ' ' + (p.variant || '') + ' ' + p.brand + ' ' + p.desc + ' ' + p.tag).toLowerCase()) + '">' +
         '<div class="ph">' +
           '<a class="ph-link" href="' + p.url + '" aria-label="' + esc(p.name) + ' details"></a>' +
-          (p.imgNote ? '<span class="ph-note" title="' + esc(p.imgNote) + '">packaging shown</span>' : '') +
+          (p.imgNote ? '<span class="ph-note" title="' + esc(p.imgNote) + '">' +
+            (/packaging/i.test(p.imgNote) ? 'packaging shown' : 'representative image') + '</span>' : '') +
           '<picture>' +
             '<source srcset="assets/cat/' + p.img + '.webp" type="image/webp">' +
             '<img src="assets/cat/' + p.img + '.jpg" alt="' + esc(p.name) + (p.variant ? ' — ' + esc(p.variant) : '') + '" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400">' +

@@ -1053,6 +1053,41 @@ body{padding-top:0;padding-bottom:24px}
 .hn-item.is-preview{justify-content:center;padding-bottom:0}
 .hn-item.is-preview .ico{display:block;transform:translateY(-2px);color:#274D36;filter:drop-shadow(0 1px 3px rgba(255,255,255,.55))}
 .hn-item.is-preview .lbl{font-weight:800;color:#1D3324}
+/* Navigation hover accents stay inside each fixed-size tab. */
+.hn-item .lbl{position:relative}
+.hn-item .lbl::after{
+  content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;
+  border-radius:2px;background:var(--item-fill);transform:scaleX(0);transform-origin:center;
+}
+.hn-item.is-preview .lbl::after,.hn-item:focus-visible .lbl::after{transform:scaleX(1)}
+@media (hover:hover) and (pointer:fine){
+  .hn-item[aria-current]:hover .lbl::after{transform:scaleX(1)}
+}
+@media (prefers-reduced-motion:no-preference){
+  .hn-item .lbl::after{transition:transform .24s var(--ease)}
+  .hn-item.is-preview .ico{animation:hn-hover-lift .42s cubic-bezier(.22,.78,.28,1) both}
+  .hn-nav:has(.hn-item[aria-current]:focus-visible) .hn-puck .ico{
+    animation:hn-hover-puck .42s cubic-bezier(.22,.78,.28,1) both;
+  }
+  @media (hover:hover) and (pointer:fine){
+    .hn-nav:has(.hn-item[aria-current]:hover) .hn-puck .ico{
+      animation:hn-hover-puck .42s cubic-bezier(.22,.78,.28,1) both;
+    }
+  }
+  @keyframes hn-hover-lift{
+    0%{transform:translateY(0) scale(1)}
+    60%{transform:translateY(-5px) scale(1.12)}
+    100%{transform:translateY(-3px) scale(1.06)}
+  }
+  @keyframes hn-hover-puck{
+    0%{transform:scale(1)}
+    60%{transform:translateY(-2px) scale(1.12)}
+    100%{transform:scale(1.06)}
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .hn-item.is-preview .ico{transform:none}
+}
 .hn-puck .ico{width:34px;height:34px}
 .hn-item .ico-solid{--icon-cut:#EAF3E5}
 .hn-search-item .ico-solid{stroke:none}

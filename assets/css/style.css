@@ -629,6 +629,21 @@ input:focus,select:focus,textarea:focus{border-color:var(--green);outline:none;b
 
 /* ---------- quote basket ---------- */
 .basket{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.6rem}
+.quote-details{
+  margin:-.55rem 0 1.6rem;
+  background:rgba(255,255,255,.045);
+}
+.quote-details table{min-width:760px}
+.quote-details th:first-child,.quote-details td:first-child{width:4.5rem}
+.quote-details th:nth-child(4),.quote-details td:nth-child(4){width:5.5rem}
+.quote-details td{font-size:.84rem}
+.quote-details strong{display:block;font-size:.88rem;line-height:1.3}
+.quote-code{
+  display:inline-flex;align-items:center;min-height:24px;padding:.1rem .45rem;
+  border-radius:6px;background:rgba(232,181,58,.12);color:var(--amber);
+  font-weight:800;font-size:.74rem;letter-spacing:.04em;white-space:nowrap;
+}
+.quote-variant{display:block;margin-top:.18rem;color:var(--faint);font-size:.78rem;line-height:1.35}
 .b-item{
   display:grid;grid-template-columns:66px 1fr auto auto;gap:1rem;align-items:center;
   background:var(--glass);border:1px solid var(--edge);border-radius:var(--r);padding:.8rem;

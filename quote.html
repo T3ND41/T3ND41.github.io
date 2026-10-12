@@ -21,7 +21,7 @@
 <meta name="geo.placename" content="Kitwe, Zambia">
 <link rel="icon" href="assets/img/favicon.png" sizes="any">
 <link rel="apple-touch-icon" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/style.min.css?v=20261008-brand-glass">
+<link rel="stylesheet" href="assets/css/style.min.css?v=20261012-quote-details">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.hanekom.co.zm/#org","name":"Hanekom Innovations Limited","legalName":"Hanekom Innovations Limited","alternateName":"Hanekom Innovations","url":"https://www.hanekom.co.zm/","logo":"https://www.hanekom.co.zm/assets/img/logo-1200.png","description":"Wholly Zambian-owned supplier of personal protective equipment, workwear and working-at-height systems to the mining, manufacturing, water utility, process, farming and mineral processing industries. Offices in Kitwe and Lusaka.","foundingDate":"2003-05-19","email":"sales@hanekom.co.zm","telephone":"+260 975 956 570","taxID":"1001639160","vatID":"1001639160","slogan":"Innovating your safety","contactPoint":[{"@type":"ContactPoint","contactType":"sales","telephone":"+260 975 956 570","email":"sales@hanekom.co.zm","areaServed":"ZM","availableLanguage":"English"},{"@type":"ContactPoint","contactType":"customer support","telephone":"+260 954 263 566","email":"brianm@hanekom.co.zm","areaServed":"ZM","availableLanguage":"English"}],"areaServed":[{"@type":"Country","name":"Zambia"},{"@type":"AdministrativeArea","name":"Copperbelt Province"},{"@type":"AdministrativeArea","name":"Lusaka Province"},{"@type":"AdministrativeArea","name":"North-Western Province"}],"knowsAbout":["Personal protective equipment","Safety footwear","Fall protection","Respiratory protection","Industrial workwear","Mining safety supplies"],"department":[{"@id":"https://www.hanekom.co.zm/#kitwe"},{"@id":"https://www.hanekom.co.zm/#lusaka"}]},{"@type":"LocalBusiness","@id":"https://www.hanekom.co.zm/#kitwe","name":"Hanekom Innovations Limited \u2014 Kitwe","parentOrganization":{"@id":"https://www.hanekom.co.zm/#org"},"url":"https://www.hanekom.co.zm/contact.html","image":"https://www.hanekom.co.zm/assets/img/logo-1200.png","telephone":["+260 975 956 570","+260 954 263 566"],"email":["sales@hanekom.co.zm","brianm@hanekom.co.zm"],"taxID":"1001639160","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"1559 Independence Avenue","postOfficeBoxNumber":"21600","addressLocality":"Kitwe","addressRegion":"Copperbelt Province","addressCountry":"ZM"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"17:00"}]},{"@type":"LocalBusiness","@id":"https://www.hanekom.co.zm/#lusaka","name":"Hanekom Innovations Limited \u2014 Lusaka","parentOrganization":{"@id":"https://www.hanekom.co.zm/#org"},"url":"https://www.hanekom.co.zm/contact.html","image":"https://www.hanekom.co.zm/assets/img/logo-1200.png","telephone":["+260 975 956 570","+260 954 263 566"],"email":["sales@hanekom.co.zm","brianm@hanekom.co.zm"],"taxID":"1001639160","priceRange":"$$","address":{"@type":"PostalAddress","streetAddress":"218A Mbereshi Street, Nyumba Yanga","addressLocality":"Lusaka","addressRegion":"Lusaka Province","addressCountry":"ZM"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"17:00"}]}]}</script>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.hanekom.co.zm/"},{"@type":"ListItem","position":2,"name":"Request a quote","item":"https://www.hanekom.co.zm/quote.html"}]}</script>
@@ -137,6 +137,22 @@
 
           <h2 style="font-size:1.4rem">Your quote list</h2>
           <div class="basket" id="basket"></div>
+          <div class="quote-details table-wrap" id="quote-details-wrap" hidden>
+            <table aria-label="Quotation details">
+              <thead>
+                <tr>
+                  <th scope="col">Line</th>
+                  <th scope="col">Code</th>
+                  <th scope="col">Product</th>
+                  <th scope="col">Qty</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Colour</th>
+                  <th scope="col">Notes</th>
+                </tr>
+              </thead>
+              <tbody id="quote-details-body"></tbody>
+            </table>
+          </div>
           <p class="hint opt-note" id="opt-note" hidden>Sizes and colours here are what you are
             <strong>requesting</strong>. The catalogue does not publish stocked ranges, so we confirm
             availability on the written quotation. Need something not listed &mdash; a different colour,
@@ -267,6 +283,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var optNote = document.getElementById('opt-note');
   var box = document.getElementById('basket'),
       empty = document.getElementById('basket-empty'),
+      detailsWrap = document.getElementById('quote-details-wrap'),
+      detailsBody = document.getElementById('quote-details-body'),
       totalBox = document.getElementById('basket-total'),
       totalAmt = document.getElementById('total-amt'),
       actions = document.getElementById('basket-actions'),
@@ -374,8 +392,34 @@ document.addEventListener('DOMContentLoaded', function () {
     return rows.join('\n');
   }
 
+  function tableNote(x) {
+    var bits = [];
+    if (x.p.variant) bits.push(x.p.variant);
+    if (ODOO[x.p.code]) bits.push('Odoo ref ' + ODOO[x.p.code]);
+    return bits.length ? bits.join(' | ') : 'Confirm current stock and price';
+  }
+
+  function renderDetailsTable(L) {
+    if (!detailsWrap || !detailsBody) return;
+    detailsWrap.hidden = L.length === 0;
+    detailsBody.innerHTML = L.map(function (x, i) {
+      return '<tr>' +
+        '<td class="n">' + (i + 1) + '</td>' +
+        '<td><span class="quote-code">' + esc(x.p.code) + '</span></td>' +
+        '<td><strong>' + esc(x.p.name) + '</strong>' +
+          (x.p.variant ? '<span class="quote-variant">' + esc(x.p.variant) + '</span>' : '') +
+        '</td>' +
+        '<td class="n">' + esc(x.v.q) + '</td>' +
+        '<td>' + esc(x.v.s || 'To confirm') + '</td>' +
+        '<td>' + esc(x.v.c || 'To confirm') + '</td>' +
+        '<td>' + esc(tableNote(x)) + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
   function sync() {
     var L = lines();
+    renderDetailsTable(L);
     // The quantity is a bounded integer before it ever gets here, so this is
     // arithmetic on known-good numbers. It is still only an indication — the
     // quotation Hanekom sends back is the priced document.

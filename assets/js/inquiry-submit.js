@@ -6,7 +6,6 @@
 
   var ENDPOINT = 'https://vpjqzatzzbbzdvlkkugg.supabase.co/functions/v1/receive-inquiry';
   var PUBLISHABLE_KEY = 'sb_publishable_Dj0UAJSAV0otlXodWDg2bQ_Zn0wf5Ls';
-  var ANON_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwanF6YXR6emJiemR2bGtrdWdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDY2OTEsImV4cCI6MjEwNjA4MjY5MX0.hblK53mpKVdg30nGRAKgov8H-gmcA0MXxhgWaAFiR1M';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);
@@ -34,6 +33,8 @@
         unit: 'each',
         size: selected.s || '',
         colour: selected.c || '',
+        selected_size: selected.s || '',
+        selected_colour: selected.c || '',
         specifications: 'Website catalogue item: ' + code
       };
     }).filter(Boolean);
@@ -69,6 +70,7 @@
         : details.slice(0, 240) || 'General procurement enquiry',
       message: details,
       notes: details,
+      items: items,
       quotation_items: items,
       currency: 'ZMW',
       notification_targets: ['google_sheets', 'email', 'whatsapp'],
@@ -108,15 +110,14 @@
 
       var original = button ? button.textContent : '';
       if (button) { button.disabled = true; button.textContent = 'Sending securely...'; }
-      status(form, 'busy', 'Saving your quotation request...');
+      status(form, 'busy', isQuote ? 'Saving your quotation request...' : 'Saving your enquiry...');
 
       fetch(ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'apikey': PUBLISHABLE_KEY,
-          'Authorization': 'Bearer ' + ANON_JWT
+          'apikey': PUBLISHABLE_KEY
         },
         body: JSON.stringify(payload(form, type))
       })

@@ -97,7 +97,7 @@
           <div class="remember-details">
             <label class="remember-choice">
               <input type="checkbox" id="remember-details" checked>
-              <span>Remember my details on this device for next time</span>
+              <span>Remember my details on this device for 7 days of inactivity</span>
             </label>
             <button type="button" class="link-btn" id="clear-saved-details" hidden>Clear saved details</button>
           </div>
@@ -378,14 +378,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
   (function rememberedCustomerDetails() {
     var KEY = 'hanekom_quote_customer_v1';
+    var MAX_IDLE = 7 * 24 * 60 * 60 * 1000;
     var fields = ['company', 'name', 'email', 'phone', 'town', 'industry', 'contactpref'];
     var remember = document.getElementById('remember-details');
     var clear = document.getElementById('clear-saved-details');
 
     function read() {
       try {
-        var data = JSON.parse(localStorage.getItem(KEY) || '{}');
-        return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+        var saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+        if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {};
+        // Upgrade details saved before the inactivity limit was introduced.
+        var data = saved.details || saved;
+        if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+        if (saved.details && (!Number.isFinite(saved.lastUsedAt) ||
+            Date.now() - saved.lastUsedAt >= MAX_IDLE || saved.lastUsedAt > Date.now())) {
+          localStorage.removeItem(KEY);
+          return {};
+        }
+        var details = {};
+        fields.forEach(function (id) {
+          if (typeof data[id] === 'string' && data[id].trim()) details[id] = data[id].trim();
+        });
+        if (Object.keys(details).length) {
+          localStorage.setItem(KEY, JSON.stringify({ details: details, lastUsedAt: Date.now() }));
+        }
+        return details;
       } catch (e) { return {}; }
     }
 
@@ -396,7 +413,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var el = document.getElementById(id);
         if (el && el.value.trim()) data[id] = el.value.trim();
       });
-      try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+      try {
+        if (Object.keys(data).length) {
+          localStorage.setItem(KEY, JSON.stringify({ details: data, lastUsedAt: Date.now() }));
+        } else localStorage.removeItem(KEY);
+      } catch (e) {}
       if (clear) clear.hidden = !Object.keys(data).length;
     }
 

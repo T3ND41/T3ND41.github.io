@@ -19,6 +19,32 @@
     return 'web-' + type + '-' + Date.now() + '-' + suffix;
   }
 
+  function submissionKey(form, type, data) {
+    var signature = JSON.stringify(data);
+    var storageKey = 'hanekom_pending_' + type;
+    var digest = window.crypto && window.crypto.subtle
+      ? window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(signature))
+        .then(function (bytes) {
+          return Array.from(new Uint8Array(bytes)).map(function (b) {
+            return b.toString(16).padStart(2, '0');
+          }).join('');
+        }) : Promise.resolve(null);
+    return digest.catch(function () { return null; }).then(function (hash) {
+      var pending = form.hanekomPending;
+      try {
+        if (!pending && hash) pending = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
+      } catch (e) {}
+      if (!pending || pending.signature !== (hash || signature)) {
+        pending = { signature: hash || signature, key: requestKey(type) };
+      }
+      form.hanekomPending = pending;
+      if (hash) {
+        try { sessionStorage.setItem(storageKey, JSON.stringify(pending)); } catch (e) {}
+      }
+      return pending.key;
+    });
+  }
+
   function quotationItems() {
     var basket = window.HanekomQuote && window.HanekomQuote.all
       ? window.HanekomQuote.all() : {};
@@ -52,7 +78,6 @@
     var phone = isQuote ? value(form, 'phone') : value(form, 'c-phone');
     var town = isQuote ? value(form, 'town') : '';
     return {
-      request_key: requestKey(type),
       source: 'website',
       inquiry_type: type,
       full_name: name,
@@ -102,6 +127,8 @@
       event.preventDefault();
       event.stopImmediatePropagation();
 
+      if (form.hanekomSending) return;
+
       if (!form.checkValidity()) {
         form.reportValidity();
         status(form, 'warn', 'Please complete the required fields marked with an asterisk.');
@@ -109,32 +136,52 @@
       }
 
       var original = button ? button.textContent : '';
+      form.hanekomSending = true;
       if (button) { button.disabled = true; button.textContent = 'Sending securely...'; }
       status(form, 'busy', isQuote ? 'Saving your quotation request...' : 'Saving your enquiry...');
 
-      fetch(ENDPOINT, {
+      var data = payload(form, type);
+      var trap = form.querySelector('[name="botcheck"]');
+      data.website = trap && trap.checked ? 'filled' : '';
+      var controller = new AbortController();
+      var timeout = setTimeout(function () { controller.abort(); }, 20000);
+      submissionKey(form, type, data).then(function (key) {
+      data.request_key = key;
+      return fetch(ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'apikey': PUBLISHABLE_KEY
         },
-        body: JSON.stringify(payload(form, type))
+        body: JSON.stringify(data),
+        signal: controller.signal
+      });
       })
       .then(function (response) {
         return response.json().catch(function () { return {}; }).then(function (data) {
-          if (!response.ok || data.ok === false) {
+          if (!response.ok || data.ok !== true || data.processed !== true) {
             throw new Error(data.error || data.message || ('Request failed (' + response.status + ')'));
           }
           return data;
         });
       })
-      .then(function () {
+      .then(function (data) {
+        clearTimeout(timeout);
+        try {
+          sessionStorage.removeItem('hanekom_pending_' + type);
+          sessionStorage.setItem('hanekom_last_receipt', JSON.stringify({
+            reference: data.reference_number || '', receivedAt: Date.now()
+          }));
+        } catch (e) {}
+        form.hanekomPending = null;
         try { if (isQuote && window.HanekomQuote) window.HanekomQuote.clear(); } catch (e) {}
         status(form, '', 'Request received. Opening the confirmation page...');
         window.location.href = 'thank-you.html';
       })
       .catch(function () {
+        clearTimeout(timeout);
+        form.hanekomSending = false;
         if (button) { button.disabled = false; button.textContent = original; }
         status(form, 'error', 'We could not save the request. Your information is still here. Please try again, or use WhatsApp or email below.');
       });

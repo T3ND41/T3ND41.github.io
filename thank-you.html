@@ -65,6 +65,7 @@
     <div style="width:76px;height:76px;border-radius:50%;background:var(--green-tint);color:var(--green-d);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 1.5rem" aria-hidden="true">&#10003;</div>
     <span class="eyebrow">Received</span>
     <h1>Thank you &mdash; your request is with us</h1>
+    <p id="quotation-reference" hidden></p>
     <p class="lead" style="margin:0 auto 2rem">We aim to come back to you within one working day with a written quotation confirming current price, VAT status, stock, certification and delivery.</p>
     <div class="note green" style="text-align:left">
       <p style="margin-bottom:0"><strong>Need it faster?</strong> WhatsApp is the quickest way to reach our sales team &mdash; send your product codes and quantities to <a href="https://wa.me/260954263566" target="_blank" rel="noopener">+260 954 263 566</a>, or call Brian on <a href="tel:+260975956570">+260 975 956 570</a>.</p>
@@ -77,9 +78,16 @@
 </section>
 
 <script>
-// the quote list has been submitted — clear it so the next visit starts fresh
 document.addEventListener('DOMContentLoaded', function () {
-  if (window.HanekomQuote) window.HanekomQuote.clear();
+  try {
+    var receipt = JSON.parse(sessionStorage.getItem('hanekom_last_receipt') || 'null');
+    if (!receipt || Date.now() - receipt.receivedAt > 3600000) return;
+    if (receipt.reference) {
+      var reference = document.getElementById('quotation-reference');
+      reference.textContent = 'Quotation reference: ' + receipt.reference;
+      reference.hidden = false;
+    }
+  } catch (e) {}
 });
 </script>
 

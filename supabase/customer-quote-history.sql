@@ -83,7 +83,7 @@ begin
     'New website enquiry: ' || v_interest
   ) returning id into v_lead_id;
 
-  if jsonb_array_length(v_items) > 0 then
+  if p_payload->>'inquiry_type' = 'quotation' or jsonb_array_length(v_items) > 0 then
     v_reference := 'HIL-' || to_char(now(), 'YYYYMMDD') || '-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6));
     insert into public.quotation_requests (
       reference_number, customer_id, lead_id, delivery_location,

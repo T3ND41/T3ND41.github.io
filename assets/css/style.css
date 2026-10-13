@@ -457,6 +457,14 @@ a.card:hover .more{gap:.55rem}
   .add-btn{width:100%;padding:.55rem .6rem}
   .product .code{top:8px;left:8px;font-size:.62rem;padding:.2rem .45rem}
 }
+@media (max-width:360px){
+  .product-grid{grid-template-columns:minmax(0,1fr)}
+  .product-grid .product{display:grid;grid-template-columns:96px minmax(0,1fr)}
+  .product-grid .product .ph{height:100%;min-height:200px;aspect-ratio:auto;padding:8px}
+  .product-grid .product .pb{min-width:0;text-align:left}
+  .product-grid .product .foot{align-items:stretch}
+  .product-grid .product .code{max-width:calc(100% - 16px);overflow-wrap:anywhere}
+}
 .product{
   display:flex;flex-direction:column;background:var(--glass);
   border:1px solid var(--edge);border-radius:var(--r-lg);overflow:hidden;
@@ -604,6 +612,14 @@ td{color:var(--text-2)}
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover{background:rgba(255,255,255,.035)}
 td.num,td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap;color:var(--text)}
+@media (max-width:640px){
+  .vendor-table table{min-width:0}
+  .vendor-table tr{display:block;padding:.7rem .8rem;border-bottom:1px solid var(--edge)}
+  .vendor-table tr:last-child{border-bottom:0}
+  .vendor-table th,.vendor-table td{display:block;width:100%;padding:0;border:0;overflow-wrap:anywhere}
+  .vendor-table th{margin-bottom:.25rem;white-space:normal;background:none;line-height:1.35}
+  .vendor-table td a{display:inline-block;max-width:100%}
+}
 
 /* ---------- forms ---------- */
 .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem}
@@ -775,14 +791,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--green);outline:none;b
 .f-grid li{margin-bottom:.5rem}
 .f-logo{background:#fff;border-radius:12px;padding:10px 13px;display:inline-block;margin-bottom:1.1rem}
 .f-logo img{height:40px;width:auto}
-/* The floating WhatsApp button is fixed to the bottom-right of the viewport,
-   so when you scroll to the very end of a page it sits ON TOP of whatever the
-   last footer line says — which here is the TPIN, the registration number and
-   the link to the privacy notice. Reserve the height of the button so nothing
-   is ever hidden underneath it. Below 1000px the bottom navigation already
-   pushes the page up (body padding), so only the desktop case needs this. */
+/* Keep the final footer line clear of the fixed WhatsApp button at every width. */
 .f-bottom{border-top:1px solid var(--edge);margin-top:2.75rem;padding:1.35rem 0 calc(1.35rem + 62px);font-size:.81rem;display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;justify-content:space-between;color:var(--faint)}
-@media (max-width:1000px){.f-bottom{padding-bottom:1.35rem}}
+@media (max-width:1000px){.f-bottom{padding-bottom:calc(1.35rem + 62px + env(safe-area-inset-bottom))}}
 address{font-style:normal;line-height:1.75}
 
 /* ---------- floating WhatsApp ---------- */
@@ -794,6 +805,7 @@ address{font-style:normal;line-height:1.75}
   border:1px solid var(--edge-2);border-radius:var(--r-lg);padding:0;
   background:var(--surf);color:var(--text-2);
   max-width:min(560px,calc(100vw - 32px));width:100%;
+  max-height:calc(100dvh - 28px);overflow-y:auto;
   box-shadow:var(--shadow-lg);
 }
 .pdf-dialog::backdrop{background:rgba(8,12,10,.66);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
@@ -934,7 +946,7 @@ address{font-style:normal;line-height:1.75}
 @keyframes wa-unburst{to{opacity:0;transform:translateY(10px) scale(.9)}}
 
 @media (max-width:1000px){
-  .wa-float{bottom:calc(18px + env(safe-area-inset-bottom));right:14px}
+  .wa-float{bottom:calc(18px + env(safe-area-inset-bottom));right:calc(14px + env(safe-area-inset-right))}
   .wa-fab{padding:.85rem;border-radius:50%}
   .wa-fab .lbl{display:none}
   .wa-ico-x{left:.85rem}
@@ -1141,6 +1153,11 @@ body{padding-top:0;padding-bottom:24px}
   .hn-nav{width:calc(100% - 16px);top:calc(8px + env(safe-area-inset-top))}.hn-item .lbl{font-size:10px}.hn-puck{width:62px;height:62px;margin-left:-31px;top:4px}.hn-puck::after{inset:-4px}
   .hn-item .ico{width:23px;height:23px}.hn-grip{width:96px}
 }
+@media (max-width:320px){
+  .hn-nav{width:calc(100% - 30px)}
+  .hn-items{padding-left:22px;padding-right:22px}
+}
+@media (max-width:300px){.hn-items{padding-left:12px}}
 
 @media (max-width:1000px) and (max-height:500px) and (orientation:landscape){
   .hn-nav{top:calc(4px + env(safe-area-inset-top));padding-top:0}
@@ -1152,6 +1169,7 @@ body{padding-top:0;padding-bottom:24px}
   .hn-puck{display:none}
   .page-head{padding-top:96px}
   .hero-inner{padding-top:100px}
+  .site-search-strip{top:calc(72px + env(safe-area-inset-top))}
   .wa-pop{max-height:calc(100dvh - 160px);overflow-y:auto}
 }
 

@@ -188,9 +188,9 @@
       var desc = p.name + (p.variant ? ' - ' + p.variant : '');
       var extra = [];
       if (v.s) extra.push('Size requested: ' + v.s);
-      if (v.c) extra.push('Colour requested: ' + v.c);
+      extra.push('Colour: ' + (v.c || 'To confirm'));
       var wrapped = doc.wrap(desc, COLS[0].w - 6, 8, false);
-      if (extra.length) wrapped = wrapped.concat(doc.wrap(extra.join('   '), COLS[0].w - 6, 7.2, false));
+      wrapped = wrapped.concat(doc.wrap(extra.join('   '), COLS[0].w - 6, 8, false));
       var h = Math.max(16, 6 + wrapped.length * 9.4);
 
       if (y - h < M + 96) {                    // room for the footer
@@ -204,9 +204,8 @@
       zebra = !zebra;
 
       var ty = y - 11;
-      wrapped.forEach(function (t, i) {
-        var isExtra = i >= doc.wrap(desc, COLS[0].w - 6, 8, false).length;
-        doc.text(COLS[0].x, ty, t, { size: isExtra ? 7.2 : 8, color: isExtra ? GREY : INK });
+      wrapped.forEach(function (t) {
+        doc.text(COLS[0].x, ty, t, { size: 8, color: INK });
         ty -= 9.4;
       });
       doc.text(COLS[1].x + COLS[1].w / 2, y - 12, 'Unit', { size: 7.6, color: GREY, align: 'center' });
@@ -233,7 +232,7 @@
     doc.text(M + 5, y - 9.5, 'DELIVERY & PAYMENT TERMS', { size: 7.4, bold: true, color: GREEN });
     y -= 13;
     var terms = (CFG.quote && CFG.quote.terms) || {};
-    [['Delivery period', terms.delivery || '14-21 days, confirmed on quotation'],
+    [['Delivery period', terms.delivery || '5-7 days'],
      ['Payment terms', terms.payment || 'Upfront payment or as negotiated'],
      ['Warranty', terms.warranty || 'As per manufacturer specifications'],
      ['Validity', terms.validity || 'Confirmed on written quotation']

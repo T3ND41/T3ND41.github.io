@@ -1188,7 +1188,6 @@
   // exposed so a single-page preview can re-run it after swapping <main>
   window.hanekomBoot = function () {
     applyPublicCataloguePolicy();
-    initSiteLoader();
     initNav();
     initGlobalSearch();
     paintCount();
@@ -1197,7 +1196,6 @@
     initBottomNav();
     initForms();
     initFloatingContact();
-    initPageTransitions();
     initReveal();
     var y = document.getElementById('year');
     if (y) y.textContent = new Date().getFullYear();

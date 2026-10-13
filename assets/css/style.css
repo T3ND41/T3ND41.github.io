@@ -44,12 +44,12 @@
   --ease:cubic-bezier(.4,1.25,.5,1);
 }
 @view-transition{navigation:auto}
-main{view-transition-name:page-content;animation:page-arrive var(--motion-beat) cubic-bezier(.22,.7,.2,1) both}
+main{view-transition-name:page-content}
 .site-header{view-transition-name:site-header}
 .hn-nav{view-transition-name:primary-nav}
-::view-transition-group(root){animation-duration:var(--motion-beat);animation-timing-function:cubic-bezier(.22,.7,.2,1)}
-::view-transition-old(page-content){animation:page-out .22s ease both}
-::view-transition-new(page-content){animation:page-in var(--motion-beat) cubic-bezier(.22,.7,.2,1) both}
+::view-transition-group(root){animation-duration:.18s;animation-timing-function:ease-out}
+::view-transition-old(page-content){animation:page-out .12s ease both}
+::view-transition-new(page-content){animation:page-in .18s ease-out both}
 ::view-transition-old(site-header),::view-transition-new(site-header){animation-duration:.28s}
 /* Never cross-fade two navigation states: overlapping puck icons look like
    input lag. The destination nav replaces the previous one cleanly. */
@@ -58,19 +58,18 @@ main{view-transition-name:page-content;animation:page-arrive var(--motion-beat) 
 @keyframes page-arrive{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes page-out{to{opacity:0;transform:translateY(-5px) scale(.995)}}
 @keyframes page-in{from{opacity:0;transform:translateY(10px) scale(.998)}to{opacity:1;transform:none}}
-.page-is-leaving main{opacity:0;transform:translateY(-5px);transition:opacity .17s ease,transform .17s ease}
+.page-is-leaving main{opacity:0;transition:opacity .12s ease}
 
 /* Desktop: keep the page change deliberately light. Only opacity and a
    six-pixel translation are animated; the persistent header and navigation
    are not captured or animated. Touch/mobile keeps its existing motion. */
 @media (hover:hover) and (pointer:fine){
-  main{animation:desktop-page-arrive var(--motion-beat) ease-out both}
   .site-header,.hn-nav{view-transition-name:none}
   .hn-nav.is-hopping .hn-puck,.hn-nav.is-hopping .hn-item.is-next{animation:none}
-  ::view-transition-group(root){animation-duration:var(--motion-beat);animation-timing-function:ease-out}
-  ::view-transition-old(page-content){animation:desktop-page-out .18s ease-out both}
-  ::view-transition-new(page-content){animation:desktop-page-in var(--motion-beat) ease-out both}
-  .page-is-leaving main{opacity:0;transform:translateY(-6px);transition:opacity .18s ease-out,transform .18s ease-out}
+  ::view-transition-group(root){animation-duration:.18s;animation-timing-function:ease-out}
+  ::view-transition-old(page-content){animation:desktop-page-out .12s ease-out both}
+  ::view-transition-new(page-content){animation:desktop-page-in .18s ease-out both}
+  .page-is-leaving main{opacity:0;transition:opacity .12s ease-out}
 }
 @keyframes desktop-page-arrive{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes desktop-page-out{to{opacity:0;transform:translateY(-6px)}}
@@ -94,41 +93,6 @@ body{
    hidden in CSS also prevents legacy pre-rendered values flashing on load. */
 .price,.pdp-price,.b-total,.code,.qp-code{display:none!important}
 .product .foot{justify-content:flex-end}
-
-/* Branded page loader. The official combined mark moves as one unit so the
-   hard hat and gear always stay perfectly aligned. */
-.site-loader{
-  position:fixed;inset:0;z-index:10000;display:grid;place-items:center;
-  background:radial-gradient(circle at 50% 46%,rgba(140,200,95,.12),transparent 34%),var(--ground-2);
-  opacity:1;visibility:visible;pointer-events:auto;
-  transition:opacity var(--motion-half) ease-out,visibility 0s linear var(--motion-half);
-}
-.site-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.site-loader-mark{
-  position:relative;width:clamp(138px,18vw,192px);aspect-ratio:1;
-  display:grid;place-items:center;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24));
-  animation:loader-logo-hop var(--motion-double) cubic-bezier(.45,.05,.55,.95) infinite;
-}
-.site-loader-wheel,.site-loader-hat{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.site-loader-wheel{z-index:1;transform-origin:52.7% 64.8%;animation:loader-wheel-spin var(--motion-quad) linear infinite}
-.site-loader-hat{z-index:2;transform:translateY(18px)}
-.site-loader-shadow{
-  position:absolute;z-index:1;left:17%;right:17%;bottom:-9%;height:8%;border-radius:50%;
-  background:rgba(0,0,0,.5);filter:blur(9px);animation:loader-shadow-pulse var(--motion-double) ease-in-out infinite;
-}
-@keyframes loader-logo-hop{
-  0%,100%{transform:translateY(0) rotate(-1deg)}
-  48%{transform:translateY(-12px) rotate(1deg)}
-  58%{transform:translateY(-12px) rotate(1deg)}
-}
-@keyframes loader-wheel-spin{to{transform:rotate(360deg)}}
-@keyframes loader-shadow-pulse{
-  0%,100%{opacity:.68;transform:scaleX(1)}
-  48%,58%{opacity:.34;transform:scaleX(.72)}
-}
-@media (prefers-reduced-motion:reduce){
-  .site-loader,.site-loader-mark,.site-loader-wheel,.site-loader-shadow{animation:none;transition:none}
-}
 
 /* Atmosphere: a fixed, heavily blurred site photograph so the glass
    surfaces have something real to refract instead of flat colour. */

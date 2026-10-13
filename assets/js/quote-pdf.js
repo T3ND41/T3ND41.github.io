@@ -136,8 +136,9 @@
   /* ---------- the table ---------- */
 
   var COLS = [
-    { k: 'desc', label: 'Description', x: M + 4, w: 410 },
-    { k: 'unit', label: 'Unit', x: M + 424, w: 36, align: 'center' },
+    { k: 'desc', label: 'Description', x: M + 4, w: 314 },
+    { k: 'colour', label: 'Colour', x: M + 328, w: 96 },
+    { k: 'unit', label: 'Unit', x: M + 436, w: 34, align: 'center' },
     { k: 'qty', label: 'Qty', x: RIGHT - 4, w: 38, align: 'right' }
   ];
 
@@ -186,12 +187,10 @@
     lines.forEach(function (x) {
       var p = x.p, v = x.v;
       var desc = p.name + (p.variant ? ' - ' + p.variant : '');
-      var extra = [];
-      if (v.s) extra.push('Size requested: ' + v.s);
-      extra.push('Colour: ' + (v.c || 'To confirm'));
       var wrapped = doc.wrap(desc, COLS[0].w - 6, 8, false);
-      wrapped = wrapped.concat(doc.wrap(extra.join('   '), COLS[0].w - 6, 8, false));
-      var h = Math.max(16, 6 + wrapped.length * 9.4);
+      if (v.s) wrapped = wrapped.concat(doc.wrap('Size requested: ' + v.s, COLS[0].w - 6, 8, false));
+      var colour = doc.wrap(v.c || 'To confirm', COLS[1].w - 6, 8, false);
+      var h = Math.max(16, 6 + Math.max(wrapped.length, colour.length) * 9.4);
 
       if (y - h < M + 96) {                    // room for the footer
         footer(doc, page, ref);
@@ -208,8 +207,13 @@
         doc.text(COLS[0].x, ty, t, { size: 8, color: INK });
         ty -= 9.4;
       });
-      doc.text(COLS[1].x + COLS[1].w / 2, y - 12, 'Unit', { size: 7.6, color: GREY, align: 'center' });
-      doc.text(COLS[2].x, y - 12, String(v.q), { size: 8, bold: true, color: INK, align: 'right' });
+      ty = y - 11;
+      colour.forEach(function (t) {
+        doc.text(COLS[1].x, ty, t, { size: 8, color: INK });
+        ty -= 9.4;
+      });
+      doc.text(COLS[2].x + COLS[2].w / 2, y - 12, 'Unit', { size: 7.6, color: GREY, align: 'center' });
+      doc.text(COLS[3].x, y - 12, String(v.q), { size: 8, bold: true, color: INK, align: 'right' });
 
       y -= h;
       doc.line(M, y, RIGHT, y, RULE, 0.4);

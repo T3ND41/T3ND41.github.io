@@ -14,9 +14,11 @@
   var WA = (CFG.wa && CFG.wa.main && CFG.wa.main.number) || '260954263566';
   // guarded: this file is also required under Node at build time, where
   // `location` does not exist
-  var SITE = CFG.site || (typeof location !== 'undefined'
+  // Shared links must follow the host serving this copy of the site. The
+  // configured custom domain may not point at these pages yet.
+  var SITE = typeof location !== 'undefined' && /^https?:$/.test(location.protocol)
     ? location.origin + location.pathname.replace(/[^/]*$/, '')
-    : '');
+    : (CFG.site || '');
   var KEY = 'hanekom_quote_v1';
 
   /* ---------------- storage (safe) ----------------

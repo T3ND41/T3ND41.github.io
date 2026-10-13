@@ -42,27 +42,6 @@ function json(req: Request, body: Record<string, unknown>, init: ResponseInit = 
   });
 }
 
-async function sendDriveWebhook(payload: Record<string, unknown>) {
-  const url = Deno.env.get("GOOGLE_DRIVE_BACKUP_WEBHOOK_URL");
-  if (!url) return { ok: false, skipped: true, reason: "webhook_not_configured" };
-
-  const token = Deno.env.get("GOOGLE_DRIVE_BACKUP_TOKEN");
-  const headers: HeadersInit = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Google Drive backup failed with ${response.status}`);
-  }
-
-  return { ok: true };
-}
-
 export default {
   fetch: withSupabase({ auth: "publishable" }, async (req) => {
     if (req.method === "OPTIONS") {
@@ -161,30 +140,12 @@ export default {
       const saved = Array.isArray(data) ? data[0] : data;
       if (!saved?.processed) throw new Error("Enquiry was not processed");
 
-      let driveBackup = { ok: false, skipped: true, reason: "queued_for_backup" };
-      if (inquiryType === "quotation" && !saved.duplicate) {
-        try {
-          driveBackup = await sendDriveWebhook(saved.backup_payload);
-          if (driveBackup.ok) {
-            const { error } = await admin.from("google_drive_backup_queue")
-              .update({ backup_status: "synced", backed_up_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-              .eq("request_key", requestKey);
-            if (error) throw error;
-          }
-        } catch (backupError) {
-          const errorMessage = backupError instanceof Error ? backupError.message : "Unknown Google Drive backup error";
-          console.error("Google Drive backup webhook error", errorMessage);
-          await admin.from("google_drive_backup_queue")
-            .update({ backup_status: "failed", last_error: errorMessage, attempts: 1, updated_at: new Date().toISOString() })
-            .eq("request_key", requestKey);
-        }
-      }
       return json(req, {
         ok: true, queued: true, processed: true,
         duplicate: Boolean(saved.duplicate),
         request_key: requestKey,
         reference_number: saved.reference_number,
-        drive_backup: driveBackup,
+        drive_backup: { ok: false, skipped: true, reason: "queued_for_backup" },
       }, { status: saved.duplicate ? 200 : 202 });
     } catch (error) {
       console.error("Enquiry receiver error", error instanceof Error ? error.message : "unknown");

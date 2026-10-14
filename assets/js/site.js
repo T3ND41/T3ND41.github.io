@@ -1041,53 +1041,13 @@
       if (next) next.focus();
     });
 
-    // The raised button hops to the selected tab before the new page opens.
+    // Page links navigate immediately; only the search tab needs interception.
     nav.addEventListener('click', function (e) {
       var item = e.target.closest('.hn-item');
-      if (!item || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      if (item.hasAttribute('data-search-nav')) {
-        e.preventDefault();
-        var trigger = document.querySelector('.nav-search-trigger');
-        if (trigger) trigger.click();
-        return;
-      }
-      var nextIndex = +item.dataset.i;
-      if (nextIndex === active || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-      // Desktop uses an immediate click with the lightweight page transition.
-      // Keep the expressive hop only on touch/mobile devices where it is useful feedback.
-      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-
+      if (!item || !item.hasAttribute('data-search-nav')) return;
       e.preventDefault();
-      var href = item.href;
-      var previousIndex = active;
-      nav.querySelectorAll('.hn-item.is-next').forEach(function (el) { el.classList.remove('is-next'); });
-      item.classList.add('is-next');
-      nav.classList.remove('is-hopping', 'is-forward', 'is-backward');
-      void nav.offsetWidth;
-
-      // Adapt the selected icon immediately. Previously only the wave moved;
-      // the puck icon changed after the next document loaded, which felt late.
-      nav.querySelectorAll('.hn-item[aria-current]').forEach(function (el) {
-        el.removeAttribute('aria-current');
-      });
-      item.setAttribute('aria-current', 'page');
-      active = nextIndex;
-      var selectedTab = NAV_TABS[active];
-      nav.querySelector('.hn-puck').innerHTML =
-        '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="' + selectedTab.icon + '"></use></svg>' +
-        (selectedTab.badge ? badgeHTML(true) : '');
-
-      nav.classList.add(nextIndex > previousIndex ? 'is-forward' : 'is-backward');
-      nav.style.setProperty('--notch-x', ((nextIndex + 0.5) / NAV_TABS.length * 100).toFixed(2) + '%');
-      nav.classList.add('is-hopping');
-
-      // Start the page change near the top of the hop so the two motions
-      // overlap as one transition instead of feeling like hop, pause, load.
-      // Fast desktops need a little more time to display the hop before the
-      // next document replaces the current one. Touch devices keep the faster
-      // timing that already feels right on mobile.
-      setTimeout(function () { location.href = href; }, 120);
+      var trigger = document.querySelector('.nav-search-trigger');
+      if (trigger) trigger.click();
     });
 
     document.addEventListener('quote:change', paint);

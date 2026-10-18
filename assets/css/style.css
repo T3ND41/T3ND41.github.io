@@ -555,6 +555,17 @@ td.num,td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;w
   .vendor-table th,.vendor-table td{display:block;width:100%;padding:0;border:0;overflow-wrap:anywhere}
   .vendor-table th{margin-bottom:.25rem;white-space:normal;background:none;line-height:1.35}
   .vendor-table td a{display:inline-block;max-width:100%}
+  /* The standards reference is a three-column table on desktop. On phones it
+     becomes a labelled list, so the explanation never disappears off-screen. */
+  .resource-standards table{min-width:0}
+  .resource-standards thead{display:none}
+  .resource-standards tr{display:block;padding:1rem;border-bottom:1px solid var(--edge)}
+  .resource-standards tr:last-child{border-bottom:0}
+  .resource-standards td{display:block;padding:0;border:0;overflow-wrap:anywhere}
+  .resource-standards td+td{margin-top:.5rem}
+  .resource-standards td:nth-child(2)::before,.resource-standards td:nth-child(3)::before{display:block;margin-bottom:.15rem;color:var(--faint);font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+  .resource-standards td:nth-child(2)::before{content:"Applies to"}
+  .resource-standards td:nth-child(3)::before{content:"What it covers"}
 }
 
 /* ---------- forms ---------- */
@@ -776,7 +787,7 @@ address{font-style:normal;line-height:1.75}
    animating element in the corner of every page is a vestibular trigger and a
    WCAG 2.2.2 problem; a couple of beats every four seconds reads as alive
    without nagging. */
-.wa-float{position:fixed;right:18px;bottom:18px;z-index:85}
+.wa-float{position:fixed;right:18px;bottom:18px;z-index:85;transition:opacity .16s ease,transform .16s ease}
 .wa-float[open]{z-index:95}
 .wa-float summary{list-style:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .wa-float summary::-webkit-details-marker{display:none}
@@ -785,7 +796,7 @@ address{font-style:normal;line-height:1.75}
 .wa-fab{
   position:relative;
   background:linear-gradient(180deg,#4FE68E,#2FC46E);color:#04301A;
-  border-radius:99px;padding:.8rem 1.2rem;font-weight:800;font-size:.9rem;
+  width:52px;height:52px;border-radius:50%;padding:0;font-weight:800;font-size:.9rem;
   display:inline-flex;align-items:center;gap:.5rem;line-height:1;
   /* a steady halo, plus the depth shadow — the halo does not animate */
   box-shadow:0 10px 28px rgba(0,0,0,.42),0 0 22px rgba(61,216,126,.42);
@@ -801,6 +812,7 @@ address{font-style:normal;line-height:1.75}
   animation:wa-beat 4s var(--ease) 6;
   will-change:transform;
 }
+.wa-fab .lbl{display:none}
 .wa-fab:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
 .wa-fab:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 14px 34px rgba(0,0,0,.46),0 0 30px rgba(61,216,126,.6)}
 
@@ -836,7 +848,7 @@ address{font-style:normal;line-height:1.75}
 
 /* icon swap */
 .wa-ico{transition:transform .28s var(--ease),opacity .2s}
-.wa-ico-x{position:absolute;left:1.2rem;opacity:0;transform:rotate(-90deg) scale(.6)}
+.wa-ico-x{position:absolute;left:16px;opacity:0;transform:rotate(-90deg) scale(.6)}
 .wa-float[open] .wa-ico-wa{opacity:0;transform:rotate(90deg) scale(.6)}
 .wa-float[open] .wa-ico-x{opacity:1;transform:none}
 .wa-float[open] .wa-fab{background:linear-gradient(180deg,#2FC46E,#23A75B)}
@@ -883,9 +895,13 @@ address{font-style:normal;line-height:1.75}
 
 @media (max-width:1000px){
   .wa-float{bottom:calc(18px + env(safe-area-inset-bottom));right:calc(14px + env(safe-area-inset-right))}
-  .wa-fab{padding:.85rem;border-radius:50%}
-  .wa-fab .lbl{display:none}
-  .wa-ico-x{left:.85rem}
+}
+/* Do not cover the field a visitor is currently trying to complete. The
+   contact control returns as soon as focus leaves the form. */
+@supports selector(body:has(input:focus)){
+  body:has(input:focus,select:focus,textarea:focus) .wa-float{
+    opacity:0;pointer-events:none;transform:translateY(16px);
+  }
 }
 
 /* Motion is a nicety; legibility is not. Under reduced motion the button still

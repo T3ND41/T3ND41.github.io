@@ -801,6 +801,8 @@ address{font-style:normal;line-height:1.75}
      the lone WhatsApp icon lands at flex-start and sits hard against the left
      edge of the circle instead of in the middle. */
   display:inline-flex;align-items:center;justify-content:center;gap:.5rem;line-height:1;
+  /* No 300ms double-tap delay and no accidental pinch-zoom while tapping. */
+  touch-action:manipulation;
   /* a steady halo, plus the depth shadow — the halo does not animate */
   box-shadow:0 10px 28px rgba(0,0,0,.42),0 0 22px rgba(61,216,126,.42);
   transition:transform .22s var(--ease),box-shadow .3s;
@@ -871,8 +873,8 @@ address{font-style:normal;line-height:1.75}
 .wa-pop{
   position:absolute;right:0;bottom:calc(100% + 12px);
   display:flex;flex-direction:column;gap:.5rem;
-  /* min-width used to beat max-width on anything narrower than ~292px, which
-     pushed the panel off the left edge; min() lets it shrink instead. */
+  /* Flat fallback first, then the shrinkable value for browsers with min(). */
+  min-width:262px;
   min-width:min(262px, calc(100vw - 30px));
   max-width:calc(100vw - 30px);
   /* Never taller than the space above the button. Short landscape phones and
@@ -918,7 +920,15 @@ address{font-style:normal;line-height:1.75}
 @keyframes wa-unburst{to{opacity:0;transform:translateY(10px) scale(.9)}}
 
 @media (max-width:1000px){
-  .wa-float{bottom:calc(18px + env(safe-area-inset-bottom));right:calc(14px + env(safe-area-inset-right))}
+  /* The 0px fallbacks matter: a browser that does not understand env() would
+     otherwise drop the whole declaration and fall back to the desktop inset,
+     which on a notched phone puts the button under the home indicator or the
+     rounded corner. All pages also carry viewport-fit=cover, without which
+     env(safe-area-inset-*) is always 0 on iOS. */
+  .wa-float{
+    bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+    right:calc(14px + env(safe-area-inset-right, 0px));
+  }
 }
 /* Do not cover the field a visitor is currently trying to complete. The
    contact control returns as soon as focus leaves the form. */
@@ -937,6 +947,21 @@ address{font-style:normal;line-height:1.75}
   .wa-float[open] .wa-opt{animation:none;opacity:1;transform:none}
   .wa-float.wa-closing .wa-opt{animation:none}
   .wa-ico{transition:none}
+}
+
+/* Windows High Contrast / forced-colors. The glyph is a white SVG image, so it
+   is not recoloured by the OS; keep the brand green behind it (otherwise it can
+   land white-on-white in the light theme) and add a system-coloured edge so the
+   target is unmistakable in either HC theme. */
+@media (forced-colors:active){
+  .wa-fab{
+    forced-color-adjust:none;
+    background:#2FC46E;color:#04301A;
+    border:2px solid ButtonText;
+    box-shadow:none;
+  }
+  .wa-float[open] .wa-fab{background:#23A75B}
+  .wa-opt{border-color:ButtonText}
 }
 
 /* ---------- article ---------- */

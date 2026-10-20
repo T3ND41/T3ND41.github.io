@@ -1,0 +1,12 @@
+# Hanekom Innovations Limited
+# Allow everything that is real content; keep the dev/portfolio section out of the index.
+
+User-agent: *
+Allow: /
+Disallow: /portfolio/
+Disallow: /supabase/
+Disallow: /scripts/
+Disallow: /tests/
+
+# Sitemap
+Sitemap: https://www.hanekom.co.zm/sitemap.xml

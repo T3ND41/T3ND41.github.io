@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /google-drive/
+Disallow: /scripts/
+Disallow: /supabase/
+Disallow: /tests/
+Disallow: /.github/
+
+Sitemap: https://t3nd41.github.io/sitemap.xml

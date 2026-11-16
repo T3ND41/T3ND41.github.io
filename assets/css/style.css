@@ -1539,3 +1539,67 @@ form[data-form-offline] .promise{display:none}
 @media (max-width:560px){
   .theme-toggle{right:14px;bottom:76px;width:44px;height:44px}
 }
+
+/* ============================================================
+   LIGHT THEME — SECOND PASS: MORE BRAND COLOUR
+   Hues straight from the brand guide:
+   - Cream Paper #F2EFE4 ground (documented 2026 catalogue ground)
+   - Gear Gold #DBB417 accents (small doses: eyebrows, hovers, rules)
+   - Teal #2D7F76 footer band (documented footer-contact-bar colour)
+   - Green→gold gradient rules under section headings
+   Dark theme is untouched — every rule below is light-only.
+   ============================================================ */
+:root[data-theme="light"]{
+  --ground:#F2EFE4;
+  --ground-2:#EAE7D6;
+  --surf-2:#F3F1E3;
+}
+/* warm daylight atmosphere: green + gold radials over cream */
+:root[data-theme="light"] body::before{
+  background:
+    radial-gradient(900px 620px at 82% -6%, rgba(105,168,63,.17), transparent 62%),
+    radial-gradient(760px 540px at 4% 4%, rgba(219,180,23,.14), transparent 58%),
+    linear-gradient(178deg,#F5F3E6 0%,#F0EDDC 48%,#EAE6D2 100%);
+}
+
+/* eyebrow kickers go Gear Gold (darkened for AA on cream) */
+:root[data-theme="light"] .eyebrow{color:#8F6A00}
+
+/* green→gold brand rule under section + page headings */
+:root[data-theme="light"] .sec-head h2::after,
+:root[data-theme="light"] .page-head h1::after{
+  content:"";display:block;width:76px;height:4px;margin-top:.75rem;
+  border-radius:99px;
+  background:linear-gradient(90deg,#3E7723 0%,#69A840 55%,#DBB417 100%);
+}
+
+/* trustbar: each stat gets a brand-family top rule + matching numeral */
+:root[data-theme="light"] .trustbar .cell{border-top:3px solid rgba(27,41,29,.12)}
+:root[data-theme="light"] .trustbar .cell:nth-child(1){border-top-color:#3E7723}
+:root[data-theme="light"] .trustbar .cell:nth-child(1) .k{color:#3E7723}
+:root[data-theme="light"] .trustbar .cell:nth-child(2){border-top-color:#DBB417}
+:root[data-theme="light"] .trustbar .cell:nth-child(2) .k{color:#8F6A00}
+:root[data-theme="light"] .trustbar .cell:nth-child(3){border-top-color:#2D7F76}
+:root[data-theme="light"] .trustbar .cell:nth-child(3) .k{color:#1F6B62}
+:root[data-theme="light"] .trustbar .cell:nth-child(4){border-top-color:#4B4B96}
+:root[data-theme="light"] .trustbar .cell:nth-child(4) .k{color:#3F3F7A}
+
+/* catalogue cards: gold hover ring + green product code chip */
+:root[data-theme="light"] .product:hover{
+  border-color:rgba(219,180,23,.62);
+  box-shadow:0 18px 44px rgba(143,106,0,.14);
+}
+:root[data-theme="light"] .product .code{color:#3E7723;border-color:rgba(105,168,63,.38)}
+
+/* footer: teal contact band (documented supporting palette) */
+:root[data-theme="light"] .site-footer{
+  background:linear-gradient(180deg,rgba(45,127,118,.10),rgba(45,127,118,.17));
+  border-top:1px solid rgba(45,127,118,.32);
+}
+:root[data-theme="light"] .site-footer h4{color:#1F6B62}
+:root[data-theme="light"] .site-footer a{color:#2B3A33}
+:root[data-theme="light"] .site-footer a:hover{color:#1F6B62;text-decoration:underline}
+:root[data-theme="light"] .site-footer strong{color:#1B291D}
+
+/* WhatsApp card keeps brand green; quote CTA band gets a gold wash */
+:root[data-theme="light"] .bg-navy::before{background:linear-gradient(120deg,rgba(105,168,63,.10),rgba(219,180,23,.08))}

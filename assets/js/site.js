@@ -1159,7 +1159,7 @@
 
   /* ---------------- theme (light / dark) ---------------- */
   var THEME_KEY = 'hn-theme';
-  var THEME_META = { dark: '#121A16', light: '#F4F6EF' };
+  var THEME_META = { dark: '#121A16', light: '#F2EFE4' };
   function getTheme() {
     try {
       return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';

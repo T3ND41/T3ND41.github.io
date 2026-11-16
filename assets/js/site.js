@@ -202,10 +202,10 @@
       t.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     // mark current page
-    var here = location.pathname.split('/').pop() || 'index.html';
+    var here = navSlug(location.pathname);
     l.querySelectorAll('a').forEach(function (a) {
       var href = a.getAttribute('href');
-      if (href === here) a.setAttribute('aria-current', 'page');
+      if (href && href.indexOf('#') < 0 && navSlug(href) === here) a.setAttribute('aria-current', 'page');
     });
   }
 
@@ -970,6 +970,18 @@
     });
   }
 
+  /* Current-page slug for nav matching. Handles .html URLs (GitHub
+     Pages) and clean extensionless URLs (Cloudflare Pages): /products,
+     /products.html and /products/ all normalise to products. */
+  function navSlug(v) {
+    var s = String(v == null ? '' : v);
+    var cut = s.indexOf("?"); if (cut > -1) s = s.slice(0, cut);
+    cut = s.indexOf("#"); if (cut > -1) s = s.slice(0, cut);
+    var parts = s.split("/").filter(Boolean);
+    var last = parts.pop() || '';
+    last = last.replace(/\.html?$/i, "");
+    return last || 'index';
+  }
   /* ---------------- bottom navigation ---------------- */
   var NAV_TABS = [
     { href:'index.html',     label:'Home',     icon:'#i-home' },
@@ -980,26 +992,27 @@
     { label:'Search', search:true }
   ];
   // pages that belong under a tab even though they are not the tab itself
-  var NAV_ALIAS = {
-    'guide-safety-footwear.html':'resources.html',
-    'guide-glove-selection.html':'resources.html',
-    'guide-working-at-height.html':'resources.html',
-    'guide-ppe-law-zambia.html':'resources.html',
-    'industries.html':'index.html',
-    'gallery.html':'products.html',
-    'about.html':'contact.html',
-    'thank-you.html':'quote.html'
-  };
+  var NAV_ALIAS = new Map();
+  NAV_ALIAS.set('guide-safety-footwear', 'resources');
+  NAV_ALIAS.set('guide-glove-selection', 'resources');
+  NAV_ALIAS.set('guide-working-at-height', 'resources');
+  NAV_ALIAS.set('guide-ppe-law-zambia', 'resources');
+  NAV_ALIAS.set('industries', 'index');
+  NAV_ALIAS.set('gallery', 'products');
+  NAV_ALIAS.set('about', 'contact');
+  NAV_ALIAS.set('thank-you', 'quote');
 
   function initBottomNav() {
     var nav = document.getElementById('hn-nav');
     if (!nav) return;
 
-    var here = window.__previewPage || window.__navTab ||
-               location.pathname.split('/').pop() || 'index.html';
-    here = NAV_ALIAS[here] || here;
+    NAV_TABS.forEach(function (t) { t.slug = navSlug(t.href); });
+    var forced = window.__previewPage || window.__navTab || '';
+    var here = forced ? navSlug(forced) : navSlug(location.pathname);
+    var aliasTab = NAV_ALIAS.get(here);
+    if (aliasTab) here = aliasTab;
     var active = 0;
-    NAV_TABS.forEach(function (t, i) { if (t.href === here) active = i; });
+    NAV_TABS.forEach(function (t, i) { if (t.href && t.slug === here) active = i; });
 
     function badgeHTML(onPuck) {
       var n = api.count();
@@ -1011,7 +1024,7 @@
       nav.querySelector('.hn-items').innerHTML = NAV_TABS.map(function (t, i) {
         var on = i === active;
         if (t.search) {
-          return '<button type="button" class="hn-item hn-search-item" data-i="' + i + '" data-search-nav aria-label="Open site search">' +
+          return '<button type="button" class="hn-item hn-search-item" data-i="' + i + '" data-search-nav aria-label="Open site search"' + (on ? ' aria-current="true"' : '') + '>' +
                  '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.7" cy="10.7" r="6.6"></circle><path d="m15.8 15.8 5 5"></path></svg>' +
                  '<span class="lbl">Search</span></button>';
         }

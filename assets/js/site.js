@@ -1157,10 +1157,55 @@
     });
   }
 
+  /* ---------------- theme (light / dark) ---------------- */
+  var THEME_KEY = 'hn-theme';
+  var THEME_META = { dark: '#121A16', light: '#F4F6EF' };
+  function getTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';
+    } catch (e) { return 'dark'; }
+  }
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', THEME_META[t] || THEME_META.dark);
+    document.querySelectorAll('.theme-toggle').forEach(function (b) {
+      var label = t === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+      b.setAttribute('aria-pressed', t === 'light' ? 'true' : 'false');
+      b.setAttribute('aria-label', label);
+      b.title = label;
+    });
+  }
+  var THEME_TOGGLE_HTML =
+    '<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch theme">' +
+    '<svg class="tt-ico tt-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.4"></circle><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"></path></svg>' +
+    '<svg class="tt-ico tt-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 14.2A8.6 8.6 0 0 1 9.8 3.4a8.6 8.6 0 1 0 10.8 10.8z"></path></svg>' +
+    '</button>';
+  function initTheme() {
+    if (!document.querySelector('.theme-toggle')) {
+      var host = document.querySelector('.wa-float');
+      if (host && host.parentNode) host.insertAdjacentHTML('beforebegin', THEME_TOGGLE_HTML);
+      else if (document.body) document.body.insertAdjacentHTML('beforeend', THEME_TOGGLE_HTML);
+    }
+    applyTheme(getTheme());
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('.theme-toggle');
+      if (!b) return;
+      e.preventDefault();
+      var next = getTheme() === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem(THEME_KEY, next); } catch (err) {}
+      var reduce = false;
+      try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (err) {}
+      if (document.startViewTransition && !reduce) document.startViewTransition(function () { applyTheme(next); });
+      else applyTheme(next);
+    });
+  }
+
   /* ---------------- boot ---------------- */
   // exposed so a single-page preview can re-run it after swapping <main>
   window.hanekomBoot = function () {
     applyPublicCataloguePolicy();
+    initTheme();
     initNav();
     initGlobalSearch();
     paintCount();

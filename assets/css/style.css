@@ -1374,3 +1374,168 @@ form[data-form-offline] .promise{display:none}
   font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
   color:#14181C;background:var(--amber);border-radius:5px;padding:.14rem .45rem;
 }
+
+/* ============================================================
+   LIGHT THEME
+   Default is dark. html[data-theme="light"] flips the palette.
+   Brand constants stay: Hanekom green + safety amber; only the
+   ground, surfaces, ink and glass alphas adapt for daylight.
+   ============================================================ */
+:root[data-theme="light"]{
+  color-scheme:light;
+  --ground:#F4F6EF;
+  --ground-2:#EBEEE2;
+  --surf:#FFFFFF;
+  --surf-2:#F0F3E9;
+  --glass:rgba(20,28,22,.05);
+  --glass-2:rgba(20,28,22,.085);
+  --edge:rgba(20,28,22,.13);
+  --edge-2:rgba(20,28,22,.22);
+  /* --plate stays white in both themes: it is the backdrop that product
+     photographs (white studio shots blended with multiply) sit on */
+  --plate:#FFFFFF;
+  --text:#1B291D;
+  --text-2:#41503F;
+  --mute:#5D6C58;
+  --faint:#77826E;
+  /* the dark-mode greens #8CC85F/#5FA83C are too pale for white paper:
+     in daylight the brand green deepens for legibility */
+  --green:#3E7723;
+  --green-2:#346A1B;
+  --green-deep:#2B5A16;
+  --green-glow:rgba(95,168,60,.20);
+  --green-tint:rgba(95,168,60,.11);
+  --amber:#8F6400;
+  --amber-tint:rgba(143,100,0,.11);
+  --danger:#B23A2E;
+  --shadow:0 4px 18px rgba(27,41,29,.10);
+  --shadow-lg:0 18px 44px rgba(27,41,29,.16);
+}
+:root[data-theme="light"] body{
+  background:var(--ground);
+}
+/* atmosphere: same composition, daylight grade */
+:root[data-theme="light"] body::before{
+  background:
+    radial-gradient(900px 620px at 82% -6%, rgba(95,168,60,.14), transparent 62%),
+    radial-gradient(760px 540px at 6% 8%, rgba(143,100,0,.06), transparent 60%),
+    linear-gradient(178deg,#F6F8F1 0%,#F1F4E9 46%,#EAEEDF 100%);
+}
+:root[data-theme="light"] body::after{
+  filter:blur(24px) saturate(.55) brightness(1.04);
+  opacity:.16;
+}
+:root[data-theme="light"] ::selection{background:var(--green-glow);color:#1B291D}
+
+/* floating chrome */
+:root[data-theme="light"] .hn-bar{
+  border:1px solid rgba(27,41,29,.14);
+  box-shadow:0 8px 22px rgba(27,41,29,.10),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(105,167,63,.15);
+}
+:root[data-theme="light"] .brand img{
+  border:1px solid rgba(27,41,29,.12);
+}
+:root[data-theme="light"] .nav-search-trigger:hover,
+:root[data-theme="light"] .nav-search-trigger:focus-visible,
+:root[data-theme="light"] .nav-search-trigger.is-open{
+  color:var(--green);border-color:var(--green);background:var(--green-tint);
+}
+/* fixed search strip */
+:root[data-theme="light"] .site-search-strip{
+  background:rgba(250,252,247,.96);
+  border-block:1px solid rgba(62,119,35,.24);
+  box-shadow:0 14px 30px rgba(27,41,29,.14);
+}
+:root[data-theme="light"] .site-search-strip label{color:var(--green)}
+:root[data-theme="light"] .site-search-strip input{
+  border:1px solid rgba(27,41,29,.2);background:#fff;color:var(--text);
+}
+:root[data-theme="light"] .site-search-strip input::placeholder{color:var(--mute)}
+:root[data-theme="light"] .site-search-strip button{background:var(--green);color:#fff}
+:root[data-theme="light"] .site-search-strip button:hover,
+:root[data-theme="light"] .site-search-strip button:focus-visible{background:var(--green-2)}
+
+/* page scaffolding */
+:root[data-theme="light"] .page-head{background:rgba(27,41,29,.028)}
+:root[data-theme="light"] .trustbar{background:rgba(27,41,29,.04)}
+:root[data-theme="light"] .trustbar .cell{background:rgba(255,255,255,.72)}
+/* the "navy" band is a 26% black overlay in dark mode: too heavy for daylight */
+:root[data-theme="light"] .bg-navy::before{background:rgba(27,41,29,.045)}
+
+/* catalogue cards */
+:root[data-theme="light"] .product .code{background:rgba(255,255,255,.92);color:#41503F;border:1px solid var(--edge)}
+:root[data-theme="light"] .product .spec{background:rgba(27,41,29,.05)}
+:root[data-theme="light"] .empty{background:linear-gradient(180deg,rgba(95,168,60,.07),var(--glass))}
+
+/* catalogue toolbar */
+:root[data-theme="light"] .search-guide{
+  background:linear-gradient(135deg,rgba(95,168,60,.10),rgba(255,255,255,.65));
+}
+:root[data-theme="light"] .search input{
+  background:#fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235D6C58' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat .85rem center/1.05rem;
+}
+
+/* tables, forms */
+:root[data-theme="light"] th{background:rgba(27,41,29,.05)}
+:root[data-theme="light"] tbody tr:hover{background:rgba(27,41,29,.035)}
+:root[data-theme="light"] input[type=text],
+:root[data-theme="light"] input[type=email],
+:root[data-theme="light"] input[type=tel],
+:root[data-theme="light"] select,
+:root[data-theme="light"] textarea{background:#fff;color:var(--text)}
+:root[data-theme="light"] select{
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235D6C58' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+:root[data-theme="light"] select option{background:#FFFFFF;color:#1B291D}
+:root[data-theme="light"] .remember-details{background:rgba(27,41,29,.04)}
+:root[data-theme="light"] .quote-details{background:rgba(27,41,29,.045)}
+
+/* dialogs and overlays */
+:root[data-theme="light"] .quote-picker::backdrop,
+:root[data-theme="light"] .pdf-dialog::backdrop{background:rgba(27,41,29,.38)}
+
+/* gallery, CTA band, footer */
+:root[data-theme="light"] .gallery figcaption{background:rgba(27,41,29,.04)}
+:root[data-theme="light"] .cta-band::before{
+  background:radial-gradient(680px 300px at 50% 0%, rgba(95,168,60,.14), transparent 70%), rgba(255,255,255,.6);
+}
+:root[data-theme="light"] .site-footer{background:rgba(27,41,29,.05)}
+
+/* floating contact card */
+:root[data-theme="light"] .wa-opt{background:rgba(255,255,255,.96)}
+:root[data-theme="light"] .wa-opt:hover{background:rgba(255,255,255,1)}
+
+/* inline-styled dark-mode remnants (author markup hard-codes light-on-dark
+   colours): footer straplines and the index industry cards. Author-level
+   !important is the only thing that beats an inline style. */
+:root[data-theme="light"] .site-footer strong{color:var(--text)!important}
+:root[data-theme="light"] .grid .card[style]{background:var(--glass)!important;border-color:var(--edge)!important;color:var(--text)!important}
+:root[data-theme="light"] .grid .card[style] h3{color:var(--text)!important}
+:root[data-theme="light"] .grid .card[style] p{color:var(--text-2)!important}
+:root[data-theme="light"] .grid .card[style] .more{color:var(--green)!important}
+
+/* ---------------- theme toggle button ---------------- */
+.theme-toggle{
+  position:fixed;right:18px;bottom:80px;z-index:84;
+  width:46px;height:46px;border-radius:50%;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--surf);border:1px solid var(--edge-2);color:var(--text-2);
+  box-shadow:var(--shadow);cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:transform .22s var(--ease),box-shadow .3s,color .2s,border-color .2s;
+}
+.theme-toggle:hover{transform:translateY(-2px);color:var(--green);border-color:var(--green);box-shadow:var(--shadow-lg)}
+.theme-toggle:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.theme-toggle:active{transform:scale(.94);transition-duration:.1s}
+.theme-toggle .tt-ico{
+  width:22px;height:22px;display:block;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+.theme-toggle .tt-sun{display:block}
+.theme-toggle .tt-moon{display:none}
+:root[data-theme="light"] .theme-toggle .tt-sun{display:none}
+:root[data-theme="light"] .theme-toggle .tt-moon{display:block}
+@media print{.theme-toggle{display:none!important}}
+@media (max-width:560px){
+  .theme-toggle{right:14px;bottom:76px;width:44px;height:44px}
+}

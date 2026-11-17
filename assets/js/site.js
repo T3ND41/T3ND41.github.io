@@ -1284,48 +1284,59 @@
     }
 
     function draw(center, stretch) {
-      var width = bar.getBoundingClientRect().width;
+      var box = bar.getBoundingClientRect();
+      var width = box.width;
+      var h = box.height || 82;
       if (width < 150) return;
+      // Every curve dimension scales with the bar height, so the compact
+      // phone dock (64px) gets a proportionally smaller scoop than the
+      // 82px desktop dock and never crowds the neighbouring tabs.
+      var s = Math.min(1, h / 82);
       x = center;
       // Keep a small rounded cap beyond an end tab, as in the reference.
       // Narrow screens use a flowing side shoulder when there is no room.
       var edgeDistance = Math.min(center, width - center);
-      var edgeBlend = Math.max(0, Math.min(1, (190 - edgeDistance) / 100));
+      var edgeBlend = Math.max(0, Math.min(1, (190 * s - edgeDistance) / (100 * s)));
       // Let the cradle sweep under the neighbouring tabs, while an end tab
       // keeps its short outer shoulder and the rounded bar cap.
-      var innerReach = 120 + stretch * 12;
-      var outerReach = innerReach - 35 * edgeBlend;
+      var innerReach = (120 + stretch * 12) * s;
+      var outerReach = innerReach - 35 * s * edgeBlend;
       var leftReach = center <= width / 2 ? outerReach : innerReach;
       var rightReach = center >= width / 2 ? outerReach : innerReach;
-      var cap = edgeDistance > 100 ? 25 : 18;
+      var cap = (edgeDistance > 100 * s ? 25 : 18) * s;
       var start = Math.max(cap, center - leftReach);
       var end = Math.min(width - cap, center + rightReach);
       var left = center - start;
       var right = end - center;
-      var depth = 52 + stretch * 5;
-      var nearLeft = start < 25;
-      var nearRight = end > width - 25;
+      var depth = (52 + stretch * 5) * s;
+      var corner = 25 * s;   // bar corner radius
+      var shoulder = 19 * s; // where the top shoulder begins
+      var nub = 7 * s;       // flat run before the shoulder curve
+      var nearLeft = start < corner;
+      var nearRight = end > width - corner;
       var leftWing = nearLeft
-        ? 'M0 25 Q0 19 7 19 C' +
-          (7 + Math.min(14, (center - 7) * .42)).toFixed(1) + ' 19 ' +
-          (center - Math.min(30, left * .55)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+        ? 'M0 ' + corner.toFixed(1) + ' Q0 ' + shoulder.toFixed(1) + ' ' + nub.toFixed(1) + ' ' + shoulder.toFixed(1) + ' C' +
+          (nub + Math.min(14 * s, (center - nub) * .42)).toFixed(1) + ' ' + shoulder.toFixed(1) + ' ' +
+          (center - Math.min(30 * s, left * .55)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
           center.toFixed(1) + ' ' + depth.toFixed(1) + ' '
-        : 'M25 0 L' + start.toFixed(1) + ' 0 C' +
+        : 'M' + corner.toFixed(1) + ' 0 L' + start.toFixed(1) + ' 0 C' +
           (start + left * .65).toFixed(1) + ' 0 ' +
-          (center - Math.min(42, left * .4)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+          (center - Math.min(42 * s, left * .4)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
           center.toFixed(1) + ' ' + depth.toFixed(1) + ' ';
       var rightWing = nearRight
-        ? 'C' + (center + Math.min(30, right * .55)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
-          (width - 7 - Math.min(14, (width - center - 7) * .42)).toFixed(1) + ' 19 ' +
-          (width - 7).toFixed(1) + ' 19 Q' + width.toFixed(1) + ' 19 ' + width.toFixed(1) + ' 25 '
-        : 'C' + (center + Math.min(42, right * .4)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+        ? 'C' + (center + Math.min(30 * s, right * .55)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
+          (width - nub - Math.min(14 * s, (width - center - nub) * .42)).toFixed(1) + ' ' + shoulder.toFixed(1) + ' ' +
+          (width - nub).toFixed(1) + ' ' + shoulder.toFixed(1) + ' Q' + width.toFixed(1) + ' ' + shoulder.toFixed(1) + ' ' + width.toFixed(1) + ' ' + corner.toFixed(1) + ' '
+        : 'C' + (center + Math.min(42 * s, right * .4)).toFixed(1) + ' ' + depth.toFixed(1) + ' ' +
           (end - right * .65).toFixed(1) + ' 0 ' + end.toFixed(1) + ' 0 L' +
-          (width - 25).toFixed(1) + ' 0 Q' + width.toFixed(1) + ' 0 ' +
-          width.toFixed(1) + ' 25 ';
+          (width - corner).toFixed(1) + ' 0 Q' + width.toFixed(1) + ' 0 ' +
+          width.toFixed(1) + ' ' + corner.toFixed(1) + ' ';
+      var flat = (h - corner).toFixed(1);
       var d = leftWing + rightWing +
-        'L' + width.toFixed(1) + ' 57 Q' + width.toFixed(1) + ' 82 ' +
-        (width - 25).toFixed(1) + ' 82 L25 82 Q0 82 0 57 L0 25 ' +
-        (nearLeft ? 'Z' : 'Q0 0 25 0 Z');
+        'L' + width.toFixed(1) + ' ' + flat + ' Q' + width.toFixed(1) + ' ' + h.toFixed(1) + ' ' +
+        (width - corner).toFixed(1) + ' ' + h.toFixed(1) + ' L' + corner.toFixed(1) + ' ' + h.toFixed(1) +
+        ' Q0 ' + h.toFixed(1) + ' 0 ' + flat + ' L0 ' + corner.toFixed(1) + ' ' +
+        (nearLeft ? 'Z' : 'Q0 0 ' + corner.toFixed(1) + ' 0 Z');
       bar.style.clipPath = 'path("' + d + '")';
       bar.classList.add('is-fluid');
     }

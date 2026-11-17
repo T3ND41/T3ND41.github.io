@@ -1149,14 +1149,37 @@ body{padding-top:0;padding-bottom:24px}
 .hn-item .hn-badge{top:10px;right:calc(50% - 20px)}
 .hn-puck .hn-badge{top:-3px;right:-5px;border-color:#fff}
 .hn-grip{display:none}
-@media (max-width:700px){.hn-items{padding-left:36px;padding-right:36px}}
+@media (max-width:700px){.hn-items{padding:5px 36px 8px}}
+/* Compact nav: the scoop, puck and dock shrink together so the curve
+   stays clear of neighbouring tabs and the content it floats over. */
+@media (max-width:700px){
+  .hn-nav{--lift:26px}
+  .hn-bar{height:64px;border-radius:20px;
+    -webkit-mask-image:radial-gradient(ellipse 86px 54px at var(--notch-x) -6px,
+      transparent 0 36px,rgba(0,0,0,.12) 40px,
+      rgba(0,0,0,.55) 45px,#000 50px);
+            mask-image:radial-gradient(ellipse 86px 54px at var(--notch-x) -6px,
+      transparent 0 36px,rgba(0,0,0,.12) 40px,
+      rgba(0,0,0,.55) 45px,#000 50px);
+  }
+  .hn-item .lbl{font-size:10.5px}
+  .hn-item .ico{width:22px;height:22px}
+  .hn-puck{width:54px;height:54px;margin-left:-27px;top:0}
+  .hn-puck .ico{width:28px;height:28px}
+  .hn-puck .ico-3d{width:28px;height:28px}
+  .hn-puck::after{inset:-4px}
+  .hn-item .hn-badge{top:4px;right:calc(50% - 16px)}
+}
 @media (max-width:380px){
-  .hn-nav{width:calc(100% - 16px);top:calc(8px + env(safe-area-inset-top))}.hn-items{padding-left:28px;padding-right:28px}.hn-item .lbl{font-size:9px;letter-spacing:.01em}.hn-puck{width:62px;height:62px;margin-left:-31px;top:4px}.hn-puck::after{inset:-4px}
-  .hn-item .ico{width:23px;height:23px}.hn-grip{width:96px}
+  .hn-nav{width:calc(100% - 16px);top:calc(8px + env(safe-area-inset-top))}.hn-items{padding-left:28px;padding-right:28px}.hn-item .lbl{font-size:9px;letter-spacing:.01em}.hn-puck::after{inset:-4px}
+  .hn-item .ico{width:21px;height:21px}.hn-grip{width:96px}
+  .hn-puck{width:50px;height:50px;margin-left:-25px;top:0}.hn-puck::after{inset:-4px}
+  .hn-puck .ico{width:26px;height:26px}.hn-puck .ico-3d{width:26px;height:26px}
 }
 @media (max-width:320px){
   .hn-nav{width:calc(100% - 12px)}
   .hn-items{padding-left:16px;padding-right:16px}
+  .hn-item .lbl{font-size:9px}
 }
 @media (max-width:300px){.hn-items{padding-left:10px;padding-right:10px}.hn-item .lbl{font-size:8px}}
 
@@ -1482,7 +1505,7 @@ form[data-form-offline] .promise{display:none}
 :root[data-theme="light"] input[type=email],
 :root[data-theme="light"] input[type=tel],
 :root[data-theme="light"] select,
-:root[data-theme="light"] textarea{background:#fff;color:var(--text)}
+:root[data-theme="light"] textarea{background-color:#fff;color:var(--text)}
 :root[data-theme="light"] select{
   background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235D6C58' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }

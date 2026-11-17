@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en-ZM">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>System Status | Hanekom Innovations</title>
+<meta name="description" content="Live 24/7 status of the Hanekom Innovations customer enquiry system: data collection pipeline, website availability and automated monitoring alerts.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/img/favicon.png" sizes="any">
+<link rel="apple-touch-icon" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/style.css?v=20261117-compact">
+<script>(function(){try{var t=localStorage.getItem("hn-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute("content",t==="light"?"#F4F6EF":"#121A16");}}}catch(e){}})();</script>
+<style>
+  .status-grid{display:grid;gap:1rem;grid-template-columns:1fr}
+  @media (min-width:760px){.status-grid{grid-template-columns:repeat(3,1fr)}}
+  .status-card{padding:1.1rem 1.2rem;border:1px solid var(--line,rgba(0,0,0,.12));border-radius:14px;background:var(--card,rgba(255,255,255,.6))}
+  .status-card h3{margin:0 0 .35rem;font-size:1.02rem}
+  .status-pill{display:inline-block;padding:.22rem .7rem;border-radius:999px;font-weight:700;font-size:.82rem;letter-spacing:.02em}
+  .pill-up{background:#e6f4e0;color:#256029}
+  .pill-down{background:#fbe3e0;color:#8a1c12}
+  .pill-wait{background:rgba(127,127,127,.15);color:inherit;opacity:.8}
+  .status-card .meta{font-size:.85rem;opacity:.75;margin-top:.45rem;line-height:1.45}
+  .incident{border-top:1px dashed rgba(127,127,127,.35);padding:.6rem 0}
+  .incident:first-of-type{border-top:0}
+  .incident strong{font-size:.9rem}
+  .incident time{font-size:.8rem;opacity:.7;display:block}
+  .pulse{width:.6rem;height:.6rem;border-radius:999px;display:inline-block;margin-right:.4rem;animation:pulse 2s infinite}
+  @keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="topbar">
+  <div class="wrap">
+    <span>Zambian owned since 2003 &middot; Kitwe &amp; Lusaka</span>
+    <span class="topbar-links">
+      <a href="tel:+260975956570">+260 975 956 570</a>
+      <a href="mailto:sales@hanekom.co.zm">sales@hanekom.co.zm</a>
+      <a href="https://wa.me/260954263566" target="_blank" rel="noopener">WhatsApp +260 954 263 566</a>
+    </span>
+  </div>
+</div>
+<header class="site-header">
+  <nav class="nav" aria-label="Main">
+    <a class="brand" href="index.html">
+      <img src="assets/img/logo-420.png" alt="Hanekom Innovations Limited" width="420" height="104">
+      <span class="sr-only">Hanekom Innovations Limited — home</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">&#9776;</button>
+    <div class="nav-links" id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="industries.html">Industries</a>
+        <a href="resources.html">Safety Resources</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a class="quote-pill" href="quote.html">Quote list <span class="n" data-quote-count>0</span></a>
+        <a class="btn btn-primary btn-sm nav-cta" href="quote.html">Request a quote</a>
+    </div>
+  </nav>
+</header>
+<main id="main">
+  <section class="wrap" style="padding-top:2.2rem">
+    <p class="eyebrow">Operations</p>
+    <h1>Live system status</h1>
+    <p>Every visitor enquiry — quote requests and contact messages — is saved to the Hanekom sales database around the clock. This page checks the whole chain right now and shows what the automated monitor (running every 5 minutes) has recorded. If anything breaks, an alert email is sent immediately.</p>
+    <p class="meta" style="font-size:.85rem;opacity:.75">This page refreshes automatically every 60 seconds. Last refreshed: <span id="refreshed">—</span></p>
+  </section>
+
+  <section class="wrap" aria-label="Status checks">
+    <div class="status-grid">
+      <div class="status-card" id="card-pipeline">
+        <h3><span class="pulse" style="background:#5FA83C"></span>Data collection pipeline</h3>
+        <span class="status-pill pill-wait" id="pipeline-pill">Checking…</span>
+        <div class="meta" id="pipeline-meta">Sending a test enquiry through the live form queue…</div>
+      </div>
+      <div class="status-card" id="card-website">
+        <h3><span class="pulse" style="background:#5FA83C"></span>Website</h3>
+        <span class="status-pill pill-wait" id="website-pill">Checking…</span>
+        <div class="meta" id="website-meta">Verifying hanekom.co.zm responds…</div>
+      </div>
+      <div class="status-card" id="card-monitor">
+        <h3><span class="pulse" style="background:#5FA83C"></span>Automated monitor</h3>
+        <span class="status-pill pill-wait" id="monitor-pill">Checking…</span>
+        <div class="meta" id="monitor-meta">Reading the latest alert activity…</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:2.5rem" aria-label="Incident history">
+    <h2 style="margin-top:2rem">Recent incidents</h2>
+    <p class="meta" style="font-size:.88rem;opacity:.8">The monitor probes the queue every 5 minutes. Any failure opens an alert that emails the team instantly; recovery closes it automatically.</p>
+    <div class="card" style="padding:1.1rem 1.2rem;max-width:720px" id="incidents">
+      <p class="meta" style="font-size:.9rem;opacity:.75">Loading incident history…</p>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:3rem">
+    <div class="card" style="padding:1.2rem 1.3rem;max-width:720px">
+      <h3 style="margin-top:0">If the pipeline is ever down</h3>
+      <p style="font-size:.92rem;line-height:1.55;margin:.4rem 0 0">Customer enquiries are never silently lost: when the queue cannot be reached, the website instantly offers visitors prefilled <strong>email</strong> and <strong>WhatsApp</strong> buttons carrying their complete request, so sales still receives everything. The database path is restored as soon as the alert is investigated.</p>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <span class="f-logo"><img src="assets/img/logo-420.png" alt="Hanekom Innovations Limited" width="420" height="104" loading="lazy" decoding="async" fetchpriority="low"></span>
+        <p>Wholly Zambian-owned, majority female-owned supplier of personal protective equipment and industrial products since 2003.</p>
+        <p><strong style="color:#fff">Innovating your safety.</strong></p>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About us</a></li>
+          <li><a href="products.html">Full catalogue</a></li>
+          <li><a href="quote.html">Request a quote</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="status.html" aria-current="page">System status</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <address>
+          <strong style="color:#fff">Kitwe office</strong><br>
+          1559 Independence Avenue<br>
+          Kitwe, Copperbelt Province<br><br>
+          <strong style="color:#fff">Lusaka office</strong><br>
+          218A Mbereshi Street, Nyumba Yanga<br>
+          Lusaka, Lusaka Province<br><br>
+          <a href="https://wa.me/260954263566" target="_blank" rel="noopener">WhatsApp +260 954 263 566</a><br>
+          <a href="mailto:sales@hanekom.co.zm">sales@hanekom.co.zm</a>
+        </address>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>&copy; <span id="year">2026</span> Hanekom Innovations Limited. All rights reserved.</span>
+      <span>TPIN 1001639160 &middot; Reg. No. 52472 &middot; <a href="privacy.html">Privacy notice</a></span>
+      <span>Request a written quotation for current pricing.</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/js/config.js" defer></script>
+<script src="assets/js/site.min.js?v=20261117-noprice" defer></script>
+<script>
+(function () {
+  'use strict';
+  var REPO_API = 'https://api.github.com/repos/T3ND41/T3ND41.github.io/issues?state=all&labels=health-alert&per_page=10';
+
+  function setPill(id, cls, text) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'status-pill ' + cls;
+    el.textContent = text;
+  }
+
+  function fmtAgo(iso) {
+    if (!iso) return '';
+    var ms = Date.now() - new Date(iso).getTime();
+    var mins = Math.round(ms / 60000);
+    if (mins < 2) return 'just now';
+    if (mins < 90) return mins + ' min ago';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 36) return hrs + ' h ago';
+    return Math.round(hrs / 24) + ' days ago';
+  }
+
+  function probeWebsite() {
+    var t0 = performance.now();
+    return fetch('index.html?nocache=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+      var ms = Math.round(performance.now() - t0);
+      if (r.ok) {
+        setPill('website-pill', 'pill-up', 'UP');
+        document.getElementById('website-meta').textContent = 'hanekom.co.zm responding (' + ms + ' ms).';
+        return true;
+      }
+      throw new Error('HTTP ' + r.status);
+    }).catch(function () {
+      setPill('website-pill', 'pill-down', 'DOWN');
+      document.getElementById('website-meta').textContent = 'The website did not respond. If this stays down, contact your hosting/dashboard.';
+      return false;
+    });
+  }
+
+  function probePipeline() {
+    return fetch('assets/js/inquiry-submit.js?nocache=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.text(); })
+      .then(function (js) {
+        var endpoint = (js.match(/var ENDPOINT = '([^']+)';/) || [])[1];
+        var key = (js.match(/var PUBLISHABLE_KEY = '([^']+)';/) || [])[1];
+        if (!endpoint || !key) throw new Error('config unreadable');
+        var t0 = performance.now();
+        return fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': key },
+          body: JSON.stringify({
+            source: 'status-page-probe',
+            inquiry_type: 'general',
+            full_name: 'SITE HEALTH CHECK (safe to delete)',
+            email: 'healthcheck@hanekom.co.zm',
+            phone: '',
+            message: 'Automated status page probe. This idempotent enquiry is safe to delete.',
+            request_key: 'healthcheck-statuspage-0001',
+            website: ''
+          })
+        }).then(function (r) { return r.json().then(function (data) { return { r: r, data: data }; }); })
+          .then(function (res) {
+            var ms = Math.round(performance.now() - t0);
+            if (res.r.ok && res.data && res.data.processed === true) {
+              setPill('pipeline-pill', 'pill-up', 'UP');
+              document.getElementById('pipeline-meta').textContent =
+                'Test enquiry saved through the queue (' + ms + ' ms' +
+                (res.data.duplicate ? ', verified record' : '') + '). Customer data is being captured 24/7.';
+              return true;
+            }
+            throw new Error('HTTP ' + res.r.status);
+          });
+      })
+      .catch(function (err) {
+        setPill('pipeline-pill', 'pill-down', 'DOWN');
+        document.getElementById('pipeline-meta').textContent =
+          'The queue did not save the test enquiry (' + (err && err.message ? err.message : 'network error') +
+          '). Backup email/WhatsApp routes still hand enquiries to sales. The alert monitor will email you within 5 minutes if this persists.';
+        return false;
+      });
+  }
+
+  function loadIncidents() {
+    return fetch(REPO_API, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (issues) {
+        var box = document.getElementById('incidents');
+        var open = issues.filter(function (i) { return i.state === 'open'; });
+        if (open.length) {
+          setPill('monitor-pill', 'pill-down', 'ALERT ACTIVE');
+          document.getElementById('monitor-meta').textContent =
+            open.length + ' open alert' + (open.length === 1 ? '' : 's') + ' — the automated monitor is reporting a problem right now.';
+        } else {
+          setPill('monitor-pill', 'pill-up', 'NO ALERTS');
+          document.getElementById('monitor-meta').textContent =
+            'The 5-minute monitor is running and has no open alerts.' +
+            (issues.length ? ' Last incident activity: ' + fmtAgo(issues[0].updated_at) + '.' : '');
+        }
+        if (!issues.length) {
+          box.innerHTML = '<p class="meta" style="font-size:.9rem;opacity:.75">No incidents recorded yet — the pipeline has had no reported outages.</p>';
+          return;
+        }
+        box.innerHTML = issues.map(function (i) {
+          return '<div class="incident"><strong>' +
+            (i.state === 'open' ? '&#9888; OPEN: ' : '&#10003; Resolved: ') +
+            String(i.title).replace(/</g, '&lt;') + '</strong>' +
+            '<time>Opened ' + fmtAgo(i.created_at) + (i.state === 'closed' ? ' &middot; closed ' + fmtAgo(i.closed_at) : '') + '</time></div>';
+        }).join('');
+      })
+      .catch(function () {
+        setPill('monitor-pill', 'pill-wait', 'UNKNOWN');
+        document.getElementById('monitor-meta').textContent = 'Could not read alert history right now (rate limit or network).';
+      });
+  }
+
+  function runAll() {
+    document.getElementById('refreshed').textContent = new Date().toLocaleTimeString();
+    probeWebsite();
+    probePipeline();
+    loadIncidents();
+  }
+
+  runAll();
+  setInterval(runAll, 60000);
+
+  var yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>

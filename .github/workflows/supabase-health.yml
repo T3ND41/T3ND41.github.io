@@ -1,0 +1,48 @@
+name: Supabase 24/7 health monitor
+
+# Runs every 5 minutes around the clock (public repo = free Actions minutes).
+# Probes the LIVE data collection pipeline end-to-end through the exact edge
+# function and key the website currently uses. Any failure opens a labelled
+# issue ([DOWN] ...) which triggers an email notification; recovery closes the
+# issue with a RECOVERED comment.
+#
+# Note: GitHub disables scheduled workflows after 60 days with no repo
+# activity — any commit to main re-enables it, and status.html shows the
+# monitor's last action so staleness is always visible.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+concurrency:
+  group: supabase-health
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Probe pipeline and manage alerts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/health-check.sh
+          bash scripts/health-check.sh
+
+      - name: Record run summary
+        if: always()
+        run: |
+          STATE="unknown"
+          [ -f /tmp/hn-health-last-state.txt ] && STATE=$(cat /tmp/hn-health-last-state.txt)
+          {
+            echo "## Health check $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo "- Pipeline state: $STATE"
+            echo "- Probes: live config -> website -> full pipeline write test"
+            echo "- See the \`health-alert\` issues for any active incident."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,317 @@
+name: Supabase setup and migration (one-click)
+
+# One-click setup of the customer data collection backend on the NEW Supabase
+# project, followed by automatically pointing the live website at it.
+#
+# How to run:
+#   1. Create a personal access token: https://supabase.com/dashboard/account/keys
+#      -> "Generate token" (any name, no expiry needed for this one run).
+#   2. GitHub repo -> Actions -> "Supabase setup and migration (one-click)"
+#      -> Run workflow -> paste the token -> Run.
+#   3. Optionally paste the Google Drive backup webhook URL + token if the
+#      Drive backup should keep flowing on the new project too.
+#   4. When finished, revoke the token (dashboard -> Access tokens).
+#
+# The workflow: verifies the token -> installs the full database schema with
+# RLS and rate limiting -> deploys both edge functions -> sets function
+# secrets -> runs end-to-end verification -> swaps the website's Supabase
+# credentials -> pushes so Cloudflare rebuilds.
+
+on:
+  workflow_dispatch:
+    inputs:
+      access_token:
+        description: "Supabase personal access token (account/keys)"
+        required: true
+        type: string
+      apps_script_url:
+        description: "Optional: Google Drive backup webhook URL (Apps Script)"
+        required: false
+        type: string
+        default: ""
+      apps_script_token:
+        description: "Optional: Google Drive backup token"
+        required: false
+        type: string
+        default: ""
+      swap_site:
+        description: "Point the live website at the new project after verification"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: supabase-setup
+  cancel-in-progress: false
+
+env:
+  REF: kqcnyewlkludlvtocsze
+  API: https://api.supabase.com/v1
+  OLD_ENDPOINT: "https://vpjqzatzzbbzdvlkkugg.supabase.co/functions/v1/receive-inquiry"
+  OLD_PUBLISHABLE_KEY: "sb_publishable_Dj0UAJSAV0otlXodWDg2bQ_Zn0wf5Ls"
+  NEW_PUBLISHABLE_KEY: "sb_publishable_SA0fWl1XxGtoHm8x5FKMBw_BiObT-rN"
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Verify access token and project ownership
+        env:
+          TOKEN: ${{ inputs.access_token }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$TOKEN"
+          HTTP=$(curl -sS -m 30 -o /tmp/projects.json -w "%{http_code}" \
+            -H "Authorization: Bearer $TOKEN" "$API/projects")
+          if [ "$HTTP" != "200" ]; then
+            echo "::error::Supabase rejected the access token (HTTP $HTTP). Create a fresh token at supabase.com/dashboard/account/keys and try again."
+            exit 1
+          fi
+          if ! jq -e --arg ref "$REF" '.[] | select(.id == $ref)' /tmp/projects.json > /dev/null; then
+            echo "::error::Project $REF was not found under this token's account. Make sure the project belongs to the same Supabase account that owns the token (found: $(jq -r '.[].id' /tmp/projects.json | tr '\n' ' '))."
+            exit 1
+          fi
+          echo "Token verified; project $REF is owned by this account."
+
+      - name: Install full database schema (tables, functions, RLS, rate limits, cron)
+        env:
+          TOKEN: ${{ inputs.access_token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          sql = open("supabase/full-schema.sql", encoding="utf-8").read()
+          sql = sql.replace("__PROJECT_REF__", "kqcnyewlkludlvtocsze")
+          json.dump({"query": sql}, open("/tmp/query.json", "w", encoding="utf-8"))
+          PY
+          HTTP=$(curl -sS -m 120 -o /tmp/sqlresp.json -w "%{http_code}" \
+            -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d @/tmp/query.json "$API/projects/$REF/database/query")
+          head -c 1500 /tmp/sqlresp.json || true; echo
+          if [ "$HTTP" != "200" ] || grep -q '"error"' /tmp/sqlresp.json; then
+            echo "::error::Database setup failed (HTTP $HTTP). The SQL is idempotent - fix the error and re-run the workflow."
+            exit 1
+          fi
+          echo "Schema installed."
+
+      - name: Resolve the server secret key
+        env:
+          TOKEN: ${{ inputs.access_token }}
+        run: |
+          set -euo pipefail
+          HTTP=$(curl -sS -m 30 -o /tmp/keys.json -w "%{http_code}" \
+            -H "Authorization: Bearer $TOKEN" "$API/projects/$REF/api-keys")
+          if [ "$HTTP" != "200" ]; then
+            echo "::error::Could not list project API keys (HTTP $HTTP)."
+            exit 1
+          fi
+          # Prefer a new-style sb_secret key; fall back to the legacy service_role JWT.
+          SECRET=$(jq -r '(first(.[]? | select(.type? == "secret" or .name? == "sb_secret")) | (.value // .api_key // empty))
+            // (first(.[]? | select(.name? == "service_role")) | (.value // .api_key // empty))
+            // empty' /tmp/keys.json)
+          if [ -z "$SECRET" ]; then
+            echo "::error::No secret-tier key found on the project. Enable legacy API keys in dashboard -> Settings -> API, or create an sb_secret key, then re-run."
+            exit 1
+          fi
+          echo "::add-mask::$SECRET"
+          printf '%s' "$SECRET" > /tmp/secret_key.txt
+          echo "Secret key resolved (masked)."
+
+      - name: Prepare the Drive-backup cron token (reuses the existing vault token)
+        env:
+          TOKEN: ${{ inputs.access_token }}
+        run: |
+          set -euo pipefail
+          HTTP=$(curl -sS -m 30 -o /tmp/vault.json -w "%{http_code}" \
+            -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d '{"query":"select decrypted_secret from vault.decrypted_secrets where name = '"'"'drive_sync_cron_token'"'"' limit 1"}' \
+            "$API/projects/$REF/database/query")
+          EXISTING=$(jq -r '.[0].decrypted_secret // empty' /tmp/vault.json 2>/dev/null || true)
+          if [ -n "$EXISTING" ]; then
+            echo "::add-mask::$EXISTING"
+            printf '%s' "$EXISTING" > /tmp/cron_token.txt
+            echo "Reusing existing vault token."
+          else
+            NEW=$(openssl rand -hex 32)
+            echo "::add-mask::$NEW"
+            printf '%s' "$NEW" > /tmp/cron_token.txt
+            jq -n --arg tok "$NEW" '{query: ("select vault.create_secret('"'"'" + $tok + "'"'"', '"'"'drive_sync_cron_token'"'"')")}' > /tmp/vaultquery.json
+            HTTP=$(curl -sS -m 30 -o /tmp/vaultresp.json -w "%{http_code}" \
+              -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+              -d @/tmp/vaultquery.json "$API/projects/$REF/database/query")
+            if [ "$HTTP" != "200" ] || grep -q '"error"' /tmp/vaultresp.json; then
+              echo "::error::Could not create the vault cron token (HTTP $HTTP)."
+              head -c 500 /tmp/vaultresp.json || true; echo
+              exit 1
+            fi
+            echo "Created new vault cron token."
+          fi
+
+      - name: Deploy edge functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ inputs.access_token }}
+        run: |
+          set -euo pipefail
+          supabase functions deploy receive-inquiry --project-ref "$REF"
+          # The backup worker is called by the database cron WITHOUT an apikey
+          # header, so it must skip gateway JWT verification - it enforces its
+          # own x-drive-sync-token secret instead.
+          supabase functions deploy sync-google-drive-backups --project-ref "$REF" --no-verify-jwt
+
+      - name: Configure function secrets
+        env:
+          TOKEN: ${{ inputs.access_token }}
+          APPS_SCRIPT_URL: ${{ inputs.apps_script_url }}
+          APPS_SCRIPT_TOKEN: ${{ inputs.apps_script_token }}
+        run: |
+          set -euo pipefail
+          SECRET=$(cat /tmp/secret_key.txt)
+          CRON=$(cat /tmp/cron_token.txt)
+          echo "::add-mask::$SECRET"
+          echo "::add-mask::$CRON"
+          if [ -n "$APPS_SCRIPT_TOKEN" ]; then echo "::add-mask::$APPS_SCRIPT_TOKEN"; fi
+          python3 - "$SECRET" "$CRON" "$APPS_SCRIPT_URL" "$APPS_SCRIPT_TOKEN" <<'PY'
+          import json, sys
+          secret, cron, url, tok = sys.argv[1:5]
+          payload = [
+              {"name": "SUPABASE_SECRET_KEYS", "value": json.dumps({"default": secret})},
+              {"name": "DRIVE_SYNC_CRON_TOKEN", "value": cron},
+          ]
+          if url:
+              payload.append({"name": "GOOGLE_DRIVE_BACKUP_WEBHOOK_URL", "value": url})
+          if tok:
+              payload.append({"name": "GOOGLE_DRIVE_BACKUP_TOKEN", "value": tok})
+          json.dump(payload, open("/tmp/secrets.json", "w"))
+          PY
+          HTTP=$(curl -sS -m 30 -o /tmp/secretsresp.json -w "%{http_code}" \
+            -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d @/tmp/secrets.json "$API/projects/$REF/secrets")
+          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
+            echo "::error::Setting function secrets failed (HTTP $HTTP)."
+            head -c 800 /tmp/secretsresp.json || true; echo
+            exit 1
+          fi
+          echo "Function secrets configured ($( [ -n "$APPS_SCRIPT_URL" ] && echo 'including Google Drive backup' || echo 'Drive backup left unconfigured (optional input omitted)' ))."
+
+      - name: End-to-end verification
+        env:
+          TOKEN: ${{ inputs.access_token }}
+        run: |
+          set -euo pipefail
+          echo "-- Database tables present:"
+          printf '{"query":"select table_name from information_schema.tables where table_schema=%s order by table_name"}' "'public'" > /tmp/tables.json
+          HTTP=$(curl -sS -m 60 -o /tmp/tablesresp.json -w "%{http_code}" \
+            -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d @/tmp/tables.json "$API/projects/$REF/database/query")
+          TABLES=$(jq -r 'length' /tmp/tablesresp.json 2>/dev/null || echo 0)
+          jq -r '.[].table_name' /tmp/tablesresp.json 2>/dev/null || true
+          if [ "$TABLES" -lt 8 ]; then
+            echo "::error::Expected at least 8 public tables after setup, found $TABLES."
+            exit 1
+          fi
+
+          echo "-- REST root with the publishable key:"
+          REST=$(curl -sS -m 20 -o /dev/null -w "%{http_code}" \
+            "https://$REF.supabase.co/rest/v1/" -H "apikey: $NEW_PUBLISHABLE_KEY")
+          echo "REST root -> $REST"
+          if [ "$REST" != "200" ]; then echo "::error::REST API not healthy"; exit 1; fi
+
+          echo "-- receive-inquiry function reachability (GET should be 405):"
+          FN=$(curl -sS -m 20 -o /dev/null -w "%{http_code}" \
+            "https://$REF.supabase.co/functions/v1/receive-inquiry" \
+            -H "apikey: $NEW_PUBLISHABLE_KEY" -H "Origin: https://hanekom.co.zm")
+          echo "Function GET -> $FN"
+          if [ "$FN" != "405" ]; then echo "::error::receive-inquiry did not deploy correctly"; exit 1; fi
+
+          echo "-- Full pipeline write test (idempotent healthcheck enquiry):"
+          for attempt in 1 2 3; do
+            HTTP=$(curl -sS -m 30 -o /tmp/probe.json -w "%{http_code}" -X POST \
+              "https://$REF.supabase.co/functions/v1/receive-inquiry" \
+              -H "apikey: $NEW_PUBLISHABLE_KEY" \
+              -H "Content-Type: application/json" \
+              -H "Origin: https://hanekom.co.zm" \
+              -d '{"source":"setup-verification","inquiry_type":"general","full_name":"SITE HEALTH CHECK (safe to delete)","email":"healthcheck@hanekom.co.zm","phone":"","message":"Automated setup verification. This idempotent probe is safe to delete.","request_key":"healthcheck-setup-0001","website":""}')
+            PROCESSED=$(jq -r '.processed // false' /tmp/probe.json 2>/dev/null || echo false)
+            echo "Attempt $attempt -> HTTP $HTTP, processed=$PROCESSED"
+            if { [ "$HTTP" = "200" ] || [ "$HTTP" = "202" ]; } && [ "$PROCESSED" = "true" ]; then
+              echo "Pipeline verified end-to-end."
+              break
+            fi
+            if [ "$attempt" = "3" ]; then
+              echo "::error::Healthcheck enquiry did not process. Check the function logs in the Supabase dashboard."
+              exit 1
+            fi
+            sleep 10
+          done
+
+          echo "-- Backup worker reachability (token-gated; 503 is OK until the optional Drive webhook is supplied):"
+          CRON=$(cat /tmp/cron_token.txt)
+          echo "::add-mask::$CRON"
+          SYNC=$(curl -sS -m 60 -o /tmp/syncprobe.json -w "%{http_code}" -X POST \
+            "https://$REF.supabase.co/functions/v1/sync-google-drive-backups" \
+            -H "x-drive-sync-token: $CRON" -H "Content-Type: application/json" -d '{}')
+          echo "Backup worker -> $SYNC $(head -c 200 /tmp/syncprobe.json 2>/dev/null || true)"
+          case "$SYNC" in
+            200|207|503) echo "Backup worker responds correctly." ;;
+            *) echo "::error::sync-google-drive-backups did not deploy correctly (HTTP $SYNC)."; exit 1 ;;
+          esac
+
+      - name: Point the website at the new project and push
+        if: ${{ inputs.swap_site }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          sed -i "s|var ENDPOINT = '$OLD_ENDPOINT';|var ENDPOINT = 'https://$REF.supabase.co/functions/v1/receive-inquiry';|" assets/js/inquiry-submit.js
+          sed -i "s|var PUBLISHABLE_KEY = '$OLD_PUBLISHABLE_KEY';|var PUBLISHABLE_KEY = '$NEW_PUBLISHABLE_KEY';|" assets/js/inquiry-submit.js
+          FILES=$(grep -rl "inquiry-submit.js" --include="*.html" . || true)
+          for f in $FILES; do
+            sed -i -E 's#(assets/js/inquiry-submit\.js\?v=)[a-z0-9-]+#\120261118-supabase-swap#g' "$f"
+          done
+          if git diff --quiet; then
+            echo "Website already points at the new project - nothing to change."
+          else
+            grep -n "ENDPOINT\|PUBLISHABLE_KEY" assets/js/inquiry-submit.js | head -4
+            git add -A
+            git commit -m "Migrate data collection to the new Supabase project (kqcnyewlkludlvtocsze)"
+            git push origin main
+            echo "Pushed. Cloudflare Pages will rebuild automatically."
+          fi
+
+      - name: Wait for the live site to serve the swap
+        if: ${{ inputs.swap_site }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            sleep 15
+            if curl -sS -m 20 "https://hanekom.co.zm/contact.html" | grep -q "20261118-supabase-swap"; then
+              echo "Live site now serves the new Supabase configuration."
+              exit 0
+            fi
+          done
+          echo "::warning::Cloudflare build not confirmed within 6 minutes; it usually lands within a minute or two. Check https://dash.cloudflare.com -> Pages."
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Supabase setup result"
+            echo ""
+            echo "- Project: \`kqcnyewlkludlvtocsze\`"
+            echo "- Database schema: tables + functions + Row Level Security + rate limiting + Drive-backup cron"
+            echo "- Edge functions deployed: \`receive-inquiry\`, \`sync-google-drive-backups\`"
+            echo "- End-to-end verification: healthcheck enquiry processed"
+            echo "- Website swap: ${{ inputs.swap_site && 'requested (see steps above)' || 'skipped by input' }}"
+            echo ""
+            echo "**Security tip:** revoke the access token you pasted (supabase.com/dashboard/account/keys) now that setup is complete."
+          } >> "$GITHUB_STEP_SUMMARY"

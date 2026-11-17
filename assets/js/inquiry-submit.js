@@ -49,6 +49,19 @@
     });
   }
 
+  /* Canonical origin for every link that leaves the site in a message, so
+     WhatsApp and email always point clients at hanekom.co.zm no matter which
+     host is serving the page. */
+  var SITE_ORIGIN = 'https://hanekom.co.zm';
+
+  function productPageUrl(product) {
+    return SITE_ORIGIN + '/' + String(product.url || '').replace(/^\//, '');
+  }
+
+  function productImageUrl(product) {
+    return product.img ? SITE_ORIGIN + '/assets/cat/' + product.img + '.jpg' : '';
+  }
+
   function quotationItems() {
     var basket = window.HanekomQuote && window.HanekomQuote.all
       ? window.HanekomQuote.all() : {};
@@ -57,6 +70,7 @@
       if (!product) return null;
       var selected = basket[code] || {};
       return {
+        product_code: code,
         product_name: product.name,
         description: product.variant || '',
         quantity: Number(selected.q) || 1,
@@ -65,7 +79,9 @@
         colour: selected.c || '',
         selected_size: selected.s || '',
         selected_colour: selected.c || '',
-        specifications: 'Website catalogue item: ' + code
+        specifications: 'Website catalogue item: ' + code,
+        product_url: productPageUrl(product),
+        image_url: productImageUrl(product)
       };
     }).filter(Boolean);
   }
@@ -135,15 +151,18 @@
       data.items.forEach(function (item) {
         var spec = [item.selected_size, item.selected_colour].filter(Boolean).join(', ');
         lines.push('- ' + item.quantity + ' x ' + item.product_name + (spec ? ' (' + spec + ')' : ''));
+        if (item.product_code) lines.push('  Catalogue code: ' + item.product_code);
+        if (item.product_url) lines.push('  Product page: ' + item.product_url);
+        if (item.image_url) lines.push('  Photo: ' + item.image_url);
       });
       lines.push('');
     }
     if (data.full_name) lines.push('Name: ' + data.full_name);
     if (data.company_name) lines.push('Company: ' + data.company_name);
     if (data.email) lines.push('Email: ' + data.email);
-    if (data.phone) lines.push('Phone: ' + data.phone);
+    if (data.phone) lines.push('Phone / WhatsApp: ' + data.phone);
     if (data.location) lines.push('Town / delivery location: ' + data.location);
-    if (data.industry) lines.push('Industry: ' + data.industry);
+    if (data.industry) lines.push('Industry / sector: ' + data.industry);
     if (data.preferred_channel) lines.push('Preferred contact: ' + data.preferred_channel);
     if (data.message) lines.push('', 'Message:', data.message);
     return lines.join('\n');

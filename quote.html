@@ -352,7 +352,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
   function buyer() {
     return { company: val('company'), name: val('name'), email: val('email'),
-             phone: val('phone'), town: val('town') };
+             phone: val('phone'), town: val('town'), industry: val('industry'),
+             contactpref: val('contactpref') };
   }
 
   function lines() {
@@ -516,20 +517,27 @@ document.addEventListener('DOMContentLoaded', function () {
       ? txt + '\n\n--- for Odoo (paste into a sheet, then Import) ---\n' + odooBlock(L)
       : '(none selected — see requirement details)';
 
-    // WhatsApp carries text only, so each line gets its product page URL —
-    // the recipient can open the exact item, photo and all.
+    // WhatsApp carries text only, so each line gets its catalogue code, the
+    // product page URL and the direct photo URL — the recipient sees the
+    // exact item and its photograph without opening anything, since WhatsApp
+    // renders a preview card from the photo link.
     var waTxt = L.map(function (x) {
-      return lineText(x) + '\n  ' + window.hanekomAbs(x.p.url);
+      return lineText(x) +
+        '\n  Catalogue code: ' + x.p.code +
+        '\n  Product page: ' + window.hanekomAbs(x.p.url) +
+        '\n  Photo: ' + window.hanekomAbs('assets/cat/' + x.p.img + '.jpg');
     }).join('\n');
     // Whoever picks this up needs to know who is asking. WhatsApp shows the
     // sender's number but not their company, and a quotation cannot be raised
-    // without one.
+    // without one. Every field the buyer filled in travels with the message.
     var b = buyer(), who = [];
     if (b.company) who.push('Company: ' + b.company);
     if (b.name) who.push('Contact: ' + b.name);
     if (b.email) who.push('Email: ' + b.email);
-    if (b.phone) who.push('Phone: ' + b.phone);
+    if (b.phone) who.push('Phone / WhatsApp: ' + b.phone);
     if (b.town) who.push('Delivery to: ' + b.town);
+    if (b.industry) who.push('Industry / sector: ' + b.industry);
+    if (b.contactpref) who.push('Preferred contact: ' + b.contactpref);
     var notes = val('details');
     if (notes) who.push('Notes: ' + notes);
 
@@ -803,8 +811,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.getElementById('clear-basket').addEventListener('click', function () { Q.clear(); });
   document.addEventListener('quote:change', function () { if (!typing) render(); });
-  // typing your company should update the WhatsApp message straight away
-  ['company', 'name', 'email', 'phone', 'town', 'details'].forEach(function (id) {
+  // typing your company should update the WhatsApp message straight away —
+  // and so should every other field the buyer fills in, including the two
+  // dropdowns, or the message goes out without them
+  ['company', 'name', 'email', 'phone', 'town', 'industry', 'contactpref', 'details'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener('input', sync);
   });
@@ -931,6 +941,6 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="assets/js/pdf.js" defer></script>
 <script src="assets/js/quote-pdf.js?v=20261117-noprice-column" defer></script>
 <script src="assets/js/site.min.js?v=20261117-noprice" defer></script>
-<script src="assets/js/inquiry-submit.js?v=20261117-offline-backup" defer></script>
+<script src="assets/js/inquiry-submit.js?v=20261117-itemphotos" defer></script>
 </body>
 </html>

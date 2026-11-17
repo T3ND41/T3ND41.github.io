@@ -1,6 +1,10 @@
 /* Hanekom website -> Supabase inquiry queue.
    Only browser-safe public credentials are used here. Never add a secret or
-   service-role key to this file. */
+   service-role key to this file.
+   If the queue endpoint cannot be reached (service outage, dead network), the
+   visitor's typed details are offered back to them as prefilled email and
+   WhatsApp backup routes, so an outage can never silently swallow an
+   enquiry. */
 (function () {
   'use strict';
 
@@ -114,6 +118,77 @@
     box.hidden = false;
   }
 
+  /* ---- offline backup routes ----
+     The primary path is the encrypted queue above. When it cannot be
+     reached, compose the exact same request into mailto: and wa.me: links
+     so one tap hands it to sales by email or WhatsApp instead. Nothing is
+     sent anywhere without the visitor tapping a link, and nothing here
+     stores their details beyond what the form already holds. */
+  var SALES_EMAIL = 'sales@hanekom.co.zm';
+  var SALES_WHATSAPP = '260954263566';
+
+  function backupText(data) {
+    var kind = data.inquiry_type === 'quotation' ? 'quotation request' : 'enquiry';
+    var lines = ['Website ' + kind + ' (sent from the backup route)', ''];
+    if (data.items && data.items.length) {
+      lines.push('Requested items:');
+      data.items.forEach(function (item) {
+        var spec = [item.selected_size, item.selected_colour].filter(Boolean).join(', ');
+        lines.push('- ' + item.quantity + ' x ' + item.product_name + (spec ? ' (' + spec + ')' : ''));
+      });
+      lines.push('');
+    }
+    if (data.full_name) lines.push('Name: ' + data.full_name);
+    if (data.company_name) lines.push('Company: ' + data.company_name);
+    if (data.email) lines.push('Email: ' + data.email);
+    if (data.phone) lines.push('Phone: ' + data.phone);
+    if (data.location) lines.push('Town / delivery location: ' + data.location);
+    if (data.industry) lines.push('Industry: ' + data.industry);
+    if (data.preferred_channel) lines.push('Preferred contact: ' + data.preferred_channel);
+    if (data.message) lines.push('', 'Message:', data.message);
+    return lines.join('\n');
+  }
+
+  function clearBackup(form) {
+    var box = form.querySelector('[data-form-backup]');
+    if (box && box.parentNode) box.parentNode.removeChild(box);
+  }
+
+  function offerBackup(form, data) {
+    var box = form.querySelector('[data-form-backup]');
+    if (!box) {
+      box = document.createElement('div');
+      box.setAttribute('data-form-backup', '');
+      var statusBox = form.querySelector('[data-form-status]');
+      if (statusBox && statusBox.parentNode) statusBox.parentNode.insertBefore(box, statusBox.nextSibling);
+      else form.appendChild(box);
+    }
+    box.innerHTML = '';
+    var text = backupText(data);
+    var kind = data.inquiry_type === 'quotation' ? 'quotation request' : 'enquiry';
+    var intro = document.createElement('p');
+    intro.style.cssText = 'margin:.6rem 0 .5rem;font-size:.92rem;opacity:.85;';
+    intro.textContent = 'Backup routes — hand the same details straight to sales if the queue stays unreachable:';
+    box.appendChild(intro);
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:.6rem;';
+    var mail = document.createElement('a');
+    mail.className = 'btn';
+    mail.href = 'mailto:' + SALES_EMAIL + '?subject=' +
+      encodeURIComponent('Website ' + kind + ' — backup route') +
+      '&body=' + encodeURIComponent(text);
+    mail.textContent = 'Email the same details';
+    var wa = document.createElement('a');
+    wa.className = 'btn btn-primary';
+    wa.href = 'https://wa.me/' + SALES_WHATSAPP + '?text=' + encodeURIComponent(text);
+    wa.textContent = 'Send on WhatsApp';
+    wa.target = '_blank';
+    wa.rel = 'noopener';
+    row.appendChild(mail);
+    row.appendChild(wa);
+    box.appendChild(row);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var forms = document.querySelectorAll('[data-supabase-inquiry]');
     forms.forEach(function (form) {
@@ -175,6 +250,7 @@
           }));
         } catch (e) {}
         form.hanekomPending = null;
+        clearBackup(form);
         try { if (isQuote && window.HanekomQuote) window.HanekomQuote.clear(); } catch (e) {}
         status(form, '', 'Request received. Opening the confirmation page...');
         window.location.href = 'thank-you.html';
@@ -183,7 +259,8 @@
         clearTimeout(timeout);
         form.hanekomSending = false;
         if (button) { button.disabled = false; button.textContent = original; }
-        status(form, 'error', 'We could not save the request. Your information is still here. Please try again, or use WhatsApp or email below.');
+        status(form, 'error', 'We could not reach the sales queue just now — our records service may be briefly offline. Your information is still here: please press Send again in a minute, or use a backup option below so your request reaches us either way.');
+        offerBackup(form, data);
       });
       }, true);
     });

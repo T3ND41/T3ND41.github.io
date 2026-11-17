@@ -1,15 +1,25 @@
-/* Hanekom website -> Supabase inquiry queue.
+/* Hanekom website -> Supabase inquiry queue (dual-sink, zero data loss).
+   Primary sink: the NEW project's inquiry_queue table, written straight
+   through the REST gateway with the public publishable key. Row Level
+   Security allows anonymous INSERTs only, and a database trigger validates
+   the payload and creates the customer/lead/quotation records. Works the
+   moment the project's schema has been applied.
+   Fallback sink: the original receive-inquiry edge function on the legacy
+   project, so enquiries keep flowing while the new project is still being
+   set up.
    Only browser-safe public credentials are used here. Never add a secret or
    service-role key to this file.
-   If the queue endpoint cannot be reached (service outage, dead network), the
+   If both queues cannot be reached (service outage, dead network), the
    visitor's typed details are offered back to them as prefilled email and
    WhatsApp backup routes, so an outage can never silently swallow an
    enquiry. */
 (function () {
   'use strict';
 
-  var ENDPOINT = 'https://vpjqzatzzbbzdvlkkugg.supabase.co/functions/v1/receive-inquiry';
-  var PUBLISHABLE_KEY = 'sb_publishable_Dj0UAJSAV0otlXodWDg2bQ_Zn0wf5Ls';
+  var PRIMARY_URL = 'https://kqcnyewlkludlvtocsze.supabase.co/rest/v1/inquiry_queue';
+  var PRIMARY_KEY = 'sb_publishable_SA0fWl1XxGtoHm8x5FKMBw_BiObT-rN';
+  var FALLBACK_URL = 'https://vpjqzatzzbbzdvlkkugg.supabase.co/functions/v1/receive-inquiry';
+  var FALLBACK_KEY = 'sb_publishable_Dj0UAJSAV0otlXodWDg2bQ_Zn0wf5Ls';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);
@@ -126,6 +136,84 @@
     };
   }
 
+  function timedFetch(url, options, ms) {
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, ms);
+    options.signal = controller.signal;
+    return fetch(url, options).then(
+      function (response) { clearTimeout(timer); return response; },
+      function (error) { clearTimeout(timer); throw error; }
+    );
+  }
+
+  /* Primary sink: one PostgREST insert. The database trigger validates the
+     payload and processes the enquiry, and the inserted row is returned so
+     the quotation reference can be shown to the visitor. */
+  function postPrimary(data, key) {
+    return timedFetch(PRIMARY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': PRIMARY_KEY,
+        'Authorization': 'Bearer ' + PRIMARY_KEY,
+        'x-request-key': key,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        request_key: key,
+        source: 'website',
+        inquiry_type: data.inquiry_type,
+        payload: data
+      })
+    }, 15000).then(function (response) {
+      /* 409 means the request key already exists: the enquiry was saved by
+         an earlier attempt, so treat it as delivered. */
+      if (response.status === 409) {
+        return { ok: true, reference_number: '' };
+      }
+      return response.json().catch(function () { return null; }).then(function (rows) {
+        if (!response.ok) {
+          throw new Error(rows && rows.message ? rows.message : ('Save failed (' + response.status + ')'));
+        }
+        var row = Array.isArray(rows) && rows[0];
+        if (!row) {
+          /* 201 with no visible row: RLS hid the read-back, but the
+             insert itself was accepted. Anything else is an unexpected
+             envelope; let the fallback sink handle it. */
+          if (response.ok && Array.isArray(rows) && rows.length === 0) {
+            return { ok: true, reference_number: '' };
+          }
+          throw new Error('Unexpected queue response');
+        }
+        var result = row.processing_result || {};
+        if (result.ok !== true) {
+          throw new Error(result.error || 'The queue did not accept the enquiry');
+        }
+        return { ok: true, reference_number: result.reference_number || '' };
+      });
+    });
+  }
+
+  /* Fallback sink: the legacy edge function. */
+  function postFallback(data) {
+    return timedFetch(FALLBACK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'apikey': FALLBACK_KEY
+      },
+      body: JSON.stringify(data)
+    }, 20000).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (body) {
+        if (!response.ok || body.ok !== true || body.processed !== true) {
+          throw new Error(body.error || body.message || ('Request failed (' + response.status + ')'));
+        }
+        return { ok: true, reference_number: body.reference_number || '' };
+      });
+    });
+  }
+
   function status(form, kind, message) {
     var box = form.querySelector('[data-form-status]');
     if (!box) return;
@@ -237,35 +325,18 @@
       var data = payload(form, type);
       var trap = form.querySelector('[name="botcheck"]');
       data.website = trap && trap.checked ? 'filled' : '';
-      var controller = new AbortController();
-      var timeout = setTimeout(function () { controller.abort(); }, 20000);
       submissionKey(form, type, data).then(function (key) {
-      data.request_key = key;
-      return fetch(ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'apikey': PUBLISHABLE_KEY
-        },
-        body: JSON.stringify(data),
-        signal: controller.signal
-      });
+        data.request_key = key;
+        /* Try the new project first; on any failure fall through to the
+           legacy queue so the enquiry still lands somewhere durable. */
+        return postPrimary(data, key)
+          .catch(function () { return postFallback(data); });
       })
-      .then(function (response) {
-        return response.json().catch(function () { return {}; }).then(function (data) {
-          if (!response.ok || data.ok !== true || data.processed !== true) {
-            throw new Error(data.error || data.message || ('Request failed (' + response.status + ')'));
-          }
-          return data;
-        });
-      })
-      .then(function (data) {
-        clearTimeout(timeout);
+      .then(function (result) {
         try {
           sessionStorage.removeItem('hanekom_pending_' + type);
           sessionStorage.setItem('hanekom_last_receipt', JSON.stringify({
-            reference: data.reference_number || '', receivedAt: Date.now()
+            reference: (result && result.reference_number) || '', receivedAt: Date.now()
           }));
         } catch (e) {}
         form.hanekomPending = null;
@@ -275,7 +346,6 @@
         window.location.href = 'thank-you.html';
       })
       .catch(function () {
-        clearTimeout(timeout);
         form.hanekomSending = false;
         if (button) { button.disabled = false; button.textContent = original; }
         status(form, 'error', 'We could not reach the sales queue just now — our records service may be briefly offline. Your information is still here: please press Send again in a minute, or use a backup option below so your request reaches us either way.');

@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Hanekom Innovations - complete database setup for the customer data
--- collection project (Supabase project ref: __PROJECT_REF__)
+-- collection project (Supabase project ref: kqcnyewlkludlvtocsze)
 --
 -- Safe to run more than once (idempotent). Run as the postgres role via the
 -- Supabase Management API "database/query" endpoint or the dashboard SQL
@@ -549,6 +549,140 @@ after insert on public.google_drive_backup_queue
 for each row execute function public.unpack_google_drive_backup_row();
 
 -- ----------------------------------------------------------------------------
+-- 5b) Direct browser submission path (no edge function required)
+--     The website inserts enquiry rows straight into inquiry_queue through
+--     the REST gateway with the public publishable key. This security
+--     definer trigger validates the payload, creates the customer, lead and
+--     quotation records, queues the Google Drive backup and stamps the
+--     result back onto the row so the visitor can read their reference.
+--     - request keys starting with "healthcheck-" are no-op probes that
+--       never touch customer records (used by the 24/7 monitors),
+--     - inserts arriving as role "service_role" come from the edge function
+--       path, which does its own processing (no double processing here),
+--     - bots that fill the hidden honeypot field are parked as spam,
+--     - a global flood cap protects the table from bursts (per-IP rate
+--       limiting stays with the optional edge function).
+-- ----------------------------------------------------------------------------
+create or replace function public.handle_website_inquiry_insert()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $function$
+declare
+  v_payload jsonb := new.payload;
+  v_items jsonb;
+  v_result jsonb;
+  v_flood integer;
+begin
+  -- 1) Health probes: keep the CRM clean, answer with a processed result.
+  if new.request_key like 'healthcheck-%' then
+    new.status := 'healthcheck';
+    new.processing_result := jsonb_build_object('ok', true, 'processed', true, 'healthcheck', true);
+    new.processed_at := now();
+    new.updated_at := now();
+    return new;
+  end if;
+
+  -- 2) Edge-function submissions: that path already processes the enquiry.
+  if coalesce(current_setting('role', true), '') = 'service_role' then
+    return new;
+  end if;
+
+  -- 3) Shape checks before anything else.
+  if jsonb_typeof(v_payload) <> 'object' then
+    raise exception 'Invalid enquiry payload';
+  end if;
+  if pg_column_size(v_payload) > 60000 then
+    raise exception 'Enquiry payload is too large';
+  end if;
+
+  -- 4) Honeypot: bots that filled the hidden field are parked, not deleted,
+  --    so abuse patterns stay visible to the owner.
+  if coalesce(v_payload->>'website', '') <> '' then
+    new.status := 'spam';
+    new.processing_result := jsonb_build_object('ok', true, 'processed', true, 'spam', true);
+    new.processed_at := now();
+    new.updated_at := now();
+    return new;
+  end if;
+
+  -- 5) Global flood cap.
+  select count(*) into v_flood from public.inquiry_queue
+    where status = 'completed' and created_at > now() - interval '1 hour';
+  if v_flood >= 240 then
+    raise exception 'Submission limit reached, please try again later';
+  end if;
+
+  -- 6) Validation mirrors the edge function exactly.
+  if coalesce(trim(v_payload->>'full_name'), '') = '' then
+    raise exception 'Name is required';
+  end if;
+  if coalesce(trim(v_payload->>'email'), '') = ''
+     and coalesce(trim(v_payload->>'phone'), '') = '' then
+    raise exception 'A phone number or email address is required';
+  end if;
+  if coalesce(v_payload->>'email', '') <> ''
+     and v_payload->>'email' !~* '^[^\s@]+@[^\s@]+\.[^\s@]{2,}$' then
+    raise exception 'Please provide a valid email address';
+  end if;
+  if coalesce(trim(v_payload->>'phone'), '') <> ''
+     and trim(v_payload->>'phone') !~ '^[+()0-9\s-]{7,40}$' then
+    raise exception 'Please provide a valid phone number';
+  end if;
+  v_items := coalesce(nullif(v_payload->'quotation_items', 'null'::jsonb),
+                      nullif(v_payload->'items', 'null'::jsonb), '[]'::jsonb);
+  if jsonb_typeof(v_items) <> 'array' then
+    raise exception 'Invalid enquiry items';
+  end if;
+  if jsonb_array_length(v_items) > 60 then
+    raise exception 'Too many items in one enquiry';
+  end if;
+  if new.inquiry_type not in ('general', 'quotation', 'message', 'callback') then
+    raise exception 'Invalid enquiry type';
+  end if;
+
+  -- 7) Create the customer/lead/quotation records and queue the backup.
+  new.inquiry_type := coalesce(nullif(trim(new.inquiry_type), ''), 'general');
+  new.source := coalesce(nullif(trim(new.source), ''), 'website');
+  new.status := 'completed';
+  new.processed_at := now();
+  new.updated_at := now();
+
+  v_result := public.create_website_lead(v_payload);
+
+  insert into public.google_drive_backup_queue
+    (request_key, source, inquiry_type, quotation_request_id, customer_id,
+     lead_id, backup_status, backup_payload)
+  values (
+    new.request_key, new.source, new.inquiry_type,
+    (v_result->>'quotation_id')::uuid,
+    (v_result->>'customer_id')::uuid,
+    (v_result->>'lead_id')::uuid,
+    case when new.inquiry_type = 'quotation' then 'pending' else 'skipped' end,
+    v_payload || jsonb_build_object(
+      'request_key', new.request_key,
+      'customer_id', v_result->'customer_id',
+      'lead_id', v_result->'lead_id',
+      'quotation_id', v_result->'quotation_id',
+      'reference_number', v_result->'reference_number')
+  ) on conflict (request_key) do nothing;
+
+  new.processing_result := jsonb_build_object(
+    'ok', true, 'queued', true, 'processed', true, 'duplicate', false,
+    'request_key', new.request_key,
+    'reference_number', v_result->'reference_number');
+
+  return new;
+end;
+$function$;
+
+drop trigger if exists trg_website_inquiry_insert on public.inquiry_queue;
+create trigger trg_website_inquiry_insert
+before insert on public.inquiry_queue
+for each row execute function public.handle_website_inquiry_insert();
+
+-- ----------------------------------------------------------------------------
 -- 6) Reporting views (owner-only; security_invoker so RLS of callers applies)
 -- ----------------------------------------------------------------------------
 create index if not exists customers_email_lookup_idx on public.customers (lower(trim(email)));
@@ -629,6 +763,46 @@ grant all on public.customers, public.leads, public.quotation_requests,
   public.submission_rate_log
   to service_role;
 
+-- ----------------------------------------------------------------------------
+-- 7b) Browser (anon) access to the submission queue
+--     INSERT-only. Visitors may submit enquiries and read back ONLY the row
+--     they just posted (matched against their unguessable x-request-key
+--     request header). No updates, no deletes, no listing, no reading of
+--     anyone else's submissions. Every other table stays service-role-only.
+-- ----------------------------------------------------------------------------
+grant insert (request_key, source, inquiry_type, payload)
+  on public.inquiry_queue to anon;
+grant select on public.inquiry_queue to anon;
+
+drop policy if exists "website_visitors_may_submit_enquiries" on public.inquiry_queue;
+create policy "website_visitors_may_submit_enquiries"
+  on public.inquiry_queue
+  for insert
+  to anon
+  with check (true);
+
+drop policy if exists "website_visitors_read_own_enquiry" on public.inquiry_queue;
+create policy "website_visitors_read_own_enquiry"
+  on public.inquiry_queue
+  for select
+  to anon
+  using (
+    request_key = coalesce(
+      case
+        when jsonb_typeof(coalesce(current_setting('request.headers', true)::jsonb, 'null'::jsonb)) = 'object'
+          then coalesce(current_setting('request.headers', true)::jsonb->>'x-request-key', '')
+        when jsonb_typeof(coalesce(current_setting('request.headers', true)::jsonb, 'null'::jsonb)) = 'array'
+          then coalesce(
+            (select h->>'value' from jsonb_array_elements(current_setting('request.headers', true)::jsonb) h
+             where lower(coalesce(h->>'name', '')) = 'x-request-key' limit 1),
+            '')
+        else ''
+      end,
+      ''
+    )
+  );
+
+create schema if not exists private;
 revoke all on schema private from public, anon, authenticated;
 grant usage on schema private to service_role;
 
@@ -658,7 +832,7 @@ begin
   end if;
 
   perform net.http_post(
-    url := 'https://__PROJECT_REF__.supabase.co/functions/v1/sync-google-drive-backups',
+    url := 'https://kqcnyewlkludlvtocsze.supabase.co/functions/v1/sync-google-drive-backups',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
       'x-drive-sync-token', v_token

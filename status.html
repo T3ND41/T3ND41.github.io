@@ -148,6 +148,7 @@
 (function () {
   'use strict';
   var REPO_API = 'https://api.github.com/repos/T3ND41/T3ND41.github.io/issues?state=all&labels=health-alert&per_page=10';
+  var PRIMARY_URL = '', PRIMARY_KEY = '', FALLBACK_URL = '', FALLBACK_KEY = '';
 
   function setPill(id, cls, text) {
     var el = document.getElementById(id);
@@ -184,44 +185,81 @@
     });
   }
 
+  function probePrimary() {
+    var t0 = performance.now();
+    return fetch(PRIMARY_URL + '?select=id&limit=1', {
+      cache: 'no-store',
+      headers: { 'apikey': PRIMARY_KEY, 'Authorization': 'Bearer ' + PRIMARY_KEY }
+    }).then(function (r) {
+      var ms = Math.round(performance.now() - t0);
+      if (r.ok) return { state: 'ready', ms: ms };
+      if (r.status === 404 || r.status === 503) return { state: 'pending', ms: ms };
+      throw new Error('HTTP ' + r.status);
+    }).catch(function () {
+      return { state: 'down', ms: 0 };
+    });
+  }
+
+  function probeFallback() {
+    var t0 = performance.now();
+    return fetch(FALLBACK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': FALLBACK_KEY },
+      body: JSON.stringify({
+        source: 'status-page-probe',
+        inquiry_type: 'general',
+        full_name: 'SITE HEALTH CHECK (safe to delete)',
+        email: 'healthcheck@hanekom.co.zm',
+        phone: '',
+        message: 'Automated status page probe. This idempotent enquiry is safe to delete.',
+        request_key: 'healthcheck-statuspage-0001',
+        website: ''
+      })
+    }).then(function (r) {
+      var ms = Math.round(performance.now() - t0);
+      return r.json().then(function (data) {
+        if (r.ok && data && data.processed === true) return { state: 'up', ms: ms };
+        throw new Error('HTTP ' + r.status);
+      });
+    }).catch(function () {
+      return { state: 'down', ms: 0 };
+    });
+  }
+
   function probePipeline() {
     return fetch('assets/js/inquiry-submit.js?nocache=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { return r.text(); })
       .then(function (js) {
-        var endpoint = (js.match(/var ENDPOINT = '([^']+)';/) || [])[1];
-        var key = (js.match(/var PUBLISHABLE_KEY = '([^']+)';/) || [])[1];
-        if (!endpoint || !key) throw new Error('config unreadable');
-        var t0 = performance.now();
-        return fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': key },
-          body: JSON.stringify({
-            source: 'status-page-probe',
-            inquiry_type: 'general',
-            full_name: 'SITE HEALTH CHECK (safe to delete)',
-            email: 'healthcheck@hanekom.co.zm',
-            phone: '',
-            message: 'Automated status page probe. This idempotent enquiry is safe to delete.',
-            request_key: 'healthcheck-statuspage-0001',
-            website: ''
-          })
-        }).then(function (r) { return r.json().then(function (data) { return { r: r, data: data }; }); })
-          .then(function (res) {
-            var ms = Math.round(performance.now() - t0);
-            if (res.r.ok && res.data && res.data.processed === true) {
-              setPill('pipeline-pill', 'pill-up', 'UP');
-              document.getElementById('pipeline-meta').textContent =
-                'Test enquiry saved through the queue (' + ms + ' ms' +
-                (res.data.duplicate ? ', verified record' : '') + '). Customer data is being captured 24/7.';
-              return true;
-            }
-            throw new Error('HTTP ' + res.r.status);
-          });
+        PRIMARY_URL = (js.match(/var PRIMARY_URL = '([^']+)';/) || [])[1];
+        PRIMARY_KEY = (js.match(/var PRIMARY_KEY = '([^']+)';/) || [])[1];
+        FALLBACK_URL = (js.match(/var FALLBACK_URL = '([^']+)';/) || [])[1];
+        FALLBACK_KEY = (js.match(/var FALLBACK_KEY = '([^']+)';/) || [])[1];
+        if (!PRIMARY_URL || !PRIMARY_KEY || !FALLBACK_URL || !FALLBACK_KEY) throw new Error('config unreadable');
+        return Promise.all([probePrimary(), probeFallback()]);
+      })
+      .then(function (sinks) {
+        var primary = sinks[0], fallback = sinks[1];
+        var parts = [];
+        if (primary.state === 'ready') {
+          parts.push('primary database queue saving enquiries (' + primary.ms + ' ms)');
+        } else if (primary.state === 'pending') {
+          parts.push('primary queue is awaiting its one-time database setup');
+        }
+        if (fallback.state === 'up') {
+          parts.push('legacy queue confirmed saving (' + fallback.ms + ' ms)');
+        }
+        if (primary.state === 'ready' || fallback.state === 'up') {
+          setPill('pipeline-pill', 'pill-up', 'UP');
+          document.getElementById('pipeline-meta').textContent =
+            'Test enquiry saved. ' + parts.join('; ') + '. Customer data is being captured 24/7.';
+          return true;
+        }
+        throw new Error(primary.state === 'down' && fallback.state === 'down' ? 'both queues unreachable' : 'queues not saving');
       })
       .catch(function (err) {
         setPill('pipeline-pill', 'pill-down', 'DOWN');
         document.getElementById('pipeline-meta').textContent =
-          'The queue did not save the test enquiry (' + (err && err.message ? err.message : 'network error') +
+          'The queues did not save the test enquiry (' + (err && err.message ? err.message : 'network error') +
           '). Backup email/WhatsApp routes still hand enquiries to sales. The alert monitor will email you within 5 minutes if this persists.';
         return false;
       });

@@ -5,6 +5,16 @@ const { webcrypto } = require('node:crypto');
 const source = fs.readFileSync('assets/js/inquiry-submit.js', 'utf8');
 const storage = new Map();
 const requests = [];
+const urls = [];
+
+function fakeElement(tag) {
+  return {
+    tagName: tag, style: {}, children: [], parentNode: null,
+    setAttribute() {},
+    appendChild(child) { this.children.push(child); if (child) child.parentNode = this; },
+    removeChild(child) { this.children = this.children.filter(c => c !== child); }
+  };
+}
 
 function visit(response) {
   const listeners = {};
@@ -23,7 +33,8 @@ function visit(response) {
       return null;
     },
     getAttribute() { return 'quotation'; }, checkValidity() { return true; },
-    addEventListener(type, callback) { listeners[type] = callback; }
+    addEventListener(type, callback) { listeners[type] = callback; },
+    appendChild() {}
   };
   let cleared = 0;
   const location = { origin: 'https://hanekom.co.zm', href: 'https://hanekom.co.zm/quote.html' };
@@ -31,8 +42,11 @@ function visit(response) {
     window: { crypto: webcrypto, location, HanekomQuote: { all: () => ({}), clear() { cleared++; } } },
     location, crypto: webcrypto, TextEncoder, AbortController, setTimeout, clearTimeout,
     sessionStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key) },
-    document: { addEventListener(type, callback) { callback(); }, querySelectorAll: () => [form] },
-    fetch: async (url, options) => { requests.push(JSON.parse(options.body)); return response(); }
+    document: {
+      addEventListener(type, callback) { callback(); }, querySelectorAll: () => [form],
+      createElement: tag => fakeElement(tag)
+    },
+    fetch: async (url, options) => { urls.push(String(url)); requests.push(JSON.parse(options.body)); return response(); }
   };
   vm.runInNewContext(source, context);
   return {
@@ -54,16 +68,22 @@ async function settled(page) {
   const lostResponse = () => { throw new Error('Connection lost after server save'); };
   let page = visit(lostResponse);
   page.submit(); page.submit(); await settled(page);
-  assert.equal(requests.length, 1, 'Double clicks must send once');
+  /* One submission runs the whole sink chain once: primary REST queue first,
+     then the legacy edge function. The double click must not add a second run. */
+  assert.equal(requests.length, 2, 'Double clicks must run the sink chain once');
+  assert.equal(urls.length, 2);
+  assert(urls[0].includes('kqcnyewlkludlvtocsze'), 'Primary attempt must hit the new project first');
+  assert(urls[1].includes('receive-inquiry'), 'Second attempt must hit the legacy queue');
   const originalKey = requests[0].request_key;
+  assert.equal(requests[1].request_key, originalKey, 'Both sinks must carry the same request key');
   assert.equal(page.cleared, 0);
   assert.equal(page.fields.name.value, 'Test customer');
   assert(!Array.from(storage.values()).some(value => value.includes('test@example.invalid')), 'Pending storage must contain only hash and key');
 
   page = visit(lostResponse); page.submit(); await settled(page);
-  assert.equal(requests[1].request_key, originalKey, 'Reloaded retry must reuse key');
+  assert.equal(requests[2].request_key, originalKey, 'Reloaded retry must reuse key');
   page.fields.details.value = 'Changed requirement'; page.submit(); await settled(page);
-  assert.notEqual(requests[2].request_key, originalKey, 'Changed enquiry needs a new key');
+  assert.notEqual(requests[4].request_key, originalKey, 'Changed enquiry needs a new key');
 
   page = visit(() => ({ ok: true, json: async () => ({}) })); page.submit(); await settled(page);
   assert.equal(page.cleared, 0, 'Malformed success must not clear the basket');
@@ -75,5 +95,5 @@ async function settled(page) {
   assert.equal(page.location.href, 'thank-you.html');
   assert.equal(storage.has('hanekom_pending_quotation'), false);
   assert.equal(JSON.parse(storage.get('hanekom_last_receipt')).reference, 'HIL-TEST');
-  console.log('Passed: duplicate click, lost response, reload retry, changed request, invalid response, and confirmation reference.');
+  console.log('Passed: duplicate click, sink chain order, lost response, reload retry, changed request, invalid response, and confirmation reference.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

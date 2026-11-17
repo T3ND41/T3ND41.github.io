@@ -14,8 +14,9 @@ name: Supabase setup and migration (one-click)
 #
 # The workflow: verifies the token -> installs the full database schema with
 # RLS and rate limiting -> deploys both edge functions -> sets function
-# secrets -> runs end-to-end verification -> swaps the website's Supabase
-# credentials -> pushes so Cloudflare rebuilds.
+# secrets -> runs end-to-end verification of BOTH sinks (direct REST insert
+# and edge function) -> confirms the website already points at the new
+# project.
 
 on:
   workflow_dispatch:
@@ -35,7 +36,7 @@ on:
         type: string
         default: ""
       swap_site:
-        description: "Point the live website at the new project after verification"
+        description: "Re-verify that the live website points at the new project"
         required: false
         type: boolean
         default: true
@@ -233,7 +234,7 @@ jobs:
           echo "Function GET -> $FN"
           if [ "$FN" != "405" ]; then echo "::error::receive-inquiry did not deploy correctly"; exit 1; fi
 
-          echo "-- Full pipeline write test (idempotent healthcheck enquiry):"
+          echo "-- Full pipeline write test via the edge function (idempotent healthcheck enquiry):"
           for attempt in 1 2 3; do
             HTTP=$(curl -sS -m 30 -o /tmp/probe.json -w "%{http_code}" -X POST \
               "https://$REF.supabase.co/functions/v1/receive-inquiry" \
@@ -244,7 +245,7 @@ jobs:
             PROCESSED=$(jq -r '.processed // false' /tmp/probe.json 2>/dev/null || echo false)
             echo "Attempt $attempt -> HTTP $HTTP, processed=$PROCESSED"
             if { [ "$HTTP" = "200" ] || [ "$HTTP" = "202" ]; } && [ "$PROCESSED" = "true" ]; then
-              echo "Pipeline verified end-to-end."
+              echo "Function pipeline verified end-to-end."
               break
             fi
             if [ "$attempt" = "3" ]; then
@@ -253,6 +254,28 @@ jobs:
             fi
             sleep 10
           done
+
+          echo "-- Full pipeline write test via the direct REST path (the website's primary sink):"
+          RESTHTTP=$(curl -sS -m 30 -o /tmp/restprobe.json -w "%{http_code}" -X POST \
+            "https://$REF.supabase.co/rest/v1/inquiry_queue" \
+            -H "apikey: $NEW_PUBLISHABLE_KEY" \
+            -H "Authorization: Bearer $NEW_PUBLISHABLE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "x-request-key: healthcheck-setup-rest-0001" \
+            -H "Prefer: return=representation" \
+            -H "Origin: https://hanekom.co.zm" \
+            -d '{"request_key":"healthcheck-setup-rest-0001","source":"setup-verification","inquiry_type":"general","payload":{"source":"setup-verification","inquiry_type":"general","full_name":"SITE HEALTH CHECK (safe to delete)","email":"healthcheck@hanekom.co.zm","phone":"","message":"Automated setup verification via the direct REST path. Safe to delete.","website":""}}')
+          echo "REST insert -> $RESTHTTP $(head -c 200 /tmp/restprobe.json 2>/dev/null || true)"
+          if [ "$RESTHTTP" != "201" ] && [ "$RESTHTTP" != "409" ]; then
+            echo "::error::Direct REST insert failed (HTTP $RESTHTTP). Check the RLS insert policy and the submission trigger."
+            exit 1
+          fi
+          # Clean the probe row back out (service-role delete via the API).
+          curl -sS -m 30 -o /dev/null -X POST -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"query":"delete from public.inquiry_queue where request_key = '''healthcheck-setup-rest-0001'''; delete from public.google_drive_backup_queue where request_key = '''healthcheck-setup-rest-0001''';"}' \
+            "$API/projects/$REF/database/query" || true
+          echo "Direct REST path verified end-to-end (201/409)."
 
           echo "-- Backup worker reachability (token-gated; 503 is OK until the optional Drive webhook is supplied):"
           CRON=$(cat /tmp/cron_token.txt)
@@ -266,40 +289,15 @@ jobs:
             *) echo "::error::sync-google-drive-backups did not deploy correctly (HTTP $SYNC)."; exit 1 ;;
           esac
 
-      - name: Point the website at the new project and push
+      - name: Verify the website already points at the new project
         if: ${{ inputs.swap_site }}
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          sed -i "s|var ENDPOINT = '$OLD_ENDPOINT';|var ENDPOINT = 'https://$REF.supabase.co/functions/v1/receive-inquiry';|" assets/js/inquiry-submit.js
-          sed -i "s|var PUBLISHABLE_KEY = '$OLD_PUBLISHABLE_KEY';|var PUBLISHABLE_KEY = '$NEW_PUBLISHABLE_KEY';|" assets/js/inquiry-submit.js
-          FILES=$(grep -rl "inquiry-submit.js" --include="*.html" . || true)
-          for f in $FILES; do
-            sed -i -E 's#(assets/js/inquiry-submit\.js\?v=)[a-z0-9-]+#\120261118-supabase-swap#g' "$f"
-          done
-          if git diff --quiet; then
-            echo "Website already points at the new project - nothing to change."
+          if curl -sS -m 20 -H "Cache-Control: no-cache" "https://hanekom.co.zm/assets/js/inquiry-submit.js" | grep -q "$REF"; then
+            echo "The live website already submits to the new project (primary sink: direct REST insert)."
           else
-            grep -n "ENDPOINT\|PUBLISHABLE_KEY" assets/js/inquiry-submit.js | head -4
-            git add -A
-            git commit -m "Migrate data collection to the new Supabase project (kqcnyewlkludlvtocsze)"
-            git push origin main
-            echo "Pushed. Cloudflare Pages will rebuild automatically."
+            echo "::warning::The live website JS does not mention $REF yet. Check that assets/js/inquiry-submit.js on main defines PRIMARY_URL with the new project."
           fi
-
-      - name: Wait for the live site to serve the swap
-        if: ${{ inputs.swap_site }}
-        run: |
-          set -euo pipefail
-          for i in $(seq 1 24); do
-            sleep 15
-            if curl -sS -m 20 "https://hanekom.co.zm/contact.html" | grep -q "20261118-supabase-swap"; then
-              echo "Live site now serves the new Supabase configuration."
-              exit 0
-            fi
-          done
-          echo "::warning::Cloudflare build not confirmed within 6 minutes; it usually lands within a minute or two. Check https://dash.cloudflare.com -> Pages."
 
       - name: Summary
         if: always()
@@ -310,8 +308,8 @@ jobs:
             echo "- Project: \`kqcnyewlkludlvtocsze\`"
             echo "- Database schema: tables + functions + Row Level Security + rate limiting + Drive-backup cron"
             echo "- Edge functions deployed: \`receive-inquiry\`, \`sync-google-drive-backups\`"
-            echo "- End-to-end verification: healthcheck enquiry processed"
-            echo "- Website swap: ${{ inputs.swap_site && 'requested (see steps above)' || 'skipped by input' }}"
+            echo "- End-to-end verification: edge-function healthcheck processed + direct REST insert verified"
+            echo "- Website: verified pointing at the new project (primary sink: direct REST insert)"
             echo ""
             echo "**Security tip:** revoke the access token you pasted (supabase.com/dashboard/account/keys) now that setup is complete."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -1,21 +1,12 @@
 /* Hanekom Innovations — product catalogue data
    Originally from the Hanekom Innovations Complete Product Catalogue 2026.
 
-   ODOO IS THE SYSTEM OF RECORD for products, prices and stock. This file is
-   downstream of it. Do not hand-edit a price here and assume it is correct —
-   the risk this project has to manage is the website publishing a figure Odoo
-   no longer agrees with, which a customer can then hold you to.
+   NO PRICES LIVE IN THIS FILE — and none may be added. The public catalogue
+   never publishes prices: every figure is supplied on Hanekom's written
+   quotation. Odoo remains the system of record for products and stock.
 
-   To update prices:
-       export Products to CSV from Odoo
-       python3 tools/odoo.py diff <that file>     (shows changes, writes nothing)
-       python3 tools/odoo.py apply <that file>
-       python3 build.py
-   See ODOO-AND-WORDPRESS.md. odoo-map.json pairs these codes to Odoo's own
-   internal references.
-
-   Everything other than price — descriptions, categories, images, the size and
-   colour option sets — is edited here by hand. Every page reads from this file. */
+   Descriptions, categories, images, and the size and colour option sets are
+   edited here by hand. Every page reads from this file. */
 
 window.HANEKOM_CATEGORIES = [
   { id: 'workwear',    name: 'Protective Workwear',   blurb: 'Conti suits, worksuits and specialist flame and acid resistant garments.' },
@@ -35,166 +26,166 @@ window.HANEKOM_CATEGORIES = [
 
 window.HANEKOM_PRODUCTS = [
   /* ---- Protective workwear ---- */
-  { code:'P01', name:'Impressions 65/35 Conti Suit', variant:'All Colours', cat:'workwear', brand:'Impressions', price:450.00,
+  { code:'P01', name:'Impressions 65/35 Conti Suit', variant:'All Colours', cat:'workwear', brand:'Impressions',
     desc:'Durable everyday two-piece workwear for industrial teams, with colour options for role or company identification.',
     tag:'Workwear | Colour options', spec:'Model / options: confirm on quote', img:'P01' },
-  { code:'P03', name:'Green Worksuit', variant:'100% Polyester', cat:'workwear', brand:'Hanekom', price:250.00,
+  { code:'P03', name:'Green Worksuit', variant:'100% Polyester', cat:'workwear', brand:'Hanekom',
     desc:'Lightweight two-piece workwear suited to general duties, housekeeping and warm working conditions.',
     tag:'Lightweight workwear', spec:'Model / options: confirm on quote', img:'P03' },
-  { code:'P04', name:'Javlin Acid Resistant Worksuit', variant:'', cat:'workwear', brand:'Javlin', price:950.00,
+  { code:'P04', name:'Javlin Acid Resistant Worksuit', variant:'', cat:'workwear', brand:'Javlin',
     desc:'Acid-resistant workwear option for chemical-handling and process environments; confirm the exact supplied model.',
     tag:'Chemical handling', spec:'Representative image — confirm exact item', img:'P04' },
-  { code:'P02', name:'D59 Flame & Acid Resistant Worksuit', variant:'', cat:'workwear', brand:'D59', price:1098.50,
+  { code:'P02', name:'D59 Flame & Acid Resistant Worksuit', variant:'', cat:'workwear', brand:'D59',
     desc:'Heavy-duty workwear for tasks where flame and acid-splash hazards require enhanced garment protection.',
     tag:'Specialist workwear', spec:'Model / options: confirm on quote', img:'P02' },
 
   /* ---- Hi-vis & outerwear ---- */
-  { code:'P06', name:'Reflective Vest', variant:'Assorted Colours', cat:'hivis', brand:'Hanekom', price:75.00,
+  { code:'P06', name:'Reflective Vest', variant:'Assorted Colours', cat:'hivis', brand:'Hanekom',
     desc:'Cost-effective visibility layer in assorted colours for visitors, crews and general site identification.',
     tag:'High visibility', spec:'Model / options: confirm on quote', img:'P06' },
-  { code:'P05', name:'Reflective Vest', variant:'Lime Green', cat:'hivis', brand:'Hanekom', price:150.00,
+  { code:'P05', name:'Reflective Vest', variant:'Lime Green', cat:'hivis', brand:'Hanekom',
     desc:'Bright lime visibility vest that improves worker conspicuity around vehicles, machinery and low-light work areas.',
     tag:'High visibility', spec:'Model / options: confirm on quote', img:'P05' },
-  { code:'P07', name:'WATT Winter Jacket', variant:'', cat:'hivis', brand:'WATT', price:850.00,
+  { code:'P07', name:'WATT Winter Jacket', variant:'', cat:'hivis', brand:'WATT',
     desc:'Insulated outer layer for colder shifts, early starts and exposed outdoor work.',
     tag:'Cold-weather layer', spec:'Model / options: confirm on quote', img:'P07' },
 
   /* ---- Hand protection ---- */
-  { code:'C03', name:'GLO 300 Flexnite Grip Glove', variant:'Nitrile', cat:'hand', brand:'GLO', price:63.80,
+  { code:'C03', name:'GLO 300 Flexnite Grip Glove', variant:'Nitrile', cat:'hand', brand:'GLO',
     desc:'Nitrile-coated grip glove for general handling where abrasion resistance, dexterity and secure grip are important.',
     tag:'Nitrile-coated glove', spec:'Model / options: confirm on quote', img:'C03' },
-  { code:'C04', name:'GLO 305 Cut Resistant Glove', variant:'13 Gauge Alkimos Cut 5 liner, nitrile coating', cat:'hand', brand:'GLO', price:154.00,
+  { code:'C04', name:'GLO 305 Cut Resistant Glove', variant:'13 Gauge Alkimos Cut 5 liner, nitrile coating', cat:'hand', brand:'GLO',
     desc:'Cut level 5 liner with nitrile coating for sharp-edged material handling while maintaining practical grip.',
     tag:'Cut-resistant glove', spec:'Model / options: confirm on quote', img:'C04' },
-  { code:'P10', name:'Welding Glove Double Palm', variant:'', cat:'hand', brand:'Hanekom', price:125.00,
+  { code:'P10', name:'Welding Glove Double Palm', variant:'', cat:'hand', brand:'Hanekom',
     desc:'Reinforced double-palm welding glove for improved durability and hand protection during hot-work handling.',
     tag:'Hand protection', spec:'Model / options: confirm on quote', img:'P10' },
 
   /* ---- Respiratory ---- */
-  { code:'C01', name:'Karam Disposable Dust Mask', variant:'', cat:'respiratory', brand:'KARAM', price:7.50,
+  { code:'C01', name:'Karam Disposable Dust Mask', variant:'', cat:'respiratory', brand:'KARAM',
     desc:'Single-use dust mask for basic nuisance-particle control; confirm suitability for the assessed airborne hazard.',
     tag:'Disposable respiratory PPE', spec:'Model / options: confirm on quote', img:'C01' },
-  { code:'C10', name:'KARAM FFP3 Mask', variant:'', cat:'respiratory', brand:'KARAM', price:33.34,
+  { code:'C10', name:'KARAM FFP3 Mask', variant:'', cat:'respiratory', brand:'KARAM',
     desc:'FFP3 disposable respirator for higher-level particulate filtration where the task requires enhanced protection.',
     tag:'Respiratory PPE', spec:'FFP3 class — confirm fit testing', img:'C10' },
-  { code:'C11', name:'KARAM FFP2 Welding Mask', variant:'', cat:'respiratory', brand:'KARAM', price:46.95,
+  { code:'C11', name:'KARAM FFP2 Welding Mask', variant:'', cat:'respiratory', brand:'KARAM',
     desc:'FFP2 respirator for welding-related particulate exposure; confirm fit, use limits and PPE compatibility.',
     tag:'Respiratory PPE', spec:'FFP2 class — confirm fit testing', img:'C11' },
 
   /* ---- Eye & face ---- */
-  { code:'C06', name:'ES 001 Karam Clear Sporty Glasses', variant:'', cat:'eye', brand:'KARAM', price:29.95,
+  { code:'C06', name:'ES 001 Karam Clear Sporty Glasses', variant:'', cat:'eye', brand:'KARAM',
     desc:'Clear wraparound-style safety glasses for everyday eye protection in workshops, warehouses and industrial tasks.',
     tag:'Eye protection', spec:'Model / options: confirm on quote', img:'C06' },
-  { code:'C05', name:'Dromex Sporty Clear Goggles', variant:'', cat:'eye', brand:'Dromex', price:35.00,
+  { code:'C05', name:'Dromex Sporty Clear Goggles', variant:'', cat:'eye', brand:'Dromex',
     desc:'Clear sporty goggles for impact and dust protection, with a lightweight profile for routine site use.',
     tag:'Eye protection', spec:'Model / options: confirm on quote', img:'C05' },
-  { code:'C07', name:'ES 015 Karam Safety Glasses', variant:'Euro Style', cat:'eye', brand:'KARAM', price:45.00,
+  { code:'C07', name:'ES 015 Karam Safety Glasses', variant:'Euro Style', cat:'eye', brand:'KARAM',
     desc:'Euro-style safety glasses offering lightweight eye coverage for visitors, operators and routine site activities.',
     tag:'Eye protection', spec:'Model / options: confirm on quote', img:'C07' },
-  { code:'P11', name:'KARAM ES 61 Welding Shield', variant:'', cat:'eye', brand:'KARAM', price:300.00,
+  { code:'P11', name:'KARAM ES 61 Welding Shield', variant:'', cat:'eye', brand:'KARAM',
     desc:'Handheld welding shield that helps protect the face and eyes; confirm the required lens shade and configuration.',
     tag:'Face protection', spec:'Confirm required lens shade', img:'P11' },
 
   /* ---- Head ---- */
-  { code:'C08', name:'Nikki Hard Hat', variant:'', cat:'head', brand:'Nikki', price:75.00,
+  { code:'C08', name:'Nikki Hard Hat', variant:'', cat:'head', brand:'Nikki',
     desc:'General-purpose hard hat for overhead-impact protection on construction, maintenance and industrial sites.',
     tag:'Head protection', spec:'Model / options: confirm on quote', img:'C08' },
-  { code:'C09', name:'PN542 Karam Hard Hat', variant:'2-point chin strap', cat:'head', brand:'KARAM', price:142.46,
+  { code:'C09', name:'PN542 Karam Hard Hat', variant:'2-point chin strap', cat:'head', brand:'KARAM',
     desc:'KARAM hard hat with a two-point chin strap for improved retention during active or elevated work.',
     tag:'Head protection', spec:'2-point chin strap retention', img:'C09' },
 
   /* ---- Hearing ---- */
-  { code:'P13', name:'Karam EP21 Ear Muff', variant:'27 dB', cat:'hearing', brand:'KARAM', price:278.00,
+  { code:'P13', name:'Karam EP21 Ear Muff', variant:'27 dB', cat:'hearing', brand:'KARAM',
     desc:'Over-ear hearing protector rated at 27 dB for noisy industrial environments, subject to exposure assessment.',
     tag:'Hearing protection', spec:'27 dB attenuation rating', img:'P13' },
 
   /* ---- Footwear ---- */
-  { code:'P14', name:'Rebel FX2 Safety Boot', variant:'', cat:'foot', brand:'Rebel Safety Gear', price:950.00,
+  { code:'P14', name:'Rebel FX2 Safety Boot', variant:'', cat:'foot', brand:'Rebel Safety Gear',
     desc:'Practical safety boot for routine site work, balancing protective coverage with everyday wearability.',
     tag:'Safety footwear', spec:'Model / options: confirm on quote', img:'P14' },
-  { code:'P17', name:'Grittgear Mangano Safety Boot', variant:'', cat:'foot', brand:'Grittgear', price:1050.00,
+  { code:'P17', name:'Grittgear Mangano Safety Boot', variant:'', cat:'foot', brand:'Grittgear',
     desc:'Robust safety boot for demanding daily site use; confirm sole, toe protection and available sizing.',
     tag:'Safety footwear', spec:'Confirm sole and toe protection', img:'P17' },
-  { code:'P15', name:'Tasco Safety Boot', variant:'', cat:'foot', brand:'Tasco', price:1115.00,
+  { code:'P15', name:'Tasco Safety Boot', variant:'', cat:'foot', brand:'Tasco',
     desc:'Industrial safety boot option for workshops, construction and general plant duties; confirm the protection specification.',
     tag:'Safety footwear', spec:'Model / options: confirm on quote', img:'P15',
     // the only photograph supplied for this line shows the packaging rather
     // than the boot — flagged rather than substituted with another product
     imgNote:'The supplied photograph shows the packaging, not the boot itself. Ask us for a product photograph before ordering.' },
-  { code:'P16', name:'Bova Chelsea Safety Boot', variant:'', cat:'foot', brand:'Bova', price:1950.00,
+  { code:'P16', name:'Bova Chelsea Safety Boot', variant:'', cat:'foot', brand:'Bova',
     desc:'Chelsea-style safety boot offering easy slip-on access for supervisors, technicians and mobile site personnel.',
     tag:'Safety footwear', spec:'Model / options: confirm on quote', img:'P16' },
 
   /* ---- Gumboots ---- */
-  { code:'P18', name:'Egoli Gum Boot', variant:'', cat:'gumboots', brand:'Egoli', price:400.00,
+  { code:'P18', name:'Egoli Gum Boot', variant:'', cat:'gumboots', brand:'Egoli',
     desc:'Economical gumboot for wet, muddy and wash-down environments requiring basic water-resistant footwear.',
     tag:'Water-resistant footwear', spec:'Model / options: confirm on quote', img:'P18' },
-  { code:'P19', name:'Stimela Gum Boot', variant:'', cat:'gumboots', brand:'Stimela', price:750.00,
+  { code:'P19', name:'Stimela Gum Boot', variant:'', cat:'gumboots', brand:'Stimela',
     desc:'Heavy-duty gumboot for industrial and agricultural wet-work; confirm sole and toe-protection options.',
     tag:'Water-resistant footwear', spec:'Confirm sole and toe options', img:'P19' },
 
   /* ---- Task-specific body ---- */
-  { code:'P09', name:'Zam Leather Spat', variant:'', cat:'body', brand:'Zam', price:250.00,
+  { code:'P09', name:'Zam Leather Spat', variant:'', cat:'body', brand:'Zam',
     desc:'Leather lower-leg cover designed to shield footwear and ankles from sparks, spatter and hot debris.',
     tag:'Leather lower-leg protection', spec:'Model / options: confirm on quote', img:'P09' },
-  { code:'P08', name:'Zam Leather Apron', variant:'', cat:'body', brand:'Zam', price:350.00,
+  { code:'P08', name:'Zam Leather Apron', variant:'', cat:'body', brand:'Zam',
     desc:'Leather apron providing front-body coverage against sparks, heat and abrasion during welding or grinding.',
     tag:'Leather body protection', spec:'Model / options: confirm on quote', img:'P08' },
-  { code:'P12', name:'ASI Snake Gaiter', variant:'', cat:'body', brand:'ASI', price:1450.00,
+  { code:'P12', name:'ASI Snake Gaiter', variant:'', cat:'body', brand:'ASI',
     desc:'Protective gaiter designed to reduce lower-leg exposure in snake-prone field, farming and outdoor work.',
     tag:'Lower-leg protection', spec:'Model / options: confirm on quote', img:'P12' },
-  { code:'C02', name:'30203/65 KARAM Disposable Coverall', variant:'65g Microporous Type 5/6', cat:'body', brand:'KARAM', price:154.87,
+  { code:'C02', name:'30203/65 KARAM Disposable Coverall', variant:'65g Microporous Type 5/6', cat:'body', brand:'KARAM',
     desc:'Lightweight 65 g microporous disposable coverall for Type 5/6 particulate and limited liquid-splash protection.',
     tag:'Disposable chemical protection', spec:'Type 5/6 | 65 g microporous', img:'C02' },
 
   /* ---- Working at height ---- */
-  { code:'PN 10(S)+PN 361', id:'PN10S', name:'Full Body Harness with Double Lanyard', variant:'Steel scaffold hooks', cat:'height', brand:'KARAM', price:775.41,
+  { code:'PN 10(S)+PN 361', id:'PN10S', name:'Full Body Harness with Double Lanyard', variant:'Steel scaffold hooks', cat:'height', brand:'KARAM',
     desc:'Entry-level full-body fall-arrest set with a double lanyard and scaffold hooks for continuous connection.',
     tag:'Harness + lanyard', spec:'EN 361 + EN 355 | 1.7 m | dorsal', img:'PN10S' },
-  { code:'PN 21(WB)+PN 361', id:'PN21WB', name:'Waist-Belt Harness with Double Lanyard', variant:'Steel scaffold hooks', cat:'height', brand:'KARAM', price:954.16,
+  { code:'PN 21(WB)+PN 361', id:'PN21WB', name:'Waist-Belt Harness with Double Lanyard', variant:'Steel scaffold hooks', cat:'height', brand:'KARAM',
     desc:'Full-body harness with positioning waist belt and twin lanyard for support and mobility at height.',
     tag:'Harness + lanyard + belt', spec:'EN 361 + EN 355 | 1.75 m', img:'PN21WB' },
-  { code:'PN 24', id:'PN24', name:'Padded Dorsal and Sternal Full Body Harness', variant:'', cat:'height', brand:'KARAM', price:1917.29,
+  { code:'PN 24', id:'PN24', name:'Padded Dorsal and Sternal Full Body Harness', variant:'', cat:'height', brand:'KARAM',
     desc:'Padded harness with dorsal and sternal attachment points for improved comfort during extended fall-arrest work.',
     tag:'Padded fall-arrest harness', spec:'EN 361 | dorsal + sternal | 1.50 kg', img:'PN24' },
-  { code:'PN 42(03)', id:'PN4203', name:'Padded Work-Positioning Full Body Harness', variant:'', cat:'height', brand:'KARAM', price:2463.96,
+  { code:'PN 42(03)', id:'PN4203', name:'Padded Work-Positioning Full Body Harness', variant:'', cat:'height', brand:'KARAM',
     desc:'Padded harness combining fall-arrest and work-positioning functions for maintenance and access tasks.',
     tag:'Fall arrest + positioning', spec:'EN 361 + EN 358 | 2.04 kg', img:'PN4203' },
-  { code:'PN 56', id:'PN56', name:'Padded Tower and Rope-Access Harness', variant:'', cat:'height', brand:'KARAM', price:3737.51,
+  { code:'PN 56', id:'PN56', name:'Padded Tower and Rope-Access Harness', variant:'', cat:'height', brand:'KARAM',
     desc:'Four-point padded harness for tower climbing and rope-access work requiring multiple attachment options.',
     tag:'Four-point tower harness', spec:'EN 361 + EN 358 + EN 813 | 2.24 kg', img:'PN56' },
-  { code:'MAGNA 2', id:'MAGNA2', name:'Alpha Series Work-Positioning Harness', variant:'', cat:'height', brand:'KARAM', price:6567.86,
+  { code:'MAGNA 2', id:'MAGNA2', name:'Alpha Series Work-Positioning Harness', variant:'', cat:'height', brand:'KARAM',
     desc:'Advanced positioning harness with dorsal, sternal and lateral points for supported hands-free work at height.',
     tag:'Advanced positioning harness', spec:'Dorsal + sternal + lateral | 2.50 kg', img:'MAGNA2' },
-  { code:'MAGNA 3', id:'MAGNA3', name:'Alpha Series Rope-Access Harness', variant:'', cat:'height', brand:'KARAM', price:7921.45,
+  { code:'MAGNA 3', id:'MAGNA3', name:'Alpha Series Rope-Access Harness', variant:'', cat:'height', brand:'KARAM',
     desc:'Advanced rope-access harness combining fall-arrest, positioning and sit-harness functions for technical teams.',
     tag:'Advanced rope-access harness', spec:'EN 361 + EN 358 + EN 813 | 2.30 kg', img:'MAGNA3' },
 
   /* ---- Lanyards & tool retention ---- */
-  { code:'TL 01(N)', id:'TL01', name:'Single Tool Lanyard with Karabiner', variant:'', cat:'lanyards', brand:'KARAM', price:152.79,
+  { code:'TL 01(N)', id:'TL01', name:'Single Tool Lanyard with Karabiner', variant:'', cat:'lanyards', brand:'KARAM',
     desc:'Adjustable single-leg tool lanyard that helps retain one tool and reduce dropped-object risk at height.',
     tag:'Single tool retention', spec:'85–135 cm | tools up to 10 kg', img:'TL01' },
-  { code:'TL 02(N)', id:'TL02', name:'Twin Tool Lanyard with Karabiner', variant:'', cat:'lanyards', brand:'KARAM', price:205.32,
+  { code:'TL 02(N)', id:'TL02', name:'Twin Tool Lanyard with Karabiner', variant:'', cat:'lanyards', brand:'KARAM',
     desc:'Twin-leg tool lanyard for securing two tools or maintaining retention during tool changeover.',
     tag:'Twin tool retention', spec:'Twin leg | tools up to 10 kg', img:'TL02' },
-  { code:'PN 361(30)', id:'PN36130', name:'Forked Lanyard with Energy Absorber', variant:'', cat:'lanyards', brand:'KARAM', price:1150.20,
+  { code:'PN 361(30)', id:'PN36130', name:'Forked Lanyard with Energy Absorber', variant:'', cat:'lanyards', brand:'KARAM',
     desc:'Forked energy-absorbing lanyard supporting continuous attachment between suitable anchor points.',
     tag:'Energy-absorbing lanyard', spec:'EN 355 | 1.5 m / 1.8 m / 2.0 m', img:'PN36130' },
 
   /* ---- Self-retracting lifelines ---- */
-  { code:'MIC 02', id:'MIC02', name:'2 m Micron Webbing Block', variant:'', cat:'srl', brand:'KARAM', price:3447.43,
+  { code:'MIC 02', id:'MIC02', name:'2 m Micron Webbing Block', variant:'', cat:'srl', brand:'KARAM',
     desc:'Lightweight two-metre webbing block for compact personal fall arrest and short-range movement.',
     tag:'Compact retractable block', spec:'EN 360 | 2 m webbing | 1.17 kg', img:'MIC02' },
-  { code:'TPGS 3.5', id:'TPGS35', name:'3.5 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM', price:5174.00,
+  { code:'TPGS 3.5', id:'TPGS35', name:'3.5 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM',
     desc:'Compact wire-rope self-retracting lifeline for shorter-range fall protection with fast line take-up.',
     tag:'Retractable fall arrester', spec:'EN 360 | 3.5 m | 2.23 kg | ATEX', img:'TPGS35' },
-  { code:'TPGS 06', id:'TPGS06', name:'6 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM', price:6463.66,
+  { code:'TPGS 06', id:'TPGS06', name:'6 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM',
     desc:'Six-metre wire-rope self-retracting lifeline for mobile work zones requiring additional reach.',
     tag:'Retractable fall arrester', spec:'EN 360 | 6 m | 2.88 kg | ATEX', img:'TPGS06' },
-  { code:'TPGS 10', id:'TPGS10', name:'10 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM', price:9009.54,
+  { code:'TPGS 10', id:'TPGS10', name:'10 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM',
     desc:'Ten-metre wire-rope self-retracting lifeline for larger work areas and elevated access routes.',
     tag:'Retractable fall arrester', spec:'EN 360 | 10 m | 4.28 kg | ATEX', img:'TPGS10' },
-  { code:'TPGS 15', id:'TPGS15', name:'15 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM', price:11193.66,
+  { code:'TPGS 15', id:'TPGS15', name:'15 m Wire-Rope Self-Retracting Lifeline', variant:'', cat:'srl', brand:'KARAM',
     desc:'Long-reach fifteen-metre wire-rope self-retracting lifeline for extensive work zones.',
     tag:'Retractable fall arrester', spec:'EN 360 | 15 m | 5.65 kg | ATEX', img:'TPGS15' }
 ];

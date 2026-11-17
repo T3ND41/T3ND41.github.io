@@ -14,11 +14,10 @@
   var WA = (CFG.wa && CFG.wa.main && CFG.wa.main.number) || '260954263566';
   // guarded: this file is also required under Node at build time, where
   // `location` does not exist
-  // Shared links must follow the host serving this copy of the site. The
-  // configured custom domain may not point at these pages yet.
-  var SITE = typeof location !== 'undefined' && /^https?:$/.test(location.protocol)
-    ? location.origin + location.pathname.replace(/[^/]*$/, '')
-    : (CFG.site || '');
+  // Shared links ALWAYS carry the canonical domain, whichever host happens to
+  // be serving the page (Cloudflare Pages, the GitHub Pages mirror or a local
+  // preview), so a client never sees or shares a mirror or staging URL.
+  var SITE = 'https://hanekom.co.zm/';
   var KEY = 'hanekom_quote_v1';
 
   /* ---------------- storage (safe) ----------------
@@ -274,6 +273,9 @@
         'Request a written quotation for current pricing.');
       value = value.replace(/product codes/gi, 'product names');
       value = value.replace(/product code/gi, 'product name');
+      // Safety net: no price figure may ever reach the screen. Sources are
+      // clean; this catches anything a future edit reintroduces.
+      value = value.replace(/ZMW\s*[0-9][0-9,.]*/gi, 'on quotation');
       textNode.nodeValue = value;
     });
   }

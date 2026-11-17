@@ -1,11 +1,11 @@
-# T3ND41.github.io
+# hanekom.co.zm
 
 This repository currently hosts two public web surfaces:
 
 ## Hanekom Innovations
 The production-facing Hanekom Innovations website is served from the repository root.
 
-**Live:** https://T3ND41.github.io/
+**Live:** https://hanekom.co.zm/
 
 The Hanekom root site should be treated as a separate business project and preserved when working on the personal portfolio.
 
@@ -16,7 +16,7 @@ The T3ND41 project portfolio is isolated under:
 /portfolio/
 ```
 
-**Portfolio:** https://T3ND41.github.io/portfolio/
+**Portfolio:** https://hanekom.co.zm/portfolio/
 
 The portfolio focuses on project value, problem solving, design decisions and case studies rather than a simple repository list.
 

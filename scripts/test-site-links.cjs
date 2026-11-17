@@ -43,14 +43,14 @@ function visit(script, origin, hash) {
 }
 
 for (const script of ['assets/js/site.js', 'assets/js/site.min.js']) {
-  const site = visit(script, 'https://t3nd41.github.io', `#q=${sample}`);
+  const site = visit(script, 'https://hanekom.co.zm', `#q=${sample}`);
   assert.equal(site.hanekomImportQuote(), true, `${script} did not import the shared list`);
   assert.equal(site.HanekomQuote.count(), 5);
-  assert.equal(site.hanekomQuoteLink(), `https://t3nd41.github.io/quote.html#q=${sample},`);
+  assert.equal(site.hanekomQuoteLink(), `https://hanekom.co.zm/quote.html#q=${sample},`);
   const product = site.HANEKOM_PRODUCTS.find(item => item.id === 'P01');
   const message = new URL(site.hanekomWaProduct(product, 4)).searchParams.get('text');
-  assert(message.includes('https://t3nd41.github.io/' + product.url));
-  assert(message.includes('https://t3nd41.github.io/assets/cat/'));
+  assert(message.includes('https://hanekom.co.zm/' + product.url));
+  assert(message.includes('https://hanekom.co.zm/assets/cat/'));
   assert(!message.includes('www.hanekom.co.zm'));
   assert.equal(visit(script, 'https://pages.example', '').hanekomAbs('quote.html'),
     'https://pages.example/quote.html', `${script} must follow the current host`);

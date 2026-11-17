@@ -99,7 +99,7 @@
       (CFG.address && CFG.address.lusaka) || '218A Mbereshi Street, Nyumba Yanga, Lusaka',
       ((CFG.wa && CFG.wa.sales && CFG.wa.sales.display) || '+260 975 956 570') + '  |  ' +
         ((CFG.email && CFG.email.primary) || 'sales@hanekom.co.zm'),
-      (CFG.site || 'https://www.hanekom.co.zm').replace(/^https?:\/\//, '')
+      (CFG.site || 'https://hanekom.co.zm').replace(/^https?:\/\//, '')
     ];
     if (CFG.company && CFG.company.tpin) lines.push('TPIN ' + CFG.company.tpin);
     var ly = y - 24;

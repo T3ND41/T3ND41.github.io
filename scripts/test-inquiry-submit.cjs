@@ -26,7 +26,7 @@ function visit(response) {
     addEventListener(type, callback) { listeners[type] = callback; }
   };
   let cleared = 0;
-  const location = { origin: 'https://t3nd41.github.io', href: 'https://t3nd41.github.io/quote.html' };
+  const location = { origin: 'https://hanekom.co.zm', href: 'https://hanekom.co.zm/quote.html' };
   const context = {
     window: { crypto: webcrypto, location, HanekomQuote: { all: () => ({}), clear() { cleared++; } } },
     location, crypto: webcrypto, TextEncoder, AbortController, setTimeout, clearTimeout,

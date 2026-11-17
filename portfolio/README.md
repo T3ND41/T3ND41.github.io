@@ -4,7 +4,7 @@ A lightweight static portfolio that documents real projects as problem-solving c
 
 ## Live path
 
-https://T3ND41.github.io/portfolio/
+https://hanekom.co.zm/portfolio/
 
 ## Structure
 

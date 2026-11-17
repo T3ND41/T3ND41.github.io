@@ -22,7 +22,7 @@ function cleanText(value: unknown, max: number): string | undefined {
 
 function corsHeaders(req: Request): HeadersInit {
   const origin = req.headers.get("origin");
-  const allowOrigin = origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://t3nd41.github.io";
+  const allowOrigin = origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://hanekom.co.zm";
   return {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-request-key",

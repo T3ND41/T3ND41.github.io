@@ -1,4 +1,5 @@
-/* Hanekom website -> Supabase inquiry queue (dual-sink, zero data loss).
+/* Hanekom website -> Supabase inquiry queue (dual-sink + worker bridge, zero
+   data loss).
    Primary sink: the NEW project's inquiry_queue table, written straight
    through the REST gateway with the public publishable key. Row Level
    Security allows anonymous INSERTs only, and a database trigger validates
@@ -7,6 +8,10 @@
    Fallback sink: the original receive-inquiry edge function on the legacy
    project, so enquiries keep flowing while the new project is still being
    set up.
+   Tertiary sink: the Cloudflare Worker "quote bridge" (hanekom-quote-bridge)
+   receives the core customer fields of every submission as a best-effort,
+   fire-and-forget copy, so the details survive even if both Supabase
+   projects are unreachable at the same moment.
    Only browser-safe public credentials are used here. Never add a secret or
    service-role key to this file.
    If both queues cannot be reached (service outage, dead network), the
@@ -20,6 +25,11 @@
   var PRIMARY_KEY = 'sb_publishable_SA0fWl1XxGtoHm8x5FKMBw_BiObT-rN';
   var FALLBACK_URL = 'https://vpjqzatzzbbzdvlkkugg.supabase.co/functions/v1/receive-inquiry';
   var FALLBACK_KEY = 'sb_publishable_Dj0UAJSAV0otlXodWDg2bQ_Zn0wf5Ls';
+  /* Tertiary sink: Cloudflare Worker "quote bridge". Set the full workers.dev
+     URL of the worker here (https://hanekom-quote-bridge.<account-subdomain>
+     .workers.dev). While it is empty the bridge is disabled and submissions
+     rely on the two Supabase sinks plus the backup routes below. */
+  var QUOTE_BRIDGE_URL = '';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);
@@ -214,6 +224,31 @@
     });
   }
 
+  /* Tertiary sink: the quote-bridge Cloudflare Worker. Independent of both
+     Supabase projects, so it is fired up-front on every submission — even if
+     both queues are unreachable. Best-effort only: failures are swallowed so
+     they can never block or duplicate the primary flow, and no alert() is
+     shown because the form status and backup routes handle all user
+     feedback. */
+  function postQuoteBridge(data) {
+    if (!QUOTE_BRIDGE_URL) return;
+    try {
+      fetch(QUOTE_BRIDGE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          company: data.company_name || '',   // 'Company / organisation'
+          contact: data.full_name || '',      // 'Contact person'
+          email: data.email || '',            // 'Email'
+          phone: data.phone || '',            // 'Phone / WhatsApp'
+          town: data.location || '',          // 'Town / site location'
+          industry: data.industry || ''       // 'Industry'
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
   function status(form, kind, message) {
     var box = form.querySelector('[data-form-status]');
     if (!box) return;
@@ -325,6 +360,9 @@
       var data = payload(form, type);
       var trap = form.querySelector('[name="botcheck"]');
       data.website = trap && trap.checked ? 'filled' : '';
+      /* Hand the core customer fields to the quote-bridge worker right away
+         as an independent third copy. */
+      postQuoteBridge(data);
       submissionKey(form, type, data).then(function (key) {
         data.request_key = key;
         /* Try the new project first; on any failure fall through to the

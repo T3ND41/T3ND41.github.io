@@ -29,7 +29,7 @@
      URL of the worker here (https://hanekom-quote-bridge.<account-subdomain>
      .workers.dev). While it is empty the bridge is disabled and submissions
      rely on the two Supabase sinks plus the backup routes below. */
-  var QUOTE_BRIDGE_URL = '';
+  var QUOTE_BRIDGE_URL = 'https://hanekom-quote-bridge.hanekominnovationsltd.workers.dev';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);

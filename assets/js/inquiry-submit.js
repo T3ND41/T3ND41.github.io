@@ -12,6 +12,9 @@
    receives the core customer fields of every submission as a best-effort,
    fire-and-forget copy, so the details survive even if both Supabase
    projects are unreachable at the same moment.
+   Email relay: every submission is also POSTed to the Hanekom Google Apps
+   Script email relay, which mails it to sales@hanekom.co.zm and
+   hanekominnovationsltd@gmail.com straight from the Hanekom Google account.
    Only browser-safe public credentials are used here. Never add a secret or
    service-role key to this file.
    If both queues cannot be reached (service outage, dead network), the
@@ -30,6 +33,11 @@
      .workers.dev). While it is empty the bridge is disabled and submissions
      rely on the two Supabase sinks plus the backup routes below. */
   var QUOTE_BRIDGE_URL = 'https://hanekom-quote-bridge.hanekominnovationsltd.workers.dev';
+  /* Email relay: the Hanekom Apps Script web app that emails every
+     submission to both sales addresses. Paste the web app /exec URL below
+     and the matching EMAIL_RELAY_TOKEN to switch it on. */
+  var EMAIL_RELAY_URL = '';
+  var EMAIL_RELAY_TOKEN = '';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);
@@ -139,7 +147,8 @@
       quotation_items: items,
       currency: 'ZMW',
       notification_targets: ['google_sheets', 'email', 'whatsapp'],
-      notification_email: 'sales@hanekom.co.zm',
+      notification_email: 'sales@hanekom.co.zm, hanekominnovationsltd@gmail.com',
+      notification_emails: ['sales@hanekom.co.zm', 'hanekominnovationsltd@gmail.com'],
       notification_whatsapp: '260954263566',
       website_origin: location.origin,
       page_url: location.href
@@ -247,6 +256,50 @@
           phone: data.phone || 'Not provided',            // 'Phone / WhatsApp'
           town: data.location || 'Not provided',          // 'Town / site location'
           industry: data.industry || 'Not provided'       // 'Industry'
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  /* Email relay: hands the full enquiry to the Hanekom Apps Script, which
+     mails it to sales@hanekom.co.zm and hanekominnovationsltd@gmail.com.
+     Sent as text/plain on purpose: JSON content-type would trigger a CORS
+     preflight that Apps Script web apps cannot answer, while text/plain is
+     a "simple request" that goes straight through. Fire-and-forget: the
+     response is opaque and failures never disturb the primary flow. */
+  function postEmailRelay(data) {
+    if (!EMAIL_RELAY_URL || !EMAIL_RELAY_TOKEN) return;
+    try {
+      fetch(EMAIL_RELAY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        keepalive: true,
+        body: JSON.stringify({
+          type: 'email_notification',
+          token: EMAIL_RELAY_TOKEN,
+          enquiry: {
+            inquiry_type: data.inquiry_type,
+            full_name: data.full_name || '',
+            company_name: data.company_name || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            location: data.location || '',
+            industry: data.industry || '',
+            preferred_channel: data.preferred_channel || '',
+            message: data.message || '',
+            items: (data.items || []).map(function (it) {
+              return {
+                product_code: it.product_code || '',
+                product_name: it.product_name || '',
+                quantity: it.quantity || 1,
+                selected_size: it.selected_size || '',
+                selected_colour: it.selected_colour || '',
+                product_url: it.product_url || '',
+                image_url: it.image_url || ''
+              };
+            }),
+            page_url: data.page_url || ''
+          }
         })
       }).catch(function () {});
     } catch (e) {}
@@ -366,6 +419,9 @@
       /* Hand the core customer fields to the quote-bridge worker right away
          as an independent third copy. */
       postQuoteBridge(data);
+      /* Email the same enquiry to both sales addresses via the Apps Script
+         relay. */
+      postEmailRelay(data);
       submissionKey(form, type, data).then(function (key) {
         data.request_key = key;
         /* Try the new project first; on any failure fall through to the

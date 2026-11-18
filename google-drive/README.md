@@ -9,10 +9,15 @@ worker retries failures with backoff and the Google script ignores repeated
 
 1. In the Hanekom Google account, create an Apps Script project with `Code.gs`.
    Set script properties `SPREADSHEET_ID` to
-   `1gHSMBEIO0HYa98h59gz3QIawUojpV-PJ_rGOco7lzdA` and `BACKUP_TOKEN` to a
-   random secret of at least 32 bytes. Deploy as a web app executing as the
-   Hanekom owner, accessible to anyone. The request body token is required;
-   never put it in the URL or in Git.
+   `1gHSMBEIO0HYa98h59gz3QIawUojpV-PJ_rGOco7lzdA`, `BACKUP_TOKEN` to a
+   random secret of at least 32 bytes, and `EMAIL_RELAY_TOKEN` to a separate
+   random secret (this one is safe to put in the public website JS - the
+   relay is rate-limited to 20 emails/hour and can only send enquiry emails).
+   Deploy as a web app executing as the Hanekom owner, accessible to anyone.
+   The request body token is required; never put it in the URL or in Git.
+   When the deployment is live, the same web app also emails every website
+   enquiry to sales@hanekom.co.zm and hanekominnovationsltd@gmail.com with
+   reply-to set to the customer.
 2. In Supabase Edge Function secrets, save `GOOGLE_DRIVE_BACKUP_WEBHOOK_URL`
    as the web app `/exec` URL and `GOOGLE_DRIVE_BACKUP_TOKEN` as that same
    random secret. Save a separate random `DRIVE_SYNC_CRON_TOKEN` there.

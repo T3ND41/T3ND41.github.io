@@ -6,6 +6,15 @@
 -- Supabase Management API "database/query" endpoint or the dashboard SQL
 -- editor.
 --
+-- ALL-OR-NOTHING: the whole script runs inside one transaction. If anything
+-- fails or stray text got pasted in, nothing is applied - just fix the paste
+-- and run it again.
+--
+-- HOW TO CHECK YOUR PASTE: the very LAST line of this file must read
+--   -- === END OF SCHEMA ===
+-- Anything visible in the editor AFTER that line is junk that got copied
+-- along with the SQL. Delete it before pressing Run.
+--
 -- What this installs:
 --   1. Extensions (pg_cron, pg_net)
 --   2. Core CRM tables: customers, leads, quotation_requests, quotation_items,
@@ -23,6 +32,8 @@
 --      REST API.
 --   8. Daily-operation cron: flushes the Google Drive backup queue
 -- ============================================================================
+
+begin;
 
 -- ----------------------------------------------------------------------------
 -- 1) Extensions
@@ -851,3 +862,9 @@ select cron.schedule(
   '* * * * *',
   'select private.invoke_google_drive_backup_sync()'
 );
+
+commit;
+
+-- === END OF SCHEMA ===
+-- If you can see text below this line in the SQL editor, it was copied from
+-- somewhere else by mistake. Delete everything below this line, then Run.

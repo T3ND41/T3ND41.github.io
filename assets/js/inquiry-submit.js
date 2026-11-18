@@ -238,12 +238,15 @@
         headers: { 'Content-Type': 'application/json' },
         keepalive: true,
         body: JSON.stringify({
-          company: data.company_name || '',   // 'Company / organisation'
-          contact: data.full_name || '',      // 'Contact person'
-          email: data.email || '',            // 'Email'
-          phone: data.phone || '',            // 'Phone / WhatsApp'
-          town: data.location || '',          // 'Town / site location'
-          industry: data.industry || ''       // 'Industry'
+          /* The worker rejects requests with empty fields ("Missing
+             required fields"), and the contact form has no town/industry
+             inputs at all - so blanks are sent as an explicit value. */
+          company: data.company_name || 'Not provided',   // 'Company / organisation'
+          contact: data.full_name || 'Not provided',      // 'Contact person'
+          email: data.email || 'Not provided',            // 'Email'
+          phone: data.phone || 'Not provided',            // 'Phone / WhatsApp'
+          town: data.location || 'Not provided',          // 'Town / site location'
+          industry: data.industry || 'Not provided'       // 'Industry'
         })
       }).catch(function () {});
     } catch (e) {}

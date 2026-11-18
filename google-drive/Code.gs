@@ -1,10 +1,15 @@
 // Deploy this as a web app owned by the Hanekom Google account.
-// Two duties, both token-gated:
+// Three duties, all token-gated:
 //   1. Backup sink: appends quotation rows to the Quotations sheet.
 //      Auth: BACKUP_TOKEN script property (server-to-server, never public).
 //   2. Email relay: emails every website quotation request / enquiry to the
 //      Hanekom sales addresses. Auth: EMAIL_RELAY_TOKEN script property
 //      (this one lives in the public website JS, so it is rate-limited).
+//   3. Sheet relay: the same email-relay request also appends the enquiry
+//      to the Quotations sheet (one row per requested item), so every
+//      submission is stored even when both Supabase projects are down.
+//      Same EMAIL_RELAY_TOKEN, same 20/hour rate limit, same request_key +
+//      line dedup as duty 1, so the two paths never store a line twice.
 const EXPECTED_COLUMNS = 26;
 const EMAIL_RELAY_RECIPIENTS = 'sales@hanekom.co.zm,hanekominnovationsltd@gmail.com';
 const EMAIL_RELAY_MAX_PER_HOUR = 20;
@@ -29,26 +34,19 @@ function doPost(e) {
     try {
       const sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName('Quotations');
       if (!sheet) throw new Error('Quotations tab missing');
-      const lastRow = sheet.getLastRow();
-      const existing = new Set();
-      if (lastRow > 1) {
-        const keysAndLines = sheet.getRange(2, 3, lastRow - 1, 13).getValues();
-        keysAndLines.forEach(row => {
-          if (String(row[0]) === input.request_key) existing.add(String(row[12]));
-        });
-      }
+      const found = existingLines_(sheet, input.request_key);
 
       const toAppend = [];
       input.rows.forEach(row => {
         if (!Array.isArray(row) || row.length !== EXPECTED_COLUMNS ||
             row[2] !== input.request_key) throw new Error('Invalid backup row');
         const line = String(row[14]);
-        if (existing.has(line)) return;
-        existing.add(line);
+        if (found.existing.has(line)) return;
+        found.existing.add(line);
         toAppend.push(row.map(safeCell_));
       });
       if (toAppend.length) {
-        sheet.getRange(lastRow + 1, 1, toAppend.length, EXPECTED_COLUMNS).setValues(toAppend);
+        sheet.getRange(found.lastRow + 1, 1, toAppend.length, EXPECTED_COLUMNS).setValues(toAppend);
         SpreadsheetApp.flush();
       }
       return reply_({ ok: true, request_key: input.request_key, appended: toAppend.length });
@@ -64,6 +62,21 @@ function safeCell_(value) {
   if (typeof value === 'number') return value;
   const text = value == null ? '' : String(value);
   return /^[=+\-@\t\r]/.test(text) ? "'" + text : text;
+}
+
+/* Collects the line numbers already stored for a request_key, so repeated
+   pushes (website relay, Supabase sync worker, retries) each append a line
+   only once. Reads columns 3-15 of every data row: column 3 is the request
+   key, column 15 the line number. */
+function existingLines_(sheet, requestKey) {
+  const lastRow = sheet.getLastRow();
+  const existing = new Set();
+  if (lastRow > 1) {
+    sheet.getRange(2, 3, lastRow - 1, 13).getValues().forEach(row => {
+      if (String(row[0]) === String(requestKey)) existing.add(String(row[12]));
+    });
+  }
+  return { lastRow: lastRow, existing: existing };
 }
 
 /* ---- email relay ----
@@ -99,7 +112,80 @@ function handleEmailRelay_(input) {
   };
   if (enq.email && String(enq.email).indexOf('@') > 0) opts.replyTo = enq.email;
   MailApp.sendEmail(opts);
-  return reply_({ ok: true, emailed: true });
+
+  // Duty 3: store the same enquiry in the Quotations sheet. Best-effort -
+  // the email has already gone out, so sheet problems are reported back but
+  // never thrown.
+  let sheetResult = { appended: 0 };
+  try {
+    sheetResult = appendEnquiryToSheet_(input.request_key || '', enq);
+  } catch (sheetError) {
+    sheetResult = { appended: 0, error: String(sheetError.message || sheetError) };
+  }
+  return reply_({ ok: true, emailed: true, sheet: sheetResult });
+}
+
+/* Duty 3 implementation: builds relay rows in the exact 26-column layout
+   the Supabase sync worker uses (same column order as the Quotations sheet
+   header), then appends them under the script lock with the shared
+   request_key + line dedup. */
+function appendEnquiryToSheet_(requestKey, enq) {
+  const properties = PropertiesService.getScriptProperties();
+  const spreadsheetId = properties.getProperty('SPREADSHEET_ID');
+  if (!spreadsheetId) return { appended: 0, error: 'SPREADSHEET_ID missing' };
+  const rows = enquirySheetRows_(requestKey, enq);
+  const key = rows[0][2];
+  const lock = LockService.getScriptLock();
+  lock.waitLock(25000);
+  try {
+    const sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName('Quotations');
+    if (!sheet) return { appended: 0, error: 'Quotations tab missing' };
+    const found = existingLines_(sheet, key);
+    const toAppend = [];
+    rows.forEach(row => {
+      if (found.existing.has(String(row[14]))) return;
+      found.existing.add(String(row[14]));
+      toAppend.push(row.map(safeCell_));
+    });
+    if (toAppend.length) {
+      sheet.getRange(found.lastRow + 1, 1, toAppend.length, EXPECTED_COLUMNS).setValues(toAppend);
+      SpreadsheetApp.flush();
+    }
+    return { appended: toAppend.length };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function enquirySheetRows_(requestKey, enq) {
+  const now = new Date().toISOString();
+  const key = requestKey || 'web-relay-' + now;
+  const items = Array.isArray(enq.items) && enq.items.length
+    ? enq.items
+    : [{ product_code: '', product_name: enq.inquiry_type === 'quotation'
+          ? '(no items selected)' : '(general enquiry)',
+        description: '', quantity: 1, unit: 'each', selected_size: '',
+        selected_colour: '', specifications: '' }];
+  return items.map((item, index) => {
+    const columns = [
+      'direct', now, key,
+      '', 'received', now,
+      enq.company_name || '', enq.full_name || '',
+      enq.email || '', enq.phone || '', enq.phone || '',
+      enq.location || '', enq.preferred_channel || '',
+      enq.message || '',
+      index + 1,
+      item.product_code || '', item.product_name || '',
+      item.description || '', Number(item.quantity) || 1,
+      item.unit || 'each', item.selected_size || '',
+      item.selected_colour || '',
+      item.specifications ||
+        (item.product_code ? 'Website catalogue item: ' + item.product_code : ''),
+      enq.currency || 'ZMW', '', ''
+    ];
+    if (columns.length !== EXPECTED_COLUMNS) throw new Error('Relay row column mismatch');
+    return columns;
+  });
 }
 
 function esc_(value) {
@@ -108,6 +194,7 @@ function esc_(value) {
 }
 
 function enquiryEmailHtml_(enq, kind) {
+  const who = enq.full_name || 'Not provided';
   const rows = [
     ['Received', Utilities.formatDate(new Date(), 'Africa/Lusaka', 'yyyy-MM-dd HH:mm') + ' (CAT)'],
     ['Name', enq.full_name], ['Company', enq.company_name],

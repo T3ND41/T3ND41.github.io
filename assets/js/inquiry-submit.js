@@ -12,9 +12,13 @@
    receives the core customer fields of every submission as a best-effort,
    fire-and-forget copy, so the details survive even if both Supabase
    projects are unreachable at the same moment.
-   Email relay: every submission is also POSTed to the Hanekom Google Apps
-   Script email relay, which mails it to sales@hanekom.co.zm and
-   hanekominnovationsltd@gmail.com straight from the Hanekom Google account.
+   Apps Script relay: every submission is also POSTed to the Hanekom Google
+   Apps Script web app, which mails it to sales@hanekom.co.zm and
+   hanekominnovationsltd@gmail.com straight from the Hanekom Google account
+   AND appends it to the Quotations Google Sheet (one row per requested
+   item). This is the Google Sheets backup path: it is fired before the
+   queue attempts, so the Sheet and the emails keep receiving every
+   quotation request even when both Supabase projects are down.
    Only browser-safe public credentials are used here. Never add a secret or
    service-role key to this file.
    If both queues cannot be reached (service outage, dead network), the
@@ -33,11 +37,14 @@
      .workers.dev). While it is empty the bridge is disabled and submissions
      rely on the two Supabase sinks plus the backup routes below. */
   var QUOTE_BRIDGE_URL = 'https://hanekom-quote-bridge.hanekominnovationsltd.workers.dev';
-  /* Email relay: the Hanekom Apps Script web app that emails every
-     submission to both sales addresses. Paste the web app /exec URL below
-     and the matching EMAIL_RELAY_TOKEN to switch it on. */
-  var EMAIL_RELAY_URL = '';
-  var EMAIL_RELAY_TOKEN = '';
+  /* Apps Script relay: the Hanekom Google Apps Script web app that emails
+     every submission to both sales addresses and stores it in the
+     Quotations Google Sheet. Paste the web app /exec URL below and the
+     matching EMAIL_RELAY_TOKEN to switch it on. While the URL is empty the
+     relay is disabled and submissions rely on the two Supabase sinks plus
+     the backup routes below. */
+  var APPS_SCRIPT_URL = '';
+  var APPS_SCRIPT_TOKEN = '';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);
@@ -261,22 +268,26 @@
     } catch (e) {}
   }
 
-  /* Email relay: hands the full enquiry to the Hanekom Apps Script, which
-     mails it to sales@hanekom.co.zm and hanekominnovationsltd@gmail.com.
-     Sent as text/plain on purpose: JSON content-type would trigger a CORS
-     preflight that Apps Script web apps cannot answer, while text/plain is
-     a "simple request" that goes straight through. Fire-and-forget: the
-     response is opaque and failures never disturb the primary flow. */
-  function postEmailRelay(data) {
-    if (!EMAIL_RELAY_URL || !EMAIL_RELAY_TOKEN) return;
+  /* Apps Script relay: hands the full enquiry to the Hanekom web app, which
+     (1) emails it to sales@hanekom.co.zm and hanekominnovationsltd@gmail.com
+     and (2) appends it to the Quotations Google Sheet, one row per requested
+     item. Sent as text/plain on purpose: JSON content-type would trigger a
+     CORS preflight that Apps Script web apps cannot answer, while text/plain
+     is a "simple request" that goes straight through. Fire-and-forget: the
+     response is opaque and failures never disturb the primary flow. The
+     request_key rides along so the Sheet dedup can drop duplicate copies
+     later pushed by the Supabase sync worker for the same enquiry. */
+  function postAppsScriptRelay(data) {
+    if (!APPS_SCRIPT_URL || !APPS_SCRIPT_TOKEN) return;
     try {
-      fetch(EMAIL_RELAY_URL, {
+      fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         keepalive: true,
         body: JSON.stringify({
           type: 'email_notification',
-          token: EMAIL_RELAY_TOKEN,
+          token: APPS_SCRIPT_TOKEN,
+          request_key: data.request_key || '',
           enquiry: {
             inquiry_type: data.inquiry_type,
             full_name: data.full_name || '',
@@ -287,13 +298,17 @@
             industry: data.industry || '',
             preferred_channel: data.preferred_channel || '',
             message: data.message || '',
+            currency: 'ZMW',
             items: (data.items || []).map(function (it) {
               return {
                 product_code: it.product_code || '',
                 product_name: it.product_name || '',
+                description: it.description || '',
                 quantity: it.quantity || 1,
+                unit: it.unit || 'each',
                 selected_size: it.selected_size || '',
                 selected_colour: it.selected_colour || '',
+                specifications: it.specifications || '',
                 product_url: it.product_url || '',
                 image_url: it.image_url || ''
               };
@@ -419,11 +434,12 @@
       /* Hand the core customer fields to the quote-bridge worker right away
          as an independent third copy. */
       postQuoteBridge(data);
-      /* Email the same enquiry to both sales addresses via the Apps Script
-         relay. */
-      postEmailRelay(data);
       submissionKey(form, type, data).then(function (key) {
         data.request_key = key;
+        /* Email + Google Sheets relay via the Hanekom Apps Script. Fired
+           before the queue attempts so the Sheet copy and the sales emails
+           land even when both Supabase projects are unreachable. */
+        postAppsScriptRelay(data);
         /* Try the new project first; on any failure fall through to the
            legacy queue so the enquiry still lands somewhere durable. */
         return postPrimary(data, key)

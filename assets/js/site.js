@@ -1161,11 +1161,20 @@
 
   /* ---------------- theme (light / dark) ---------------- */
   var THEME_KEY = 'hn-theme';
-  var THEME_META = { dark: '#121A16', light: '#F2EFE4' };
-  function getTheme() {
+  var THEME_META = { dark: '#121A16', light: '#F4F6EF' };
+  /* No stored preference: phones open on the daylight catalogue look (clean
+     white cards, like a modern storefront); desktop keeps the dark glass
+     identity. A stored preference always wins on every viewport. */
+  function defaultTheme() {
     try {
-      return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';
+      return matchMedia('(max-width:700px)').matches ? 'light' : 'dark';
     } catch (e) { return 'dark'; }
+  }
+  function getTheme() {
+    var stored = '';
+    try { stored = localStorage.getItem(THEME_KEY) || ''; } catch (e) { stored = ''; }
+    if (stored === 'light' || stored === 'dark') return stored;
+    return defaultTheme();
   }
   function applyTheme(t) {
     document.documentElement.setAttribute('data-theme', t);

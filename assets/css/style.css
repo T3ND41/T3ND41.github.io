@@ -1723,3 +1723,75 @@ form[data-form-offline] .promise{display:none}
   .category-section .cat-tile .body p{font-size:.72rem;text-align:center}
   .category-section .cat-tile .count{text-align:center;font-size:.64rem;margin-top:.4rem}
 }
+
+/* ==========================================================================
+   2026-11-19 item shelves — swipe left/right through product cards
+   The homepage product rows become horizontally scrollable shop shelves:
+   native touch swipe with scroll-snap on phones, plus round prev/next
+   arrows and mouse drag-to-scroll on every device. The final tile peeks
+   past the edge so the row obviously continues.
+   ========================================================================== */
+.shelf-wrap{position:relative;--gutter:24px;margin-inline:calc(var(--gutter) * -1)}
+@media (max-width:700px){.shelf-wrap{--gutter:16px}}
+@media (max-width:360px){.shelf-wrap{--gutter:12px}}
+
+.product-grid.shelf{
+  display:flex;align-items:stretch;gap:.8rem;
+  overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:.35rem var(--gutter) 1rem;
+  scroll-padding-inline-start:var(--gutter);
+  cursor:grab;
+}
+.product-grid.shelf::-webkit-scrollbar{display:none}
+.product-grid.shelf.is-dragging{cursor:grabbing;scroll-snap-type:none;user-select:none;-webkit-user-select:none}
+.product-grid.shelf.no-overflow{cursor:default}
+.product-grid.shelf img{-webkit-user-drag:none;user-select:none}
+.shelf-wrap.no-overflow .shelf-btn{display:none}
+.product-grid.shelf .product{
+  flex:0 0 clamp(150px,42vw,264px);
+  scroll-snap-align:start;
+  margin:0;
+  /* content-visibility:auto (set for the vertical catalogue grid) estimates
+     off-screen cards at 540px tall; in a horizontal shelf that estimate
+     stretches every visible card, so shelves render their real content */
+  content-visibility:visible;
+  contain-intrinsic-size:auto;
+}
+@media (min-width:481px){
+  .product-grid.shelf .product{flex-basis:min(44vw,264px)}
+}
+@media (min-width:901px){
+  .product-grid.shelf .product{flex-basis:264px}
+}
+.product-grid.shelf .product:hover{transform:none}
+
+/* round prev/next arrows riding the shelf edges */
+.shelf-btn{
+  position:absolute;top:calc(50% - 8px);translate:0 -50%;z-index:3;
+  width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;padding:0;cursor:pointer;
+  background:var(--surf,var(--glass));border:1px solid var(--edge);color:var(--text);
+  box-shadow:0 8px 22px rgba(13,19,16,.22);
+  transition:opacity .2s,border-color .2s,color .2s,transform .2s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.shelf-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.shelf-btn:hover,.shelf-btn:focus-visible{border-color:var(--green);color:var(--green)}
+.shelf-btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.shelf-btn:active{transform:translateY(-50%) scale(.94)}
+.shelf-btn:disabled,.shelf-btn[aria-disabled="true"]{opacity:0;pointer-events:none}
+.shelf-prev{left:2px}
+.shelf-next{right:2px}
+@media (min-width:701px){
+  .shelf-btn{opacity:.92}
+  .shelf-wrap:hover .shelf-btn{opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  .product-grid.shelf{scroll-snap-type:none}
+}
+
+/* shelf dots hint: keep the section headers tidy above the swipe rows */
+.product-grid.shelf .product .pb{flex:1}
+

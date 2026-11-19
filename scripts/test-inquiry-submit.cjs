@@ -68,22 +68,24 @@ async function settled(page) {
   const lostResponse = () => { throw new Error('Connection lost after server save'); };
   let page = visit(lostResponse);
   page.submit(); page.submit(); await settled(page);
-  /* One submission runs the whole sink chain once: primary REST queue first,
-     then the legacy edge function. The double click must not add a second run. */
-  assert.equal(requests.length, 2, 'Double clicks must run the sink chain once');
-  assert.equal(urls.length, 2);
-  assert(urls[0].includes('kqcnyewlkludlvtocsze'), 'Primary attempt must hit the new project first');
-  assert(urls[1].includes('receive-inquiry'), 'Second attempt must hit the legacy queue');
-  const originalKey = requests[0].request_key;
-  assert.equal(requests[1].request_key, originalKey, 'Both sinks must carry the same request key');
+  /* One submission runs the whole sink chain once: quote-bridge worker copy,
+     primary REST queue, then the legacy edge function. The double click must
+     not add a second run of any of them. */
+  assert.equal(requests.length, 3, 'Double clicks must run the sink chain once');
+  assert.equal(urls.length, 3);
+  assert(urls[0].includes('quote-bridge'), 'First copy must hit the quote-bridge worker');
+  assert(urls[1].includes('kqcnyewlkludlvtocsze'), 'Primary attempt must hit the new project first');
+  assert(urls[2].includes('receive-inquiry'), 'Final attempt must hit the legacy queue');
+  const originalKey = requests[1].request_key;
+  assert.equal(requests[2].request_key, originalKey, 'Both Supabase sinks must carry the same request key');
   assert.equal(page.cleared, 0);
   assert.equal(page.fields.name.value, 'Test customer');
   assert(!Array.from(storage.values()).some(value => value.includes('test@example.invalid')), 'Pending storage must contain only hash and key');
 
   page = visit(lostResponse); page.submit(); await settled(page);
-  assert.equal(requests[2].request_key, originalKey, 'Reloaded retry must reuse key');
+  assert.equal(requests[4].request_key, originalKey, 'Reloaded retry must reuse key');
   page.fields.details.value = 'Changed requirement'; page.submit(); await settled(page);
-  assert.notEqual(requests[4].request_key, originalKey, 'Changed enquiry needs a new key');
+  assert.notEqual(requests[7].request_key, originalKey, 'Changed enquiry needs a new key');
 
   page = visit(() => ({ ok: true, json: async () => ({}) })); page.submit(); await settled(page);
   assert.equal(page.cleared, 0, 'Malformed success must not clear the basket');

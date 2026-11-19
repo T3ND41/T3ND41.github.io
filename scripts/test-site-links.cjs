@@ -15,7 +15,9 @@ for (const file of files) {
     if (target.startsWith('https://wa.me/')) whatsappLinks++;
     if (!target || /^(?:#|https?:|mailto:|tel:|data:|javascript:|\/\/)/i.test(target)
       || target.includes("' + ")) continue;
-    assert(fs.existsSync(target), `${file} points to missing ${target}`);
+    // site-absolute URLs ("/favicon.ico") live inside the repo, not at the FS root
+    const local = target.startsWith('/') ? target.slice(1) : target;
+    assert(fs.existsSync(local), `${file} points to missing ${target}`);
   }
 }
 assert(files.length >= 98 && whatsappLinks >= 700);
@@ -52,8 +54,10 @@ for (const script of ['assets/js/site.js', 'assets/js/site.min.js']) {
   assert(message.includes('https://hanekom.co.zm/' + product.url));
   assert(message.includes('https://hanekom.co.zm/assets/cat/'));
   assert(!message.includes('www.hanekom.co.zm'));
+  // since the canonical-domain migration, absolute() always builds on the
+  // canonical host (SITE constant) rather than following the current origin
   assert.equal(visit(script, 'https://pages.example', '').hanekomAbs('quote.html'),
-    'https://pages.example/quote.html', `${script} must follow the current host`);
+    'https://hanekom.co.zm/quote.html', `${script} must build on the canonical host`);
 }
 
 console.log(`${files.length} pages, ${whatsappLinks} WhatsApp links, exact five-item share link: passed`);

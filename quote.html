@@ -106,24 +106,24 @@
 
           <div class="form-grid">
             <div class="field">
-              <label for="company">Company / organisation <span class="req">*</span></label>
-              <input type="text" id="company" name="Company" required autocomplete="organization">
+              <label for="name">Contact name <span class="req">*</span></label>
+              <input type="text" id="name" name="Contact name" required autocomplete="name">
             </div>
             <div class="field">
-              <label for="name">Contact person <span class="req">*</span></label>
-              <input type="text" id="name" name="Contact person" required autocomplete="name">
+              <label for="company">Company name <span class="req">*</span></label>
+              <input type="text" id="company" name="Company name" required autocomplete="organization">
             </div>
             <div class="field">
-              <label for="email">Email <span class="req">*</span></label>
-              <input type="email" id="email" name="Email" required autocomplete="email">
+              <label for="phone">Contact number <span class="req">*</span></label>
+              <input type="tel" id="phone" name="Contact number" required autocomplete="tel" placeholder="+260 &hellip;">
             </div>
             <div class="field">
-              <label for="phone">Phone / WhatsApp <span class="req">*</span></label>
-              <input type="tel" id="phone" name="Phone" required autocomplete="tel" placeholder="+260 &hellip;">
+              <label for="email">Business email <span class="req">*</span></label>
+              <input type="email" id="email" name="Business email" required autocomplete="email">
             </div>
             <div class="field">
-              <label for="town">Town / site location</label>
-              <input type="text" id="town" name="Town" placeholder="Kitwe, Lusaka, Solwezi&hellip;">
+              <label for="town">Address <span class="req">*</span></label>
+              <input type="text" id="town" name="Address" required autocomplete="street-address" placeholder="e.g. Plot 12, Nkana Road, Kitwe">
             </div>
             <div class="field">
               <label for="industry">Industry</label>
@@ -220,24 +220,24 @@
               form below &mdash; you will not have to type them twice.</p>
             <div class="pdf-fields">
               <div class="field">
-                <label for="d-company">Company / organisation <span class="req">*</span></label>
-                <input type="text" id="d-company" autocomplete="organization" required>
-              </div>
-              <div class="field">
-                <label for="d-name">Contact person <span class="req">*</span></label>
+                <label for="d-name">Contact name <span class="req">*</span></label>
                 <input type="text" id="d-name" autocomplete="name" required>
               </div>
               <div class="field">
-                <label for="d-email">Email <span class="req">*</span></label>
-                <input type="email" id="d-email" autocomplete="email" required>
+                <label for="d-company">Company name <span class="req">*</span></label>
+                <input type="text" id="d-company" autocomplete="organization" required>
               </div>
               <div class="field">
-                <label for="d-phone">Phone / WhatsApp <span class="req">*</span></label>
+                <label for="d-phone">Contact number <span class="req">*</span></label>
                 <input type="tel" id="d-phone" autocomplete="tel" required placeholder="+260 &hellip;">
               </div>
+              <div class="field">
+                <label for="d-email">Business email <span class="req">*</span></label>
+                <input type="email" id="d-email" autocomplete="email" required>
+              </div>
               <div class="field full">
-                <label for="d-town">Town / site location</label>
-                <input type="text" id="d-town" placeholder="Kitwe, Lusaka, Solwezi&hellip;">
+                <label for="d-town">Address <span class="req">*</span></label>
+                <input type="text" id="d-town" autocomplete="street-address" required placeholder="e.g. Plot 12, Nkana Road, Kitwe">
               </div>
             </div>
             <p class="form-status warn" id="d-error" hidden></p>
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function () {
        the buttons. Without the gate the natural path was to press "Send this
        list on WhatsApp" straight away and fire off an anonymous list of
        product codes. */
-    var NEED = ['company', 'name', 'email', 'phone'];
+    var NEED = ['name', 'company', 'phone', 'email', 'town'];
     function missing() {
       return NEED.filter(function (f) { return !val(f); });
     }
@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Copy in whatever the visitor already typed below, so the dialog is a
     // confirmation rather than a re-entry.
     function fillDialog() {
-      NEED.concat(['town']).forEach(function (f) {
+      NEED.forEach(function (f) {
         var d = document.getElementById('d-' + f);
         if (d) d.value = val(f);
       });
@@ -684,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ...and copy back out, so submitting the form afterwards needs no retyping.
     function applyDialog() {
-      NEED.concat(['town']).forEach(function (f) {
+      NEED.forEach(function (f) {
         var d = document.getElementById('d-' + f), t = document.getElementById(f);
         if (d && t && d.value.trim()) t.value = d.value.trim();
       });
@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // real event instead of calling sync() directly: site.js also listens,
       // to rebuild the form's own WhatsApp link, and it cannot be reached from
       // here.
-      NEED.concat(['town']).forEach(function (f) {
+      NEED.forEach(function (f) {
         var t = document.getElementById(f);
         if (t) t.dispatchEvent(new Event('input', { bubbles: true }));
       });
@@ -713,8 +713,9 @@ document.addEventListener('DOMContentLoaded', function () {
         gate = null;
         var first = document.getElementById(missing()[0]);
         if (first) { first.focus(); first.scrollIntoView({ block: 'center' }); }
-        say('Please fill in your company, name, email and phone below, then try ' +
-            'again \u2014 we cannot price a request without them.', true);
+        say('Please fill in your contact name, company name, contact number, business ' +
+            'email and address below, then try again \u2014 we cannot price a request ' +
+            'without them.', true);
         return;
       }
       dlg.showModal();
@@ -735,7 +736,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (bad) bad.focus();
           dSay(bad && bad.type === 'email' && bad.value
                ? 'That email address does not look right.'
-               : 'Please complete the four fields marked with an asterisk.');
+               : 'Please complete the required fields marked with an asterisk.');
           return;
         }
         applyDialog();
@@ -943,6 +944,6 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="assets/js/pdf.js" defer></script>
 <script src="assets/js/quote-pdf.js?v=20261117-noprice-column" defer></script>
 <script src="assets/js/site.min.js?v=20261119-light" defer></script>
-<script src="assets/js/inquiry-submit.js?v=20261118-sheetsrelay" defer></script>
+<script src="assets/js/inquiry-submit.js?v=20261120-realcontact" defer></script>
 </body>
 </html>

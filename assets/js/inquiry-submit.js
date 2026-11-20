@@ -131,7 +131,7 @@
     var company = isQuote ? value(form, 'company') : value(form, 'c-company');
     var email = isQuote ? value(form, 'email') : value(form, 'c-email');
     var phone = isQuote ? value(form, 'phone') : value(form, 'c-phone');
-    var town = isQuote ? value(form, 'town') : '';
+    var town = isQuote ? value(form, 'town') : value(form, 'c-town');
     return {
       source: 'website',
       inquiry_type: type,
@@ -328,6 +328,82 @@
     box.hidden = false;
   }
 
+  /* ---- contact-info quality gate ----
+     Sales needs usable details, so obvious junk ("asdf", "11111",
+     "aaaa@aaa.aa", keyboard mash) is rejected before anything is sent.
+     The rules are deliberately conservative: they block mash, near-empty
+     and obviously fake input, not unusual-but-real names, companies,
+     numbers or addresses. */
+  function letters_(text) {
+    return (String(text || '').match(/[A-Za-z]/g) || []).length;
+  }
+
+  function junkWord_(text) {
+    var s = String(text || '').toLowerCase();
+    if (!s) return false;
+    if (/(.)\1{3,}/.test(s)) return true;                          /* aaaa, 1111 */
+    if (/asdf|sdfg|dfgh|qwer|zxcv|uiop|hjkl|vbnm|123456|654321/.test(s)) return true; /* keyboard mash */
+    var word = s.replace(/[^a-z]/g, '');
+    return word.length >= 5 && !/[aeiou]/.test(word);              /* dfghj: no vowels */
+  }
+
+  function nameProblem_(text) {
+    var words = String(text || '').trim().split(/\s+/);
+    if (words.length < 2) return true;                             /* first + last name */
+    var total = 0;
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i];
+      if (w.length < 2 || !/^[A-Za-z][A-Za-z'.-]*$/.test(w) || junkWord_(w)) return true;
+      total += letters_(w);
+    }
+    return total < 5;
+  }
+
+  function phoneProblem_(text) {
+    var d = String(text || '').replace(/\D/g, '');
+    if (d.length < 9 || d.length > 15) return true;                /* E.164-ish range */
+    if (/^(.)\1+$/.test(d)) return true;                           /* all the same digit */
+    if (/(.)\1{4,}/.test(d)) return true;                          /* 5+ repeated digits */
+    var up = '0123456789', down = '9876543210';
+    for (var i = 0; i + 6 <= d.length; i++) {                      /* 6-digit runs */
+      var part = d.slice(i, i + 6);
+      if (up.indexOf(part) >= 0 || down.indexOf(part) >= 0) return true;
+    }
+    return false;
+  }
+
+  function emailProblem_(text) {
+    var m = /^([A-Za-z0-9._%+-]{2,})@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+)$/
+      .exec(String(text || '').trim());
+    if (!m) return true;
+    var parts = m[2].split('.');
+    if (parts[parts.length - 1].length < 2) return true;
+    return junkWord_(m[1]) || junkWord_(parts[0]);
+  }
+
+  /* Returns the first contact field that fails the quality gate, in the
+     order the form asks for them: name, company, number, email, address. */
+  function contactFieldProblem_(data) {
+    if (nameProblem_(data.full_name)) {
+      return { id: 'name', message: 'Please enter your full name \u2014 first and last name, letters only (e.g. Brian Mwansa).' };
+    }
+    if (String(data.company_name || '').trim().length < 2 || letters_(data.company_name) < 2 ||
+        junkWord_(data.company_name)) {
+      return { id: 'company', message: 'Please enter your company or organisation name as it should appear on the quotation (e.g. Mopani Copper Mines).' };
+    }
+    if (phoneProblem_(data.phone)) {
+      return { id: 'phone', message: 'Please enter a real contact number we can call or WhatsApp (e.g. +260 954 263 566).' };
+    }
+    if (emailProblem_(data.email)) {
+      return { id: 'email', message: 'Please enter a valid business email address (e.g. purchasing@yourcompany.co.zm).' };
+    }
+    var addr = String(data.location || '').trim();
+    if (addr.length < 4 || letters_(addr) < 3 || junkWord_(addr)) {
+      return { id: 'town', message: 'Please enter the delivery address or site location (e.g. Plot 12, Nkana Road, Kitwe).' };
+    }
+    return null;
+  }
+
   /* ---- offline backup routes ----
      The primary path is the encrypted queue above. When it cannot be
      reached, compose the exact same request into mailto: and wa.me: links
@@ -355,7 +431,7 @@
     if (data.company_name) lines.push('Company: ' + data.company_name);
     if (data.email) lines.push('Email: ' + data.email);
     if (data.phone) lines.push('Phone / WhatsApp: ' + data.phone);
-    if (data.location) lines.push('Town / delivery location: ' + data.location);
+    if (data.location) lines.push('Address: ' + data.location);
     if (data.industry) lines.push('Industry / sector: ' + data.industry);
     if (data.preferred_channel) lines.push('Preferred contact: ' + data.preferred_channel);
     if (data.message) lines.push('', 'Message:', data.message);
@@ -423,12 +499,26 @@
         return;
       }
 
+      /* Quality gate: reject obvious junk in the five contact fields before
+         anything reaches the queues, the Google Sheet or the sales inbox. */
+      var data = payload(form, type);
+      var problem = contactFieldProblem_(data);
+      if (problem) {
+        status(form, 'error', problem.message);
+        var bad = form.querySelector('#' + (isQuote ? problem.id : 'c-' + problem.id));
+        if (bad) {
+          bad.setAttribute('aria-invalid', 'true');
+          try { bad.focus(); } catch (e) {}
+          try { if (bad.scrollIntoView) bad.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+        }
+        return;
+      }
+
       var original = button ? button.textContent : '';
       form.hanekomSending = true;
       if (button) { button.disabled = true; button.textContent = 'Sending securely...'; }
       status(form, 'busy', isQuote ? 'Saving your quotation request...' : 'Saving your enquiry...');
 
-      var data = payload(form, type);
       var trap = form.querySelector('[name="botcheck"]');
       data.website = trap && trap.checked ? 'filled' : '';
       /* Hand the core customer fields to the quote-bridge worker right away

@@ -197,9 +197,9 @@ function enquiryEmailHtml_(enq, kind) {
   const who = enq.full_name || 'Not provided';
   const rows = [
     ['Received', Utilities.formatDate(new Date(), 'Africa/Lusaka', 'yyyy-MM-dd HH:mm') + ' (CAT)'],
-    ['Name', enq.full_name], ['Company', enq.company_name],
-    ['Email', enq.email], ['Phone / WhatsApp', enq.phone],
-    ['Town / delivery location', enq.location], ['Industry / sector', enq.industry],
+    ['Contact name', enq.full_name], ['Company name', enq.company_name],
+    ['Business email', enq.email], ['Contact number', enq.phone],
+    ['Address', enq.location], ['Industry / sector', enq.industry],
     ['Preferred contact', enq.preferred_channel]
   ].map(r => (r[1] ? '<tr><td style="padding:4px 14px 4px 0;color:#666;white-space:nowrap">' +
     esc_(r[0]) + '</td><td style="padding:4px 0"><strong>' + esc_(r[1]) + '</strong></td></tr>' : '')).join('');
@@ -238,8 +238,8 @@ function enquiryEmailText_(enq, kind) {
     });
     lines.push('');
   }
-  [['Name', enq.full_name], ['Company', enq.company_name], ['Email', enq.email],
-   ['Phone / WhatsApp', enq.phone], ['Town / delivery location', enq.location],
+  [['Contact name', enq.full_name], ['Company name', enq.company_name], ['Business email', enq.email],
+   ['Contact number', enq.phone], ['Address', enq.location],
    ['Industry / sector', enq.industry], ['Preferred contact', enq.preferred_channel]]
     .forEach(r => { if (r[1]) lines.push(r[0] + ': ' + r[1]); });
   if (enq.message) lines.push('', 'Message:', enq.message);

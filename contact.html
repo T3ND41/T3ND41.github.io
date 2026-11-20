@@ -181,20 +181,24 @@
 
       <div class="form-grid">
         <div class="field">
-          <label for="c-name">Your name <span class="req">*</span></label>
-          <input type="text" id="c-name" name="Name" required autocomplete="name">
+          <label for="c-name">Contact name <span class="req">*</span></label>
+          <input type="text" id="c-name" name="Contact name" required autocomplete="name">
         </div>
         <div class="field">
-          <label for="c-company">Company</label>
-          <input type="text" id="c-company" name="Company" autocomplete="organization">
+          <label for="c-company">Company name <span class="req">*</span></label>
+          <input type="text" id="c-company" name="Company name" required autocomplete="organization">
         </div>
         <div class="field">
-          <label for="c-email">Email <span class="req">*</span></label>
-          <input type="email" id="c-email" name="Email" required autocomplete="email">
+          <label for="c-phone">Contact number <span class="req">*</span></label>
+          <input type="tel" id="c-phone" name="Contact number" required autocomplete="tel" placeholder="+260 &hellip;">
         </div>
         <div class="field">
-          <label for="c-phone">Phone / WhatsApp</label>
-          <input type="tel" id="c-phone" name="Phone" autocomplete="tel" placeholder="+260 &hellip;">
+          <label for="c-email">Business email <span class="req">*</span></label>
+          <input type="email" id="c-email" name="Business email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="c-town">Address <span class="req">*</span></label>
+          <input type="text" id="c-town" name="Address" required autocomplete="street-address" placeholder="e.g. Plot 12, Nkana Road, Kitwe">
         </div>
         <div class="field full">
           <label for="c-msg">Message <span class="req">*</span></label>
@@ -325,6 +329,6 @@
 </nav>
 <script src="assets/js/config.js" defer></script>
 <script src="assets/js/site.min.js?v=20261119-light" defer></script>
-<script src="assets/js/inquiry-submit.js?v=20261118-sheetsrelay" defer></script>
+<script src="assets/js/inquiry-submit.js?v=20261120-realcontact" defer></script>
 </body>
 </html>

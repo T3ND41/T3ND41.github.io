@@ -131,7 +131,11 @@
             token: relay.token,
             request_key: key,
             enquiry: {
-              inquiry_type: 'general',
+              /* 'whatsapp_lead' (relay envelope only) makes the Apps Script
+                 subject read "Website WhatsApp lead — Name (Company)" and
+                 label the Sheet row. The Supabase payloads below stay
+                 'general' for queue compatibility. */
+              inquiry_type: 'whatsapp_lead',
               full_name: data.full_name,
               company_name: data.company_name,
               email: data.email,

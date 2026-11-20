@@ -100,7 +100,8 @@ function handleEmailRelay_(input) {
   }
   cache.put(bucket, String(count + 1), 3700);
 
-  const kind = enq.inquiry_type === 'quotation' ? 'quotation request' : 'enquiry';
+  const kind = enq.inquiry_type === 'quotation' ? 'quotation request'
+    : enq.inquiry_type === 'whatsapp_lead' ? 'WhatsApp lead' : 'enquiry';
   const who = enq.full_name || 'Not provided';
   const subject = 'Website ' + kind + ' \u2014 ' + who +
     (enq.company_name ? ' (' + enq.company_name + ')' : '');
@@ -163,7 +164,10 @@ function enquirySheetRows_(requestKey, enq) {
   const items = Array.isArray(enq.items) && enq.items.length
     ? enq.items
     : [{ product_code: '', product_name: enq.inquiry_type === 'quotation'
-          ? '(no items selected)' : '(general enquiry)',
+          ? '(no items selected)'
+          : enq.inquiry_type === 'whatsapp_lead'
+            ? '(WhatsApp lead \u2014 item discussed in chat)'
+            : '(general enquiry)',
         description: '', quantity: 1, unit: 'each', selected_size: '',
         selected_colour: '', specifications: '' }];
   return items.map((item, index) => {
@@ -195,6 +199,9 @@ function esc_(value) {
 
 function enquiryEmailHtml_(enq, kind) {
   const who = enq.full_name || 'Not provided';
+  const intro = kind === 'WhatsApp lead'
+    ? 'New website WhatsApp lead from <strong>' + esc_(who) + '</strong> \u2014 they saved their details at a WhatsApp button; the product conversation continues in the WhatsApp chat.'
+    : 'New website ' + esc_(kind) + ' from <strong>' + esc_(who) + '</strong>.';
   const rows = [
     ['Received', Utilities.formatDate(new Date(), 'Africa/Lusaka', 'yyyy-MM-dd HH:mm') + ' (CAT)'],
     ['Contact name', enq.full_name], ['Company name', enq.company_name],
@@ -218,7 +225,7 @@ function enquiryEmailHtml_(enq, kind) {
   }
   const msg = enq.message ? '<h3 style="margin:18px 0 6px;font-size:14px">Message</h3><p style="white-space:pre-wrap;margin:0">' + esc_(enq.message) + '</p>' : '';
   return '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222">' +
-    '<p style="margin:0 0 4px">New website ' + esc_(kind) + ' from <strong>' + esc_(who) + '</strong>.</p>' +
+    '<p style="margin:0 0 4px">' + intro + '</p>' +
     '<table style="border-collapse:collapse;margin-top:10px">' + rows + '</table>' +
     itemsHtml + msg +
     (enq.page_url ? '<p style="margin-top:14px;color:#999;font-size:12px">Source: ' + esc_(enq.page_url) + '</p>' : '') +
@@ -226,7 +233,10 @@ function enquiryEmailHtml_(enq, kind) {
 }
 
 function enquiryEmailText_(enq, kind) {
-  const lines = ['Website ' + kind + ' (sent by the website email relay)', ''];
+  const lines = kind === 'WhatsApp lead'
+    ? ['Website WhatsApp lead (sent by the website email relay)',
+       'The visitor saved their contact details at a WhatsApp button; the product conversation continues in the WhatsApp chat.', '']
+    : ['Website ' + kind + ' (sent by the website email relay)', ''];
   if (Array.isArray(enq.items) && enq.items.length) {
     lines.push('Requested items:');
     enq.items.forEach(it => {

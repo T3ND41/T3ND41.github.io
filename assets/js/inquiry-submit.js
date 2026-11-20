@@ -39,12 +39,14 @@
   var QUOTE_BRIDGE_URL = 'https://hanekom-quote-bridge.hanekominnovationsltd.workers.dev';
   /* Apps Script relay: the Hanekom Google Apps Script web app that emails
      every submission to both sales addresses and stores it in the
-     Quotations Google Sheet. Paste the web app /exec URL below and the
-     matching EMAIL_RELAY_TOKEN to switch it on. While the URL is empty the
-     relay is disabled and submissions rely on the two Supabase sinks plus
-     the backup routes below. */
-  var APPS_SCRIPT_URL = '';
-  var APPS_SCRIPT_TOKEN = '';
+     Quotations Google Sheet. The URL and token live in ONE place —
+     assets/js/whatsapp-gate.js (window.HANEKOM_RELAY) — so switching the
+     relay on lights it up for the forms AND the WhatsApp gate together.
+     While the values are empty the relay is disabled and submissions rely on
+     the two Supabase sinks plus the backup routes below. */
+  var RELAY = (typeof window.HANEKOM_RELAY === 'object' && window.HANEKOM_RELAY) || {};
+  var APPS_SCRIPT_URL = RELAY.url || '';
+  var APPS_SCRIPT_TOKEN = RELAY.token || '';
 
   function value(form, id) {
     var el = form.querySelector('#' + id);
@@ -487,6 +489,48 @@
       if (button) button.textContent = isQuote ? 'Send quotation request' : 'Send enquiry';
       status(form, '', 'Your request will be saved securely in the Hanekom sales queue.');
 
+      /* Contact form only: prefill from the remembered profile (the quote
+         form manages its own remember-me store, which profile.js keeps in
+         step), with an always-visible "edit saved details" escape hatch. */
+      if (!isQuote && window.HanekomProfile) {
+        var prefillIds = { 'c-name': 'full_name', 'c-company': 'company_name', 'c-phone': 'phone', 'c-email': 'email', 'c-town': 'location' };
+        window.HanekomProfile.ready().then(function (saved) {
+          if (!saved) return;
+          var filled = false;
+          Object.keys(prefillIds).forEach(function (id) {
+            var el = form.querySelector('#' + id);
+            if (el && !el.value.trim() && saved[prefillIds[id]]) {
+              el.value = saved[prefillIds[id]];
+              filled = true;
+            }
+          });
+          if (!filled || form.querySelector('[data-profile-note]')) return;
+          var note = document.createElement('p');
+          note.className = 'hint';
+          note.setAttribute('data-profile-note', '');
+          note.style.marginTop = '.6rem';
+          note.textContent = 'Filled from the details saved on this device. ';
+          var edit = document.createElement('a');
+          edit.href = '#c-name';
+          edit.textContent = 'Edit saved details';
+          edit.addEventListener('click', function (event) {
+            event.preventDefault();
+            window.HanekomProfile.clear();
+            Object.keys(prefillIds).forEach(function (id) {
+              var el = form.querySelector('#' + id);
+              if (el) el.value = '';
+            });
+            if (note.parentNode) note.parentNode.removeChild(note);
+            var first = form.querySelector('#c-name');
+            if (first) { try { first.focus(); } catch (e) {} }
+          });
+          note.appendChild(edit);
+          var grid = form.querySelector('.form-grid');
+          if (grid && grid.parentNode) grid.parentNode.insertBefore(note, grid.nextSibling);
+          else form.appendChild(note);
+        });
+      }
+
       form.addEventListener('submit', function (event) {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -512,6 +556,19 @@
           try { if (bad.scrollIntoView) bad.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
         }
         return;
+      }
+
+      /* Remember these details on this device so the WhatsApp buttons never
+         have to ask again (profile.js seals and re-validates before storing,
+         and keeps the quote page's own remember-me store in step). */
+      if (window.HanekomProfile) {
+        window.HanekomProfile.save({
+          full_name: data.full_name,
+          company_name: data.company_name,
+          phone: data.phone,
+          email: data.email,
+          location: data.location
+        }).catch(function () {});
       }
 
       var original = button ? button.textContent : '';

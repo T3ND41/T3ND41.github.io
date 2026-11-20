@@ -1795,3 +1795,86 @@ form[data-form-offline] .promise{display:none}
 /* shelf dots hint: keep the section headers tidy above the swipe rows */
 .product-grid.shelf .product .pb{flex:1}
 
+
+/* ============================================================
+   WhatsApp details gate — one-time contact capture modal
+   Theme-aware: uses the same tokens as every other surface.
+   ============================================================ */
+.hn-gate-overlay{
+  position:fixed; inset:0; z-index:1300;
+  display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(8,12,10,.62);
+  -webkit-backdrop-filter:saturate(140%) blur(7px);
+  backdrop-filter:saturate(140%) blur(7px);
+  animation:hnGateIn .18s var(--ease);
+}
+@media (min-width:560px){
+  .hn-gate-overlay{align-items:center; padding:1.5rem}
+}
+.hn-gate-overlay[hidden]{display:none}
+.hn-gate-lock{overflow:hidden}
+.hn-gate-card{
+  position:relative;
+  width:100%; max-width:520px;
+  max-height:92dvh; overflow-y:auto;
+  background:var(--surf); color:var(--text);
+  border:1px solid var(--edge-2);
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  box-shadow:var(--shadow-lg);
+  padding:1.35rem 1.25rem 1.25rem;
+  animation:hnGateCard .26s var(--ease);
+}
+@media (min-width:560px){
+  .hn-gate-card{border-radius:var(--r-xl); padding:1.7rem 1.6rem 1.4rem}
+}
+.hn-gate-title{font-size:1.22rem; line-height:1.25; margin:0 2rem .4rem}
+.hn-gate-lead{color:var(--text-2); font-size:.93rem; line-height:1.5; margin:0 0 1.05rem}
+.hn-gate-field{margin-bottom:.8rem}
+.hn-gate-field label{
+  display:block; font-size:.85rem; font-weight:600;
+  color:var(--text-2); margin-bottom:.28rem;
+}
+.hn-gate-field input{
+  width:100%;
+  padding:.62rem .75rem;
+  font:inherit; font-size:.95rem;
+  background:var(--surf-2); color:var(--text);
+  border:1px solid var(--edge);
+  border-radius:10px;
+}
+.hn-gate-field input:focus{
+  outline:2px solid var(--green); outline-offset:1px;
+  border-color:var(--green-2);
+}
+.hn-gate-field input[aria-invalid="true"]{border-color:var(--danger)}
+.hn-gate-err{
+  display:none;
+  font-size:.82rem; color:var(--danger);
+  margin-top:.3rem; line-height:1.35;
+}
+.hn-gate-err.on{display:block}
+.hn-gate-note{font-size:.8rem; color:var(--faint); line-height:1.45; margin:.85rem 0 0}
+.hn-gate-note a{color:var(--green); text-decoration:underline}
+.hn-gate-actions{display:flex; flex-direction:column; gap:.55rem; margin-top:1.1rem}
+.hn-gate-actions .btn{width:100%; justify-content:center; text-align:center}
+.hn-gate-skip{
+  background:none; border:0; cursor:pointer;
+  font:inherit; font-size:.88rem;
+  color:var(--mute); text-decoration:underline;
+  padding:.45rem;
+}
+.hn-gate-skip:hover{color:var(--text-2)}
+.hn-gate-x{
+  position:absolute; top:.85rem; right:.85rem;
+  width:36px; height:36px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--glass); color:var(--text-2);
+  border:1px solid var(--edge); border-radius:50%;
+  font-size:1.15rem; line-height:1; cursor:pointer;
+}
+.hn-gate-x:hover{color:var(--text); border-color:var(--edge-2)}
+@keyframes hnGateIn{from{opacity:0}to{opacity:1}}
+@keyframes hnGateCard{from{transform:translateY(16px); opacity:.35}to{transform:none; opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .hn-gate-overlay,.hn-gate-card{animation:none}
+}

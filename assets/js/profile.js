@@ -83,8 +83,8 @@
     if (/^(.)\1+$/.test(d)) return true;
     if (/(.)\1{4,}/.test(d)) return true;
     var up = '0123456789', down = '9876543210';
-    for (var i = 0; i + 6 <= d.length; i++) {
-      var part = d.slice(i, i + 6);
+    for (var i = 0; i + 7 <= d.length; i++) {      /* 7-digit runs: 6 can appear in real numbers */
+      var part = d.slice(i, i + 7);
       if (up.indexOf(part) >= 0 || down.indexOf(part) >= 0) return true;
     }
     return false;

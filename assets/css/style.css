@@ -1857,13 +1857,6 @@ form[data-form-offline] .promise{display:none}
 .hn-gate-note a{color:var(--green); text-decoration:underline}
 .hn-gate-actions{display:flex; flex-direction:column; gap:.55rem; margin-top:1.1rem}
 .hn-gate-actions .btn{width:100%; justify-content:center; text-align:center}
-.hn-gate-skip{
-  background:none; border:0; cursor:pointer;
-  font:inherit; font-size:.88rem;
-  color:var(--mute); text-decoration:underline;
-  padding:.45rem;
-}
-.hn-gate-skip:hover{color:var(--text-2)}
 .hn-gate-x{
   position:absolute; top:.85rem; right:.85rem;
   width:36px; height:36px;

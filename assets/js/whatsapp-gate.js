@@ -18,8 +18,9 @@
         a WhatsApp lead is never invisible to sales.
      4. Every later WhatsApp click (even days later, on any page) carries the
         saved details appended to the message text, and the visitor is never
-        asked again. "Continue without saving" always stays available so the
-        gate never traps anyone.
+        asked again. There is no way to reach WhatsApp without saving the
+        details first — closing the form (X / Esc / backdrop) simply cancels
+        the WhatsApp action, so no chat can start anonymously.
 
    The Apps Script relay is switched on in ONE place — the HANEKOM_RELAY
    constant below (inquiry-submit.js reads the same values, so filling this
@@ -232,7 +233,7 @@
     var lead = document.createElement('p');
     lead.className = 'hn-gate-lead';
     lead.id = 'hn-gate-lead';
-    lead.textContent = 'Save your details once and we\u2019ll remember you on this device \u2014 every WhatsApp message you send us will carry your name and contact details, and you\u2019ll never be asked again.';
+    lead.textContent = 'Save your details once and we\u2019ll remember you on this device \u2014 every WhatsApp message you send us will carry your name and contact details, and you\u2019ll never be asked again. This is the only step between you and WhatsApp.';
     card.appendChild(lead);
 
     form = document.createElement('form');
@@ -297,17 +298,10 @@
     go.type = 'submit';
     go.className = 'btn btn-primary';
     go.textContent = 'Save & continue to WhatsApp';
-    var skip = document.createElement('button');
-    skip.type = 'button';
-    skip.className = 'hn-gate-skip';
-    skip.textContent = 'Continue without saving details';
-    skip.addEventListener('click', function () {
-      var href = pendingAnchor ? pendingAnchor.getAttribute('href') : null;
-      closeModal();
-      if (href) window.open(href, '_blank', 'noopener');
-    });
+    /* No skip button by design: sales must be able to connect every WhatsApp
+       conversation to a real contact. The X / Esc / backdrop close cancels
+       the WhatsApp action entirely — the only way through is saving once. */
     actions.appendChild(go);
-    actions.appendChild(skip);
     form.appendChild(actions);
 
     form.addEventListener('submit', function (event) {
@@ -370,15 +364,46 @@
     });
   }
 
+  /* If the visitor has already typed their details into a form on this page
+     (quote or contact), carry them into the gate so they only confirm. */
+  var PAGE_FIELD_SOURCES = {
+    'hn-gate-name':    ['name', 'c-name'],
+    'hn-gate-company': ['company', 'c-company'],
+    'hn-gate-phone':   ['phone', 'c-phone'],
+    'hn-gate-email':   ['email', 'c-email'],
+    'hn-gate-address': ['town', 'c-town']
+  };
+
+  function prefillFromPage() {
+    FIELD_ORDER.forEach(function (id) {
+      var input = document.getElementById(id);
+      if (!input || input.value) return;
+      var sources = PAGE_FIELD_SOURCES[id] || [];
+      for (var i = 0; i < sources.length; i++) {
+        var el = document.getElementById(sources[i]);
+        if (el && typeof el.value === 'string' && el.value.trim()) {
+          input.value = el.value.trim();
+          break;
+        }
+      }
+    });
+  }
+
   function openModal(anchor) {
     if (!overlay) buildModal();
     pendingAnchor = anchor;
     lastTrigger = document.activeElement;
     overlay.hidden = false;
     document.documentElement.classList.add('hn-gate-lock');
-    var first = document.getElementById(FIELD_ORDER[0]);
-    try { (first || card).focus(); } catch (e) {}
-    if (first) first.focus();
+    prefillFromPage();
+    /* Focus the first field still empty (or the button when all filled). */
+    var focusTarget = null;
+    for (var i = 0; i < FIELD_ORDER.length; i++) {
+      var input = document.getElementById(FIELD_ORDER[i]);
+      if (input && !input.value) { focusTarget = input; break; }
+    }
+    if (!focusTarget) focusTarget = form.querySelector('button[type="submit"]') || card;
+    try { focusTarget.focus(); } catch (e) {}
     keyHandler = function (event) {
       if (event.key === 'Escape') { event.preventDefault(); closeModal(); return; }
       if (event.key === 'Tab') {

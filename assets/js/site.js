@@ -220,8 +220,8 @@
           (p.imgNote ? '<span class="ph-note" title="' + esc(p.imgNote) + '">' +
             (/packaging/i.test(p.imgNote) ? 'packaging shown' : 'representative image') + '</span>' : '') +
           '<picture>' +
-            '<source srcset="assets/cat/' + p.img + '.webp" type="image/webp">' +
-            '<img src="assets/cat/' + p.img + '.jpg" alt="' + esc(p.name) + (p.variant ? ' — ' + esc(p.variant) : '') + '" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400">' +
+            '<source srcset="assets/cat/' + p.img + '-400.webp 400w, assets/cat/' + p.img + '-1200.webp 1200w" sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 250px" type="image/webp">' +
+            '<img src="assets/cat/' + p.img + '-400.webp" alt="' + esc(p.name) + (p.variant ? ' — ' + esc(p.variant) : '') + '" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400">' +
           '</picture></div>' +
         '<div class="pb">' +
           '<span class="tag">' + esc(p.tag) + '</span>' +
@@ -579,7 +579,7 @@
       document.getElementById('quote-picker-title').textContent = p.name;
       document.getElementById('quote-picker-variant').textContent = p.variant || p.tag || '';
       var img = document.getElementById('quote-picker-img');
-      img.src = 'assets/cat/' + p.img + '.jpg';
+      img.src = 'assets/cat/' + p.img + '-400.webp';
       img.alt = p.name;
       fields.innerHTML =
         '<div class="field"><label for="qp-quantity">Quantity <span class="req">*</span></label>' +

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hanekom Innovations - product image optimization pipeline.
+
+  Maven users:  mvn -q compile exec:java -Dexec.args="assets/cat"
+  Everyone else (plain JRE/JDK):  tools/image-optimizer/run.sh
+
+  Note on WebP support:
+  - com.twelvemonkeys.imageio:imageio-webp reads WebP images (it is a reader only).
+  - org.sejda.imageio:webp-imageio provides the actual WebP *writer* (native libwebp,
+    bundled for Linux/Windows/macOS x64). Without it the pipeline cannot emit .webp.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>zm.co.hanekom</groupId>
+  <artifactId>product-image-optimizer</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <name>Hanekom Product Image Optimizer</name>
+  <description>Cleans supplier backgrounds to pure white, centres products in a 1:1 square with a 5% margin and exports 1200/400 WebP variants for hanekom.co.zm</description>
+
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.coobird</groupId>
+      <artifactId>thumbnailator</artifactId>
+      <version>0.4.20</version>
+    </dependency>
+    <dependency>
+      <groupId>com.twelvemonkeys.imageio</groupId>
+      <artifactId>imageio-webp</artifactId>
+      <version>3.11.0</version>
+    </dependency>
+    <!-- WebP writer (TwelveMonkeys imageio-webp is read-only) -->
+    <dependency>
+      <groupId>org.sejda.imageio</groupId>
+      <artifactId>webp-imageio</artifactId>
+      <version>0.1.6</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <mainClass>com.hanekom.images.BatchConvert</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

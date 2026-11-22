@@ -414,10 +414,10 @@ a.card:hover .more{gap:.55rem}
    sit on even inside a dark card. Without this they read as white blocks. */
 .product .ph{
   position:relative;aspect-ratio:1/1;padding:18px;display:flex;align-items:center;justify-content:center;
-  background:var(--plate);
+  background-color:#ffffff;
 }
 .product .ph picture{display:contents}
-.product .ph img{max-height:100%;max-width:100%;width:auto;object-fit:contain;mix-blend-mode:multiply}
+.product .ph img{max-height:100%;max-width:100%;width:auto;object-fit:contain;mix-blend-mode:multiply;background-color:#ffffff}
 .product .code{
   position:absolute;top:11px;left:11px;background:rgba(13,19,16,.88);color:#fff;font-size:.68rem;
   font-weight:800;letter-spacing:.07em;padding:.26rem .58rem;border-radius:7px;
@@ -1268,12 +1268,12 @@ body{padding-top:0;padding-bottom:24px}
 @media (max-width:960px){.pdp{grid-template-columns:1fr;gap:1.75rem}}
 .pdp-media{
   position:relative;border-radius:var(--r-xl);overflow:hidden;
-  background:var(--plate);
+  background-color:#ffffff;
   padding:34px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
   border:1px solid var(--edge);box-shadow:var(--shadow-lg);
 }
 .pdp-media picture{display:contents}
-.pdp-media img{max-height:100%;max-width:100%;width:auto;object-fit:contain;mix-blend-mode:multiply}
+.pdp-media img{max-height:100%;max-width:100%;width:auto;object-fit:contain;mix-blend-mode:multiply;background-color:#ffffff}
 .pdp-media .code{
   position:absolute;top:16px;left:16px;background:rgba(13,19,16,.88);color:#fff;
   font-size:.76rem;font-weight:800;letter-spacing:.08em;padding:.3rem .7rem;border-radius:8px;

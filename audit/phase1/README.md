@@ -44,6 +44,10 @@ Full 12-item package: **[`first-batch-handover.md`](first-batch-handover.md)** �
 
 ## 6. Production order — remaining 77 SKUs (batches of 2–3)
 
+> **SUPERSEDED by [`plan-v2.md`](plan-v2.md)** — owner directive: every image on the site,
+> worst-first ascending order, Track A (80 SKUs) + Track B (hero + 46 illustration tiles).
+> The table below is kept for history only.
+
 Severity first, then category coherence. Wearable batches (marked M) are mannequin-dependent (~30 SKUs). No batch starts before the previous one is APPROVED.
 
 | Batch | SKUs |
@@ -87,6 +91,7 @@ Severity first, then category coherence. Wearable batches (marked M) are mannequ
 
 | File | Contents |
 |---|---|
+| `plan-v2.md` | CURRENT production plan — every image on site, worst-first, Track A + Track B |
 | `first-batch-handover.md` | 12-item pilot handover package (prompts, specs, QC gates) |
 | `audit-data.json` | machine-readable record of all 80 products (provenance, dims, sizes, quality flags) |
 | `critical7-contact.png` | contact sheet of the 7 critical-quality hero images |

@@ -1,0 +1,2174 @@
+{
+ "record": "Hanekom Phase 1 photo audit - machine-readable product record",
+ "repo_commit_audited": "e47b634",
+ "channel_audited": "main (clean tree) + live hanekom.co.zm",
+ "image_variant_rule": "SKU.jpg original + SKU.webp + SKU-400.webp + SKU-1200.webp in assets/cat",
+ "quality_scale": {
+  "CRITICAL": "sd<25 or >96% near-white (unusable/near-blank)",
+  "REVIEW": "sd 25-40 (soft/washed)",
+  "OK": "sd>=40"
+ },
+ "product_count": 80,
+ "products": [
+  {
+   "code": "P01",
+   "name": "Impressions 65/35 Conti Suit",
+   "variant": "All Colours",
+   "cat": "workwear",
+   "brand": "Impressions",
+   "img": "P01",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Durable everyday two-piece workwear for industrial teams, with colour options for role or company identification.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 29850,
+    "-1200": 33814,
+    "-400": 9024
+   },
+   "quality": "OK",
+   "live_page": "d59-flame-acid-resistant-worksuit-p02.html"
+  },
+  {
+   "code": "P03",
+   "name": "Green Worksuit",
+   "variant": "100% Polyester",
+   "cat": "workwear",
+   "brand": "Hanekom",
+   "img": "P03",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Lightweight two-piece workwear suited to general duties, housekeeping and warm working conditions.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 20606,
+    "-1200": 22678,
+    "-400": 5800
+   },
+   "quality": "OK",
+   "live_page": "d59-flame-acid-resistant-worksuit-p02.html"
+  },
+  {
+   "code": "P04",
+   "name": "Javlin Acid Resistant Worksuit",
+   "variant": "",
+   "cat": "workwear",
+   "brand": "Javlin",
+   "img": "P04",
+   "spec": "Representative image — confirm exact item",
+   "desc": "Acid-resistant workwear option for chemical-handling and process environments; confirm the exact supplied model.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 16663,
+    "-1200": 20128,
+    "-400": 4960
+   },
+   "quality": "OK",
+   "live_page": "d59-flame-acid-resistant-worksuit-p02.html"
+  },
+  {
+   "code": "P02",
+   "name": "D59 Flame & Acid Resistant Worksuit",
+   "variant": "",
+   "cat": "workwear",
+   "brand": "D59",
+   "img": "P02",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Heavy-duty workwear for tasks where flame and acid-splash hazards require enhanced garment protection.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 15397,
+    "-1200": 17426,
+    "-400": 4616
+   },
+   "quality": "OK",
+   "live_page": "d59-flame-acid-resistant-worksuit-p02.html"
+  },
+  {
+   "code": "P06",
+   "name": "Reflective Vest",
+   "variant": "Assorted Colours",
+   "cat": "hivis",
+   "brand": "Hanekom",
+   "img": "P06",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Cost-effective visibility layer in assorted colours for visitors, crews and general site identification.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 24298,
+    "-1200": 29052,
+    "-400": 7338
+   },
+   "quality": "OK",
+   "live_page": "reflective-vest-assorted-colours-p06.html"
+  },
+  {
+   "code": "P05",
+   "name": "Reflective Vest",
+   "variant": "Lime Green",
+   "cat": "hivis",
+   "brand": "Hanekom",
+   "img": "P05",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Bright lime visibility vest that improves worker conspicuity around vehicles, machinery and low-light work areas.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 30082,
+    "-1200": 39308,
+    "-400": 10420
+   },
+   "quality": "OK",
+   "live_page": "reflective-vest-assorted-colours-p06.html"
+  },
+  {
+   "code": "P07",
+   "name": "WATT Winter Jacket",
+   "variant": "",
+   "cat": "hivis",
+   "brand": "WATT",
+   "img": "P07",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Insulated outer layer for colder shifts, early starts and exposed outdoor work.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 29644,
+    "-1200": 38676,
+    "-400": 10032
+   },
+   "quality": "OK",
+   "live_page": "reflective-vest-assorted-colours-p06.html"
+  },
+  {
+   "code": "C03",
+   "name": "GLO 300 Flexnite Grip Glove",
+   "variant": "Nitrile",
+   "cat": "hand",
+   "brand": "GLO",
+   "img": "C03",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Nitrile-coated grip glove for general handling where abrasion resistance, dexterity and secure grip are important.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 15131,
+    "-1200": 19242,
+    "-400": 4782
+   },
+   "quality": "OK",
+   "live_page": "glo-300-flexnite-grip-glove-nitrile-c03.html"
+  },
+  {
+   "code": "C04",
+   "name": "GLO 305 Cut Resistant Glove",
+   "variant": "13 Gauge Alkimos Cut 5 liner, nitrile coating",
+   "cat": "hand",
+   "brand": "GLO",
+   "img": "C04",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Cut level 5 liner with nitrile coating for sharp-edged material handling while maintaining practical grip.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 15608,
+    "-1200": 19558,
+    "-400": 5122
+   },
+   "quality": "OK",
+   "live_page": "glo-300-flexnite-grip-glove-nitrile-c03.html"
+  },
+  {
+   "code": "P10",
+   "name": "Welding Glove Double Palm",
+   "variant": "",
+   "cat": "hand",
+   "brand": "Hanekom",
+   "img": "P10",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Reinforced double-palm welding glove for improved durability and hand protection during hot-work handling.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 26622,
+    "-1200": 32752,
+    "-400": 8314
+   },
+   "quality": "OK",
+   "live_page": "glo-300-flexnite-grip-glove-nitrile-c03.html"
+  },
+  {
+   "code": "C01",
+   "name": "Karam Disposable Dust Mask",
+   "variant": "",
+   "cat": "respiratory",
+   "brand": "KARAM",
+   "img": "C01",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Single-use dust mask for basic nuisance-particle control; confirm suitability for the assessed airborne hazard.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 11431,
+    "-1200": 5038,
+    "-400": 1080
+   },
+   "quality": "CRITICAL",
+   "live_page": "forked-lanyard-with-energy-absorber-pn-361-30.html"
+  },
+  {
+   "code": "C10",
+   "name": "KARAM FFP3 Mask",
+   "variant": "",
+   "cat": "respiratory",
+   "brand": "KARAM",
+   "img": "C10",
+   "spec": "FFP3 class — confirm fit testing",
+   "desc": "FFP3 disposable respirator for higher-level particulate filtration where the task requires enhanced protection.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 14953,
+    "-1200": 5838,
+    "-400": 1504
+   },
+   "quality": "CRITICAL",
+   "live_page": "karam-disposable-dust-mask-c01.html"
+  },
+  {
+   "code": "C11",
+   "name": "KARAM FFP2 Welding Mask",
+   "variant": "",
+   "cat": "respiratory",
+   "brand": "KARAM",
+   "img": "C11",
+   "spec": "FFP2 class — confirm fit testing",
+   "desc": "FFP2 respirator for welding-related particulate exposure; confirm fit, use limits and PPE compatibility.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 29142,
+    "-1200": 26356,
+    "-400": 7340
+   },
+   "quality": "OK",
+   "live_page": "karam-disposable-dust-mask-c01.html"
+  },
+  {
+   "code": "C06",
+   "name": "ES 001 Karam Clear Sporty Glasses",
+   "variant": "",
+   "cat": "eye",
+   "brand": "KARAM",
+   "img": "C06",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Clear wraparound-style safety glasses for everyday eye protection in workshops, warehouses and industrial tasks.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 19250,
+    "-1200": 17334,
+    "-400": 4224
+   },
+   "quality": "CRITICAL",
+   "live_page": "dromex-sporty-clear-goggles-c05.html"
+  },
+  {
+   "code": "C05",
+   "name": "Dromex Sporty Clear Goggles",
+   "variant": "",
+   "cat": "eye",
+   "brand": "Dromex",
+   "img": "C05",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Clear sporty goggles for impact and dust protection, with a lightweight profile for routine site use.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 12373,
+    "-1200": 11194,
+    "-400": 2812
+   },
+   "quality": "REVIEW",
+   "live_page": "dromex-sporty-clear-goggles-c05.html"
+  },
+  {
+   "code": "C07",
+   "name": "ES 015 Karam Safety Glasses",
+   "variant": "Euro Style",
+   "cat": "eye",
+   "brand": "KARAM",
+   "img": "C07",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Euro-style safety glasses offering lightweight eye coverage for visitors, operators and routine site activities.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 17430,
+    "-1200": 15156,
+    "-400": 3644
+   },
+   "quality": "OK",
+   "live_page": "dromex-sporty-clear-goggles-c05.html"
+  },
+  {
+   "code": "P11",
+   "name": "KARAM ES 61 Welding Shield",
+   "variant": "",
+   "cat": "eye",
+   "brand": "KARAM",
+   "img": "P11",
+   "spec": "Confirm required lens shade",
+   "desc": "Handheld welding shield that helps protect the face and eyes; confirm the required lens shade and configuration.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 32802,
+    "-1200": 49366,
+    "-400": 8958
+   },
+   "quality": "OK",
+   "live_page": "dromex-sporty-clear-goggles-c05.html"
+  },
+  {
+   "code": "C08",
+   "name": "Nikki Hard Hat",
+   "variant": "",
+   "cat": "head",
+   "brand": "Nikki",
+   "img": "C08",
+   "spec": "Model / options: confirm on quote",
+   "desc": "General-purpose hard hat for overhead-impact protection on construction, maintenance and industrial sites.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 13831,
+    "-1200": 10754,
+    "-400": 2436
+   },
+   "quality": "REVIEW",
+   "live_page": "nikki-hard-hat-c08.html"
+  },
+  {
+   "code": "C09",
+   "name": "PN542 Karam Hard Hat",
+   "variant": "2-point chin strap",
+   "cat": "head",
+   "brand": "KARAM",
+   "img": "C09",
+   "spec": "2-point chin strap retention",
+   "desc": "KARAM hard hat with a two-point chin strap for improved retention during active or elevated work.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 21224,
+    "-1200": 30438,
+    "-400": 7200
+   },
+   "quality": "OK",
+   "live_page": "nikki-hard-hat-c08.html"
+  },
+  {
+   "code": "P13",
+   "name": "Karam EP21 Ear Muff",
+   "variant": "27 dB",
+   "cat": "hearing",
+   "brand": "KARAM",
+   "img": "P13",
+   "spec": "27 dB attenuation rating",
+   "desc": "Over-ear hearing protector rated at 27 dB for noisy industrial environments, subject to exposure assessment.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 27108,
+    "-1200": 36256,
+    "-400": 8420
+   },
+   "quality": "OK",
+   "live_page": "karam-ep21-ear-muff-27-db-p13.html"
+  },
+  {
+   "code": "P14",
+   "name": "Rebel FX2 Safety Boot",
+   "variant": "",
+   "cat": "foot",
+   "brand": "Rebel Safety Gear",
+   "img": "P14",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Practical safety boot for routine site work, balancing protective coverage with everyday wearability.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 37522,
+    "-1200": 42324,
+    "-400": 8692
+   },
+   "quality": "OK",
+   "live_page": "bova-chelsea-safety-boot-p16.html"
+  },
+  {
+   "code": "P17",
+   "name": "Grittgear Mangano Safety Boot",
+   "variant": "",
+   "cat": "foot",
+   "brand": "Grittgear",
+   "img": "P17",
+   "spec": "Confirm sole and toe protection",
+   "desc": "Robust safety boot for demanding daily site use; confirm sole, toe protection and available sizing.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 26472,
+    "-1200": 37154,
+    "-400": 8254
+   },
+   "quality": "OK",
+   "live_page": "bova-chelsea-safety-boot-p16.html"
+  },
+  {
+   "code": "P15",
+   "name": "Tasco Safety Boot",
+   "variant": "",
+   "cat": "foot",
+   "brand": "Tasco",
+   "img": "P15",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Industrial safety boot option for workshops, construction and general plant duties; confirm the protection specification.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 54221,
+    "-1200": 48258,
+    "-400": 12782
+   },
+   "quality": "OK",
+   "live_page": "bova-chelsea-safety-boot-p16.html"
+  },
+  {
+   "code": "P16",
+   "name": "Bova Chelsea Safety Boot",
+   "variant": "",
+   "cat": "foot",
+   "brand": "Bova",
+   "img": "P16",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Chelsea-style safety boot offering easy slip-on access for supervisors, technicians and mobile site personnel.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 31851,
+    "-1200": 34548,
+    "-400": 7650
+   },
+   "quality": "OK",
+   "live_page": "bova-chelsea-safety-boot-p16.html"
+  },
+  {
+   "code": "P18",
+   "name": "Egoli Gum Boot",
+   "variant": "",
+   "cat": "gumboots",
+   "brand": "Egoli",
+   "img": "P18",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Economical gumboot for wet, muddy and wash-down environments requiring basic water-resistant footwear.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 26697,
+    "-1200": 38768,
+    "-400": 10852
+   },
+   "quality": "OK",
+   "live_page": "egoli-gum-boot-p18.html"
+  },
+  {
+   "code": "P19",
+   "name": "Stimela Gum Boot",
+   "variant": "",
+   "cat": "gumboots",
+   "brand": "Stimela",
+   "img": "P19",
+   "spec": "Confirm sole and toe options",
+   "desc": "Heavy-duty gumboot for industrial and agricultural wet-work; confirm sole and toe-protection options.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 33740,
+    "-1200": 55188,
+    "-400": 16204
+   },
+   "quality": "OK",
+   "live_page": "egoli-gum-boot-p18.html"
+  },
+  {
+   "code": "P09",
+   "name": "Zam Leather Spat",
+   "variant": "",
+   "cat": "body",
+   "brand": "Zam",
+   "img": "P09",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Leather lower-leg cover designed to shield footwear and ankles from sparks, spatter and hot debris.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 12657,
+    "-1200": 13554,
+    "-400": 3462
+   },
+   "quality": "REVIEW",
+   "live_page": "30203-65-karam-disposable-coverall-65g-microporous-type-5-6-c02.html"
+  },
+  {
+   "code": "P08",
+   "name": "Zam Leather Apron",
+   "variant": "",
+   "cat": "body",
+   "brand": "Zam",
+   "img": "P08",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Leather apron providing front-body coverage against sparks, heat and abrasion during welding or grinding.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 15683,
+    "-1200": 16928,
+    "-400": 4608
+   },
+   "quality": "OK",
+   "live_page": "30203-65-karam-disposable-coverall-65g-microporous-type-5-6-c02.html"
+  },
+  {
+   "code": "P12",
+   "name": "ASI Snake Gaiter",
+   "variant": "",
+   "cat": "body",
+   "brand": "ASI",
+   "img": "P12",
+   "spec": "Model / options: confirm on quote",
+   "desc": "Protective gaiter designed to reduce lower-leg exposure in snake-prone field, farming and outdoor work.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 89798,
+    "-1200": 115744,
+    "-400": 31202
+   },
+   "quality": "OK",
+   "live_page": "30203-65-karam-disposable-coverall-65g-microporous-type-5-6-c02.html"
+  },
+  {
+   "code": "C02",
+   "name": "30203/65 KARAM Disposable Coverall",
+   "variant": "65g Microporous Type 5/6",
+   "cat": "body",
+   "brand": "KARAM",
+   "img": "C02",
+   "spec": "Type 5/6 | 65 g microporous",
+   "desc": "Lightweight 65 g microporous disposable coverall for Type 5/6 particulate and limited liquid-splash protection.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    876
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 21743,
+    "-1200": 12162,
+    "-400": 2982
+   },
+   "quality": "REVIEW",
+   "live_page": "30203-65-karam-disposable-coverall-65g-microporous-type-5-6-c02.html"
+  },
+  {
+   "code": "PN 10(S)+PN 361",
+   "name": "Full Body Harness with Double Lanyard",
+   "variant": "Steel scaffold hooks",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "PN10S",
+   "spec": "EN 361 + EN 355 | 1.7 m | dorsal",
+   "desc": "Entry-level full-body fall-arrest set with a double lanyard and scaffold hooks for continuous connection.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 21351,
+    "-1200": 29042,
+    "-400": 7990
+   },
+   "quality": "OK",
+   "live_page": "alpha-series-rope-access-harness-magna-3.html"
+  },
+  {
+   "code": "PN 21(WB)+PN 361",
+   "name": "Waist-Belt Harness with Double Lanyard",
+   "variant": "Steel scaffold hooks",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "PN21WB",
+   "spec": "EN 361 + EN 355 | 1.75 m",
+   "desc": "Full-body harness with positioning waist belt and twin lanyard for support and mobility at height.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 24554,
+    "-1200": 32140,
+    "-400": 8824
+   },
+   "quality": "OK",
+   "live_page": "alpha-series-rope-access-harness-magna-3.html"
+  },
+  {
+   "code": "PN 24",
+   "name": "Padded Dorsal and Sternal Full Body Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "PN24",
+   "spec": "EN 361 | dorsal + sternal | 1.50 kg",
+   "desc": "Padded harness with dorsal and sternal attachment points for improved comfort during extended fall-arrest work.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 23304,
+    "-1200": 28940,
+    "-400": 7876
+   },
+   "quality": "OK",
+   "live_page": "alpha-series-rope-access-harness-magna-3.html"
+  },
+  {
+   "code": "PN 42(03)",
+   "name": "Padded Work-Positioning Full Body Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "PN4203",
+   "spec": "EN 361 + EN 358 | 2.04 kg",
+   "desc": "Padded harness combining fall-arrest and work-positioning functions for maintenance and access tasks.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 29348,
+    "-1200": 37600,
+    "-400": 10296
+   },
+   "quality": "OK",
+   "live_page": "full-body-harness-with-double-lanyard-steel-scaffold-hooks-pn-10-s-pn-361.html"
+  },
+  {
+   "code": "PN 56",
+   "name": "Padded Tower and Rope-Access Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "PN56",
+   "spec": "EN 361 + EN 358 + EN 813 | 2.24 kg",
+   "desc": "Four-point padded harness for tower climbing and rope-access work requiring multiple attachment options.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 31435,
+    "-1200": 41992,
+    "-400": 11640
+   },
+   "quality": "OK",
+   "live_page": "padded-tower-and-rope-access-harness-pn-56.html"
+  },
+  {
+   "code": "MAGNA 2",
+   "name": "Alpha Series Work-Positioning Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "MAGNA2",
+   "spec": "Dorsal + sternal + lateral | 2.50 kg",
+   "desc": "Advanced positioning harness with dorsal, sternal and lateral points for supported hands-free work at height.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 31799,
+    "-1200": 40406,
+    "-400": 11230
+   },
+   "quality": "OK",
+   "live_page": "alpha-series-work-positioning-harness-magna-2.html"
+  },
+  {
+   "code": "MAGNA 3",
+   "name": "Alpha Series Rope-Access Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "MAGNA3",
+   "spec": "EN 361 + EN 358 + EN 813 | 2.30 kg",
+   "desc": "Advanced rope-access harness combining fall-arrest, positioning and sit-harness functions for technical teams.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 29311,
+    "-1200": 39892,
+    "-400": 10824
+   },
+   "quality": "OK",
+   "live_page": "alpha-series-rope-access-harness-magna-3.html"
+  },
+  {
+   "code": "TL 01(N)",
+   "name": "Single Tool Lanyard with Karabiner",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "TL01",
+   "spec": "85–135 cm | tools up to 10 kg",
+   "desc": "Adjustable single-leg tool lanyard that helps retain one tool and reduce dropped-object risk at height.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 16436,
+    "-1200": 15408,
+    "-400": 4366
+   },
+   "quality": "OK",
+   "live_page": "forked-lanyard-with-energy-absorber-pn-361-30.html"
+  },
+  {
+   "code": "TL 02(N)",
+   "name": "Twin Tool Lanyard with Karabiner",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "TL02",
+   "spec": "Twin leg | tools up to 10 kg",
+   "desc": "Twin-leg tool lanyard for securing two tools or maintaining retention during tool changeover.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    658,
+    475
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 20496,
+    "-1200": 19072,
+    "-400": 5472
+   },
+   "quality": "OK",
+   "live_page": "forked-lanyard-with-energy-absorber-pn-361-30.html"
+  },
+  {
+   "code": "PN 361(30)",
+   "name": "Forked Lanyard with Energy Absorber",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "PN36130",
+   "spec": "EN 355 | 1.5 m / 1.8 m / 2.0 m",
+   "desc": "Forked energy-absorbing lanyard supporting continuous attachment between suitable anchor points.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    657,
+    474
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 15612,
+    "-1200": 19476,
+    "-400": 5120
+   },
+   "quality": "OK",
+   "live_page": "forked-lanyard-with-energy-absorber-pn-361-30.html"
+  },
+  {
+   "code": "MIC 02",
+   "name": "2 m Micron Webbing Block",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "MIC02",
+   "spec": "EN 360 | 2 m webbing | 1.17 kg",
+   "desc": "Lightweight two-metre webbing block for compact personal fall arrest and short-range movement.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    406,
+    294
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 5829,
+    "-1200": 11986,
+    "-400": 3110
+   },
+   "quality": "OK",
+   "live_page": "10-m-wire-rope-self-retracting-lifeline-tpgs-10.html"
+  },
+  {
+   "code": "TPGS 3.5",
+   "name": "3.5 m Wire-Rope Self-Retracting Lifeline",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "TPGS35",
+   "spec": "EN 360 | 3.5 m | 2.23 kg | ATEX",
+   "desc": "Compact wire-rope self-retracting lifeline for shorter-range fall protection with fast line take-up.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    407,
+    294
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 6723,
+    "-1200": 13902,
+    "-400": 3812
+   },
+   "quality": "OK",
+   "live_page": "10-m-wire-rope-self-retracting-lifeline-tpgs-10.html"
+  },
+  {
+   "code": "TPGS 06",
+   "name": "6 m Wire-Rope Self-Retracting Lifeline",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "TPGS06",
+   "spec": "EN 360 | 6 m | 2.88 kg | ATEX",
+   "desc": "Six-metre wire-rope self-retracting lifeline for mobile work zones requiring additional reach.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    407,
+    294
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 6867,
+    "-1200": 14654,
+    "-400": 3978
+   },
+   "quality": "OK",
+   "live_page": "10-m-wire-rope-self-retracting-lifeline-tpgs-10.html"
+  },
+  {
+   "code": "TPGS 10",
+   "name": "10 m Wire-Rope Self-Retracting Lifeline",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "TPGS10",
+   "spec": "EN 360 | 10 m | 4.28 kg | ATEX",
+   "desc": "Ten-metre wire-rope self-retracting lifeline for larger work areas and elevated access routes.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    406,
+    294
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 6618,
+    "-1200": 14150,
+    "-400": 3860
+   },
+   "quality": "OK",
+   "live_page": "10-m-wire-rope-self-retracting-lifeline-tpgs-10.html"
+  },
+  {
+   "code": "TPGS 15",
+   "name": "15 m Wire-Rope Self-Retracting Lifeline",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "TPGS15",
+   "spec": "EN 360 | 15 m | 5.65 kg | ATEX",
+   "desc": "Long-reach fifteen-metre wire-rope self-retracting lifeline for extensive work zones.",
+   "provenance": "pdf-crop-legacy-upscaled",
+   "pdf_page": null,
+   "src_dims_jpg": [
+    407,
+    294
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 7079,
+    "-1200": 14520,
+    "-400": 3956
+   },
+   "quality": "OK",
+   "live_page": "15-m-wire-rope-self-retracting-lifeline-tpgs-15.html"
+  },
+  {
+   "code": "Hi-Viz Vulkan 2-Tone",
+   "name": "Hi-Viz Vulkan 2-Tone Workwear",
+   "variant": "",
+   "cat": "hivis",
+   "brand": "Vulkan",
+   "img": "EXP-VULKAN",
+   "spec": "Vented workshirt; confirm exact supplied model",
+   "desc": "High-visibility vented cotton workshirt with reflective tape for warm industrial conditions. Confirm colour, fabric and sizes on quotation.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 4,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 73917,
+    "-1200": 33258,
+    "-400": 7800
+   },
+   "quality": "OK",
+   "live_page": "hi-viz-vulkan-2-tone-workwear-hi-viz-vulkan-2-tone.html"
+  },
+  {
+   "code": "Javlin Hi-Viz Workshirt",
+   "name": "Javlin Hi-Viz Vented Workshirt",
+   "variant": "",
+   "cat": "hivis",
+   "brand": "Javlin",
+   "img": "EXP-JAVLIN-HIVIZ",
+   "spec": "Vented cotton workshirt; confirm options",
+   "desc": "Lightweight cotton high-visibility workshirt for site crews; confirm available colours, reflective layout and sizes.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 5,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 51726,
+    "-1200": 25406,
+    "-400": 6312
+   },
+   "quality": "OK",
+   "live_page": "javlin-hi-viz-vented-workshirt-javlin-hi-viz-workshirt.html"
+  },
+  {
+   "code": "Pigskin gloves",
+   "name": "Pigskin Leather Gloves",
+   "variant": "",
+   "cat": "hand",
+   "brand": "Hanekom",
+   "img": "EXP-PIGSKIN",
+   "spec": "Confirm size and task suitability",
+   "desc": "Soft, flexible leather gloves for general handling, maintenance and light abrasion. Select protection to match the task.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 7,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 59804,
+    "-1200": 33900,
+    "-400": 7816
+   },
+   "quality": "REVIEW",
+   "live_page": "pigskin-leather-gloves-pigskin-gloves.html"
+  },
+  {
+   "code": "PVC gloves",
+   "name": "PVC Industrial Gloves",
+   "variant": "",
+   "cat": "hand",
+   "brand": "Hanekom",
+   "img": "EXP-PVC-GLOVES",
+   "spec": "Confirm size, length and chemical compatibility",
+   "desc": "PVC-coated gloves for wet and oily handling. Confirm chemical compatibility and glove length for the application.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 7,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 103594,
+    "-1200": 57134,
+    "-400": 13800
+   },
+   "quality": "OK",
+   "live_page": "pvc-industrial-gloves-pvc-gloves.html"
+  },
+  {
+   "code": "KARAM impact gloves",
+   "name": "KARAM High-Impact Safety Gloves",
+   "variant": "",
+   "cat": "hand",
+   "brand": "KARAM",
+   "img": "EXP-IMPACT-GLOVES",
+   "spec": "Confirm impact and cut rating for the task",
+   "desc": "Impact gloves with TPR padding, nitrile grip and secure cuffs for demanding industrial handling.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 7,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 104248,
+    "-1200": 63708,
+    "-400": 13758
+   },
+   "quality": "OK",
+   "live_page": "karam-high-impact-safety-gloves-karam-impact-gloves.html"
+  },
+  {
+   "code": "Safeco safety cap",
+   "name": "Safeco Industrial Safety Cap",
+   "variant": "",
+   "cat": "head",
+   "brand": "Safeco",
+   "img": "EXP-SAFECO-CAP",
+   "spec": "Confirm certification and fit",
+   "desc": "Industrial protective headwear for sites with overhead impact hazards; confirm the specified model and approval.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 10,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 50657,
+    "-1200": 19592,
+    "-400": 4460
+   },
+   "quality": "OK",
+   "live_page": "safeco-industrial-safety-cap-safeco-safety-cap.html"
+  },
+  {
+   "code": "KARAM corded ear plugs",
+   "name": "KARAM Disposable Corded Ear Plugs",
+   "variant": "",
+   "cat": "hearing",
+   "brand": "KARAM",
+   "img": "EXP-CORDED-PLUGS",
+   "spec": "Confirm attenuation rating",
+   "desc": "Soft foam corded ear plugs for industrial hearing protection. Select attenuation using the measured noise exposure.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 11,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 85372,
+    "-1200": 44120,
+    "-400": 10632
+   },
+   "quality": "OK",
+   "live_page": "karam-disposable-corded-ear-plugs-karam-corded-ear-plugs.html"
+  },
+  {
+   "code": "Thunder T2H",
+   "name": "Honeywell Howard Leight Thunder T2H Earmuff",
+   "variant": "",
+   "cat": "hearing",
+   "brand": "Honeywell",
+   "img": "EXP-THUNDER-T2H",
+   "spec": "Confirm compatible helmet and attenuation",
+   "desc": "Helmet-mounted dielectric earmuff for industrial and electrical work environments. Confirm helmet compatibility and attenuation.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 11,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 50097,
+    "-1200": 24408,
+    "-400": 5694
+   },
+   "quality": "OK",
+   "live_page": "honeywell-howard-leight-thunder-t2h-earmuff-thunder-t2h.html"
+  },
+  {
+   "code": "Stimela steel toe midsole",
+   "name": "Stimela Steel-Toe & Midsole Gumboot",
+   "variant": "",
+   "cat": "gumboots",
+   "brand": "Stimela",
+   "img": "EXP-STIMELA-STEEL",
+   "spec": "Steel toe and midsole; confirm rating",
+   "desc": "Heavy-duty gumboot option with steel toe and midsole for wet industrial and agricultural work; confirm exact rating and sizing.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 13,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 76485,
+    "-1200": 43972,
+    "-400": 10386
+   },
+   "quality": "OK",
+   "live_page": "stimela-steel-toe-midsole-gumboot-stimela-steel-toe-midsole.html"
+  },
+  {
+   "code": "Wayne gumboots",
+   "name": "Wayne White Gumboots",
+   "variant": "",
+   "cat": "gumboots",
+   "brand": "Wayne",
+   "img": "EXP-WAYNE",
+   "spec": "Confirm sole and protection options",
+   "desc": "White gumboots for hygiene-sensitive and wet work. Confirm sole, protective rating and size before ordering.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 13,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 40544,
+    "-1200": 18886,
+    "-400": 4572
+   },
+   "quality": "REVIEW",
+   "live_page": "wayne-white-gumboots-wayne-gumboots.html"
+  },
+  {
+   "code": "Disposable shoe covers",
+   "name": "Disposable Shoe Covers",
+   "variant": "",
+   "cat": "body",
+   "brand": "Hanekom",
+   "img": "EXP-SHOE-COVERS",
+   "spec": "Confirm pack quantity and material",
+   "desc": "Single-use shoe covers for clean indoor areas and visitor access. Confirm material, pack quantity and slip resistance.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 14,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 91613,
+    "-1200": 54402,
+    "-400": 11202
+   },
+   "quality": "OK",
+   "live_page": "disposable-shoe-covers-disposable-shoe-covers.html"
+  },
+  {
+   "code": "DuPont Tyvek coverall",
+   "name": "DuPont Tyvek Disposable Coverall",
+   "variant": "",
+   "cat": "body",
+   "brand": "DuPont",
+   "img": "EXP-TYVEK",
+   "spec": "Confirm exact model, size and protection type",
+   "desc": "Disposable protective coverall for particulate and limited liquid-splash applications; confirm the exact Tyvek model and certification.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 15,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 69007,
+    "-1200": 31294,
+    "-400": 6896
+   },
+   "quality": "REVIEW",
+   "live_page": "dupont-tyvek-disposable-coverall-dupont-tyvek-coverall.html"
+  },
+  {
+   "code": "PN 42(03)(W)",
+   "name": "KARAM Ladies Full-Body Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "EXP-PN42W",
+   "spec": "Model PN 42(03)(W)",
+   "desc": "Women-specific full-body harness from the KARAM ladies range. Confirm attachment points, fit and certification for the work system.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 20,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 97564,
+    "-1200": 65118,
+    "-400": 9426
+   },
+   "quality": "OK",
+   "live_page": "karam-ladies-full-body-harness-pn-42-03-w.html"
+  },
+  {
+   "code": "PN 44(OR)",
+   "name": "KARAM Specialised Full-Body Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "EXP-PN44OR",
+   "spec": "Model PN 44(OR)",
+   "desc": "Specialised full-body harness in the KARAM range. Request the model datasheet to confirm fit, attachments and approved use.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 20,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 96824,
+    "-1200": 64372,
+    "-400": 10620
+   },
+   "quality": "OK",
+   "live_page": "karam-specialised-full-body-harness-pn-44-or.html"
+  },
+  {
+   "code": "PN 42(SP)(03)",
+   "name": "KARAM Mining Full-Body Harness",
+   "variant": "",
+   "cat": "height",
+   "brand": "KARAM",
+   "img": "EXP-PN42SP",
+   "spec": "Model PN 42(SP)(03)",
+   "desc": "Full-body harness from the KARAM mining range; confirm attachments and compatibility with the site fall-protection plan.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 20,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 82556,
+    "-1200": 51084,
+    "-400": 8622
+   },
+   "quality": "OK",
+   "live_page": "karam-mining-full-body-harness-pn-42-sp-03.html"
+  },
+  {
+   "code": "TPGS 25-30",
+   "name": "KARAM Long-Reach Wire-Rope SRL",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "EXP-TPGS-LONG",
+   "spec": "TPGS 25-30 range; 25 m or 30 m",
+   "desc": "Self-retracting wire-rope fall arrester for longer reach. Length and connectors must be selected for the anchorage and rescue plan.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 21,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 43985,
+    "-1200": 22840,
+    "-400": 4490
+   },
+   "quality": "OK",
+   "live_page": "karam-long-reach-wire-rope-srl-tpgs-25-30.html"
+  },
+  {
+   "code": "TPGS SE range",
+   "name": "KARAM Sharp-Edge Wire-Rope SRL",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "EXP-TPGS-SE",
+   "spec": "TPGS 3.5(SE), 5-7(SE), 7.5-10(SE)",
+   "desc": "Sharp-edge self-retracting lifeline family for selected edge-exposure applications. Confirm the edge rating and complete system before use.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 21,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 35903,
+    "-1200": 17970,
+    "-400": 3676
+   },
+   "quality": "OK",
+   "live_page": "karam-sharp-edge-wire-rope-srl-tpgs-se-range.html"
+  },
+  {
+   "code": "TPGS 20R-30R",
+   "name": "KARAM Retrieval Retractable Block",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "EXP-TPGS-RETRIEVAL",
+   "spec": "TPGS 20R, 25R or 30R; confirm configuration",
+   "desc": "Retrieval block that can shift between fall-arrest and winch modes for a planned rescue system.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 21,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 60279,
+    "-1200": 34524,
+    "-400": 6772
+   },
+   "quality": "OK",
+   "live_page": "karam-retrieval-retractable-block-tpgs-20r-30r.html"
+  },
+  {
+   "code": "SLBL 30R",
+   "name": "KARAM Sealed Three-Way Retrieval Block",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "EXP-SLBL30R",
+   "spec": "Model SLBL 30R",
+   "desc": "Sealed three-way retrieval block for fall protection and rescue applications; request the model datasheet and system compatibility.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 21,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 59493,
+    "-1200": 31652,
+    "-400": 5928
+   },
+   "quality": "OK",
+   "live_page": "karam-sealed-three-way-retrieval-block-slbl-30r.html"
+  },
+  {
+   "code": "PN2002(SW)",
+   "name": "KARAM Swivel Mini Webbing Block",
+   "variant": "",
+   "cat": "srl",
+   "brand": "KARAM",
+   "img": "EXP-PN2002SW",
+   "spec": "Model PN2002(SW); 2.5 m webbing",
+   "desc": "Compact swivel mini block for short-range personal fall protection, with a 2.5 m webbing line.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 22,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 33235,
+    "-1200": 15470,
+    "-400": 2796
+   },
+   "quality": "REVIEW",
+   "live_page": "karam-swivel-mini-webbing-block-pn2002-sw.html"
+  },
+  {
+   "code": "PN 174",
+   "name": "KARAM Twin SRL Connector",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "EXP-PN174",
+   "spec": "Model PN 174; confirm compatible SRLs",
+   "desc": "Connector designed to combine compatible Micron blocks in single or forked-lanyard arrangements.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 22,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 40877,
+    "-1200": 22198,
+    "-400": 4614
+   },
+   "quality": "REVIEW",
+   "live_page": "karam-twin-srl-connector-pn-174.html"
+  },
+  {
+   "code": "PN 329(30)",
+   "name": "KARAM 30 mm Webbing Fall-Arrest Lanyard",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "EXP-PN32930",
+   "spec": "Model PN 329(30)",
+   "desc": "Single-leg webbing lanyard from the KARAM fall-arrest range. Confirm length, connectors and energy absorber with the fall-protection plan.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 22,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 42880,
+    "-1200": 26082,
+    "-400": 4316
+   },
+   "quality": "OK",
+   "live_page": "karam-30-mm-webbing-fall-arrest-lanyard-pn-329-30.html"
+  },
+  {
+   "code": "PN 241",
+   "name": "KARAM Ring-Adjuster Positioning Lanyard",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "EXP-PN241",
+   "spec": "Model PN 241",
+   "desc": "Work-positioning lanyard with ring-type adjuster for use as part of a compatible height-work system.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 22,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 41345,
+    "-1200": 23578,
+    "-400": 4638
+   },
+   "quality": "CRITICAL",
+   "live_page": "karam-ring-adjuster-positioning-lanyard-pn-241.html"
+  },
+  {
+   "code": "PN 242",
+   "name": "KARAM Grip-Adjuster Positioning Lanyard",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "EXP-PN242",
+   "spec": "Model PN 242",
+   "desc": "Work-positioning lanyard with grip adjuster. Confirm line length, connector selection and compatibility.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 22,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 40965,
+    "-1200": 24788,
+    "-400": 4654
+   },
+   "quality": "CRITICAL",
+   "live_page": "karam-grip-adjuster-positioning-lanyard-pn-242.html"
+  },
+  {
+   "code": "PN 245",
+   "name": "KARAM Grip-Adjuster Positioning Lanyard PN 245",
+   "variant": "",
+   "cat": "lanyards",
+   "brand": "KARAM",
+   "img": "EXP-PN245",
+   "spec": "Model PN 245",
+   "desc": "Grip-adjuster work-positioning lanyard variant for compatible anchorage and harness systems.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 22,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 36142,
+    "-1200": 19418,
+    "-400": 3396
+   },
+   "quality": "CRITICAL",
+   "live_page": "karam-grip-adjuster-positioning-lanyard-pn-245-pn-245.html"
+  },
+  {
+   "code": "PN 900",
+   "name": "KARAM K-Pod Davit Arm System",
+   "variant": "",
+   "cat": "confined",
+   "brand": "KARAM",
+   "img": "EXP-PN900",
+   "spec": "Model PN 900; brackets PN 900(01)/(02)",
+   "desc": "Adjustable davit system for confined-space access, with floor and wall mounting options. Confirm mounting and retrieval equipment.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 23,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 25977,
+    "-1200": 11032,
+    "-400": 2144
+   },
+   "quality": "CRITICAL",
+   "live_page": "karam-k-pod-davit-arm-system-pn-900.html"
+  },
+  {
+   "code": "DA 01",
+   "name": "KARAM H-Base Davit System",
+   "variant": "",
+   "cat": "confined",
+   "brand": "KARAM",
+   "img": "EXP-DA01",
+   "spec": "Model DA 01; confirm base and mounting",
+   "desc": "H-base davit system for confined-space entry and retrieval; mounting configurations must be selected for the site.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 23,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 70274,
+    "-1200": 42302,
+    "-400": 8414
+   },
+   "quality": "OK",
+   "live_page": "karam-h-base-davit-system-da-01.html"
+  },
+  {
+   "code": "PN 800(DP)",
+   "name": "KARAM Tripod with Double Pulley",
+   "variant": "",
+   "cat": "confined",
+   "brand": "KARAM",
+   "img": "EXP-PN800DP",
+   "spec": "Model PN 800(DP); 7 ft or 10 ft",
+   "desc": "Confined-space tripod with double pulley, available in 7 ft and 10 ft configurations. Confirm winch and retrieval compatibility.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 23,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 46531,
+    "-1200": 23364,
+    "-400": 5488
+   },
+   "quality": "REVIEW",
+   "live_page": "karam-tripod-with-double-pulley-pn-800-dp.html"
+  },
+  {
+   "code": "SA 17",
+   "name": "KARAM Megapod",
+   "variant": "",
+   "cat": "confined",
+   "brand": "KARAM",
+   "img": "EXP-SA17",
+   "spec": "Model SA 17",
+   "desc": "Heavy-duty tripod system for confined-space access and rescue; confirm the complete configuration for your entry plan.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 23,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 54712,
+    "-1200": 27976,
+    "-400": 6880
+   },
+   "quality": "OK",
+   "live_page": "karam-megapod-sa-17.html"
+  },
+  {
+   "code": "PN 403",
+   "name": "KARAM Respac Recovery Stretcher",
+   "variant": "",
+   "cat": "rescue",
+   "brand": "KARAM",
+   "img": "EXP-PN403",
+   "spec": "Model PN 403",
+   "desc": "Recovery stretcher for planned rescue and evacuation from difficult access areas. Confirm the complete lifting system.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 24,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 49998,
+    "-1200": 27598,
+    "-400": 5580
+   },
+   "quality": "REVIEW",
+   "live_page": "karam-respac-recovery-stretcher-pn-403.html"
+  },
+  {
+   "code": "PN 408 N",
+   "name": "KARAM Evac R",
+   "variant": "",
+   "cat": "rescue",
+   "brand": "KARAM",
+   "img": "EXP-PN408N",
+   "spec": "Model PN 408 N",
+   "desc": "Rescue and evacuation device from the KARAM rope-access range. Request the operating datasheet and compatible system components.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 24,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 45864,
+    "-1200": 23782,
+    "-400": 4846
+   },
+   "quality": "OK",
+   "live_page": "karam-evac-r-pn-408-n.html"
+  },
+  {
+   "code": "PN 3001 C",
+   "name": "KARAM Horizon Four-Person Anchorage Line",
+   "variant": "",
+   "cat": "anchorage",
+   "brand": "KARAM",
+   "img": "EXP-PN3001C",
+   "spec": "Model PN 3001 C; four-person system",
+   "desc": "Temporary horizontal rope anchorage system for up to four users, with tensioner and crossover anchors. Confirm span and site design.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 24,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 36334,
+    "-1200": 19316,
+    "-400": 3468
+   },
+   "quality": "REVIEW",
+   "live_page": "karam-horizon-four-person-anchorage-line-pn-3001-c.html"
+  },
+  {
+   "code": "PN 2003",
+   "name": "KARAM Guided Fall-Arrester System",
+   "variant": "",
+   "cat": "anchorage",
+   "brand": "KARAM",
+   "img": "EXP-PN2003",
+   "spec": "Model PN 2003; confirm line and connector",
+   "desc": "Guided fall-arrester system on a flexible anchorage line for compatible vertical access applications.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 24,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 65571,
+    "-1200": 46014,
+    "-400": 5394
+   },
+   "quality": "OK",
+   "live_page": "karam-guided-fall-arrester-system-pn-2003.html"
+  },
+  {
+   "code": "PN 654",
+   "name": "KARAM Confined-Space Entry Kit",
+   "variant": "",
+   "cat": "rescue",
+   "brand": "KARAM",
+   "img": "EXP-PN654",
+   "spec": "Model PN 654; configuration on quote",
+   "desc": "Confined-space entry and egress kit with tripod, harness, retrieval block, winch and accessories. Confirm the supplied bill of materials.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 25,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 43539,
+    "-1200": 19276,
+    "-400": 4932
+   },
+   "quality": "REVIEW",
+   "live_page": "karam-confined-space-entry-kit-pn-654.html"
+  },
+  {
+   "code": "PN 661",
+   "name": "KARAM Hauling and Lowering Rescue Kit",
+   "variant": "",
+   "cat": "rescue",
+   "brand": "KARAM",
+   "img": "EXP-PN661",
+   "spec": "Model PN 661; configuration on quote",
+   "desc": "Rescue kit combining a harness, rope, descender, pulleys, connectors and bag. Confirm the supplied bill of materials.",
+   "provenance": "pdf-crop-exp",
+   "pdf_page": 25,
+   "src_dims_jpg": [
+    1200,
+    1200
+   ],
+   "rendered_dims_1200": [
+    1200,
+    1200
+   ],
+   "bytes": {
+    ".jpg": 79981,
+    "-1200": 39590,
+    "-400": 8888
+   },
+   "quality": "OK",
+   "live_page": "karam-hauling-and-lowering-rescue-kit-pn-661.html"
+  }
+ ]
+}
